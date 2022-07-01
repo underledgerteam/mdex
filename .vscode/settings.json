@@ -1,8 +1,11 @@
 {
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
-  "javascript.format.semicolons": "insert",
   "editor.formatOnSave": true,
+  "javascript.format.semicolons": "insert",
   "javascript.preferences.importModuleSpecifier": "non-relative",
-  "javascript.preferences.quoteStyle": "double"
+  "javascript.preferences.quoteStyle": "double",
+  "typescript.format.semicolons": "insert",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.quoteStyle": "double",
 }
