@@ -9,18 +9,11 @@ const InputSelect = ({className, keyUpdate, selectionUpdate, defaultValue = "", 
   const [value, setValue] = useState<string | undefined>(defaultValue);
 
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateSwap({...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], [keyUpdate.toLowerCase()]: e.target.value}});
+    updateSwap({...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], [keyUpdate]: e.target.value}});
     setValue(e.target.value);
   };
   useEffect(()=>{
-    let value;
-    if(keyUpdate === "chain"){
-      value = swap[selectionUpdate.toLowerCase()].chain
-    }
-    if(keyUpdate === "token"){
-      value = swap[selectionUpdate.toLowerCase()].token
-    }
-    setValue(value || "")
+    setValue(swap[selectionUpdate.toLowerCase()][`${keyUpdate}`]?.toString())
   },[reloadSwitch]);
   return(
     <div className={`flex items-center ${className}`}>

@@ -1,5 +1,3 @@
-import React, { Fragment, useContext, useEffect } from 'react';
-
 import SwapPage from "src/pages/SwapPage";
 function App() {
   return (

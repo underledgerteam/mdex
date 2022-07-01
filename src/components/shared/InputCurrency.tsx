@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import { InputCurrencyInterface } from "src/types/InputCurrency";
 
 import { SwapContext } from "src/contexts/swap.context";
-import { SwapContextInterface } from "src/types/contexts/swap.context";
 
 const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max", maxCurrency = false}: InputCurrencyInterface): JSX.Element => {  
   const {updateSwap, swap } = useContext(SwapContext);
@@ -14,8 +13,8 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputCurrency = e.target.value, validateNumber = inputCurrency.match(regexInputCurrency) || undefined;
     if(validateNumber || !inputCurrency){
-      const value = Number(validateNumber?.[0]) || undefined;
-      updateSwap({...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value}})
+      const value = Number(validateNumber?.[0]);
+      updateSwap({...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}})
       setNumber(value);
     }
   };
