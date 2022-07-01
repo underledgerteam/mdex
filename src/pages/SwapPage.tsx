@@ -3,10 +3,9 @@ import Card from 'src/components/shared/Card';
 import SelectionSwap from 'src/components/SelectionSwap';
 
 import { SwapContext } from "src/contexts/swap.context";
-import { SwapContextInterface } from "src/types/contexts/swap.context";
 
 const SwapPage = (): JSX.Element => {
-  const { swapSwitch } = useContext(SwapContext) as SwapContextInterface;
+  const { swapSwitch } = useContext(SwapContext);
   return(
     <Card
       className="glass w-full md:w-2/3"

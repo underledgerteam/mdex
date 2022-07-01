@@ -5,7 +5,7 @@ import { SwapContext } from "src/contexts/swap.context";
 import { SwapContextInterface } from "src/types/contexts/swap.context";
 
 const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max", maxCurrency = false}: InputCurrencyInterface): JSX.Element => {  
-  const {updateSwap, swap } = useContext(SwapContext) as SwapContextInterface;
+  const {updateSwap, swap } = useContext(SwapContext);
   
   const regexInputCurrency: RegExp = /^[0-9]{1,10}((\.)[0-9]{0,10}){0,1}$/g;
 

@@ -1,15 +1,20 @@
 import { useState, useEffect, createContext } from "react";
 
 import { SwapContextInterface, SwapProviderInterface, SwapType } from  "src/types/contexts/swap.context"
-
-export const SwapContext = createContext<SwapContextInterface | undefined>(undefined);
-
-export const SwapProvider = ({ children }: SwapProviderInterface) => {
-  const [swap, setSwap] = useState<SwapType>({
+const defaultValue: SwapContextInterface = {
+  reloadSwitch: false,
+  swap:{
     source: { chain: undefined, token: undefined, value: undefined },
     destination: { chain: undefined, token: undefined,value: undefined }
-  });
-  const [reloadSwitch, setReloadSwitch] = useState(false);
+  },
+  swapSwitch: ()=>{},
+  updateSwap: ()=>{},
+};
+export const SwapContext = createContext<SwapContextInterface>(defaultValue);
+
+export const SwapProvider = ({ children }: SwapProviderInterface) => {
+  const [swap, setSwap] = useState<SwapType>(defaultValue.swap);
+  const [reloadSwitch, setReloadSwitch] = useState<boolean>(defaultValue.reloadSwitch);
 
   const updateSwap = (objSwap: SwapType) => {
     setSwap(objSwap);
@@ -26,10 +31,10 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   return (
     <SwapContext.Provider
       value={{
+        reloadSwitch,
+        swap,
         swapSwitch,
         updateSwap,
-        reloadSwitch,
-        swap
       }}
     >
       {children}

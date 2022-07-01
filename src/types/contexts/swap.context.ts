@@ -1,9 +1,9 @@
 // value & function in Context
 export interface SwapContextInterface {
+  reloadSwitch: boolean,
+  swap: SwapType,
   swapSwitch: ()=> void,
   updateSwap: (objSwap: SwapType)=> void,
-  reloadSwitch: boolean,
-  swap: SwapType
 }
 
 export interface SwapProviderInterface {
