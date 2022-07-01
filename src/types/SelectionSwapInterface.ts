@@ -1,3 +1,4 @@
 export interface SelectionSwapInterface {
-  title: string
-}
+  title: string,
+  maxCurrency?: boolean
+};

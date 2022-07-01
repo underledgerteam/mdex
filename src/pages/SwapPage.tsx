@@ -17,7 +17,7 @@ const SwapPage = (): JSX.Element => {
       title="Swap"
     >
       <Fragment>
-        <SelectionSwap title="Source" />
+        <SelectionSwap title="Source" maxCurrency={true} />
         <div className="flex mx-auto my-5">
           <button className="btn btn-link hover:no-underline text-5xl" onClick={() => swapSwitch()}>🔃</button>
         </div>
