@@ -4,11 +4,11 @@ export interface SwapContextInterface {
   swap: SwapType,
   swapSwitch: ()=> void,
   updateSwap: (objSwap: SwapType)=> void,
-}
+};
 
 export interface SwapProviderInterface {
   children: JSX.Element
-}
+};
 
 export type SwapType = {
   [key: string]: {
@@ -16,4 +16,4 @@ export type SwapType = {
     token?: string,
     value?: number
   }
-}
+};

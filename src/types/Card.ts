@@ -4,4 +4,4 @@ export interface CardInterface {
   bodyClassName?: string,
   title?: string,
   children: JSX.Element
-}
+};
