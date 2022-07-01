@@ -3,19 +3,13 @@ import { ethers } from "ethers";
 
 export interface Web3ContextInterface {
   walletAddress: string;
-  signer: object,
-  smartContractAddress: string;
-  abi: object;
-  smartContractSigner: object;
+  isConnected: boolean;
   handleConnectWallet: Function;
 }
 
 const defaultValue: Web3ContextInterface = {
   walletAddress: "",
-  signer: {},
-  smartContractAddress: "",
-  abi: {},
-  smartContractSigner: {},
+  isConnected: false,
   handleConnectWallet: () => { }
 };
 
@@ -26,12 +20,7 @@ export const Web3Context = createContext<Web3ContextInterface>(defaultValue);
 export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) => {
   // user
   const [walletAddress, setWalletAddresss] = useState("");
-  const [signer, setSigner] = useState({});
-  // smart contract
-  const [smartContractAddress, setSmartContractAddress] = useState("");
-  const [abi, setAbi] = useState({});
-  const [smartContractSigner, setSmartContractSigner] = useState({});
-
+  const [isConnected, setIsConnected] = useState(false);
 
   const checkWalletIsConnected = async (): Promise<void> => {
     try {
@@ -41,7 +30,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       setWalletAddresss(await signer.getAddress());
-      setSigner(signer);
+      setIsConnected(true);
     } catch (e) {
       console.error(e);
     }
@@ -53,23 +42,22 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       setWalletAddresss(await signer.getAddress());
-      setSigner(signer);
+      setIsConnected(true);
     } catch (e) {
       console.error(e);
     }
   };
 
   useEffect(() => {
-    checkWalletIsConnected();
+    if (walletAddress === "" && !isConnected) {
+      checkWalletIsConnected();
+    }
   }, []);
 
   return (
     <Web3Context.Provider value={{
       walletAddress,
-      signer,
-      smartContractAddress,
-      abi,
-      smartContractSigner,
+      isConnected,
       handleConnectWallet
     }}>
       {children}
