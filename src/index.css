@@ -24,3 +24,11 @@ code {
 .btn-connect:hover {
   @apply from-custom-purple1/80 to-custom-blue1/80;
 }
+
+.btn-close {
+  @apply bg-red-500 border border-red-500 px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-full border-none;
+}
+
+.btn-close:hover {
+  @apply shadow-lg bg-red-600;
+}
