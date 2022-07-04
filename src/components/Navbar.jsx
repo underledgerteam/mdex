@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
 import { Web3Context } from "src/contexts/web3.context";
 import { shortenAddress } from "src/utils/shortenAddress.util";
 
