@@ -62,7 +62,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
 
     NATIVE_CURRENCY: {
       NAME: "Binance Coin",
-      SYMBOL: "BNB",
+      SYMBOL: "tBNB",
       DECIMALS: 18
     },
     RPC_URLS: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
