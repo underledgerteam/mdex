@@ -51,7 +51,7 @@ const Navbar = () => {
           {!isConnected ? (
             <button className="btn btn-connect" onClick={() => handleConnectWallet}>Connect Wallet</button>
           ) : (
-            <div className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0">{shortenAddress(walletAddress)}</div>
+            <div className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0 cursor-pointer">{shortenAddress(walletAddress)}</div>
           )}
         </div>
       </div>
