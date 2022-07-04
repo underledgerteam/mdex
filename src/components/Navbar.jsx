@@ -17,7 +17,7 @@ const Navbar = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8 py-5">
+      <div className="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8 py-3">
         <div className="navbar-start">
           <div className="md:hidden flex dropdown">
             <label tabindex="0" className="btn btn-white mr-4">
@@ -33,7 +33,7 @@ const Navbar = () => {
               })}
             </ul>
           </div>
-          <div className="w-20">
+          <div className="w-14">
             <button className="text-xl flex text-2xl text-white uppercase font-bold cursor-pointer"><img src={MdexLogo} /></button>
           </div>
         </div>
@@ -51,7 +51,7 @@ const Navbar = () => {
           {!isConnected ? (
             <button className="btn btn-connect" onClick={() => handleConnectWallet}>Connect Wallet</button>
           ) : (
-            <button className="inline-block text-2xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0 cursor-pointer">{shortenAddress(walletAddress)}</button>
+            <button className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0 cursor-pointer">{shortenAddress(walletAddress)}</button>
           )}
         </div>
       </div>
