@@ -1,23 +1,37 @@
-import React, { Fragment, useContext } from "react";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Web3Context } from "src/contexts/web3.context";
 import { shortenAddress } from "src/utils/shortenAddress.util";
 
 // Assets
 import MdexLogo from "../assets/images/logo/mdex_logo.png";
 
+const navData = [
+  {
+    name: "swap",
+    href: "/",
+  }
+];
+
 const Navbar = () => {
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
 
   return (
     <div className="flex flex-col">
-      <div class="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8">
+      <div class="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8 py-5">
         <div class="navbar-start">
-          <div className="w-48">
+          <div className="w-20">
             <button class="text-xl flex text-2xl text-white uppercase font-bold cursor-pointer"><img src={MdexLogo} /></button>
           </div>
           <div class="navbar hidden lg:flex">
             <ul class="menu menu-horizontal p-0">
-              <li><a class="text-xl flex text-center text-xl text-white uppercase font-bold cursor-pointer">Item 1</a></li>
+              {navData.map((item) => {
+                return (
+
+                  <li><a href={item.href} class="text-xl flex text-center text-xl text-white uppercase font-bold cursor-pointer">{item.name}</a></li>
+
+                );
+              })}
             </ul>
           </div>
         </div>
