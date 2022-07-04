@@ -20,8 +20,8 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       SYMBOL: "ARETH",
       DECIMALS: 18
     },
-    RPC_URLS: "https://rinkeby.arbitrum.io/rpc",
-    BLOCK_EXPLORER_URLS: "https://rinkeby-explorer.arbitrum.io/#/",
+    RPC_URLS: ["https://rinkeby.arbitrum.io/rpc"],
+    BLOCK_EXPLORER_URLS: ["https://rinkeby-explorer.arbitrum.io/#/"],
   },
   43113: {
     NETWORK_NAME: "AVAX Testnet Network",
@@ -35,8 +35,8 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       SYMBOL: "AVAX",
       DECIMALS: 18
     },
-    RPC_URLS: "https://api.avax-test.network/ext/bc/C/rpc",
-    BLOCK_EXPLORER_URLS: "https://testnet.snowtrace.io/",
+    RPC_URLS: ["https://api.avax-test.network/ext/bc/C/rpc"],
+    BLOCK_EXPLORER_URLS: ["https://testnet.snowtrace.io/"],
   },
   80001: {
     NETWORK_NAME: "Polygon Testnet Network",
@@ -50,8 +50,8 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       SYMBOL: "MATIC",
       DECIMALS: 18
     },
-    RPC_URLS: "https://matic-mumbai.chainstacklabs.com/",
-    BLOCK_EXPLORER_URLS: "https://mumbai.polygonscan.com/",
+    RPC_URLS: ["https://matic-mumbai.chainstacklabs.com/"],
+    BLOCK_EXPLORER_URLS: ["https://mumbai.polygonscan.com/"],
   },
   97: {
     NETWORK_NAME: "Binance Smart Chain Testnet",
@@ -65,7 +65,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       SYMBOL: "BNB",
       DECIMALS: 18
     },
-    RPC_URLS: "https://data-seed-prebsc-1-s1.binance.org:8545",
-    BLOCK_EXPLORER_URLS: "https://explorer.binance.org/smart-testnet",
+    RPC_URLS: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+    BLOCK_EXPLORER_URLS: ["https://explorer.binance.org/smart-testnet"],
   },
 };

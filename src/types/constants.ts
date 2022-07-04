@@ -11,7 +11,7 @@ export interface SWAP_CONTRACTS_INTERFACE {
       SYMBOL: string,
       DECIMALS: number
     },
-    RPC_URLS?: string,
-    BLOCK_EXPLORER_URLS?: string,
+    RPC_URLS?: string[],
+    BLOCK_EXPLORER_URLS?: string[],
   }
 };
