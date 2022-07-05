@@ -17,24 +17,38 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [swap, setSwap] = useState<SwapType>(defaultValue.swap);
   const [reloadSwitch, setReloadSwitch] = useState<boolean>(defaultValue.reloadSwitch);
 
-  const updateSwap = async(objSwap: SwapType) => {
+  const updateSwap = async(selectionUpdate: string, keyUpdate: string, objSwap: SwapType) => {
     const beforeSwitchSwapObj = swap;
     try {
-      await walletSwitchChain(Number(objSwap.source.chain));
+      if(selectionUpdate==="Source" && keyUpdate === "chain"){
+        await walletSwitchChain(Number(objSwap.source.chain));
+      }
       setSwap(objSwap);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
       setSwap(beforeSwitchSwapObj);
       setReloadSwitch(!reloadSwitch);
+      alert(error);
     }
   };
 
-  const swapSwitch = () => {
-    setSwap({
-      source: {...swap.destination, token: undefined, value: undefined},
-      destination: {...swap.source, token: undefined, value: undefined}
-    })
-    setReloadSwitch(!reloadSwitch);
+  const swapSwitch = async() => {
+    const beforeSwitchSwapObj = swap;
+    let isSwitch = reloadSwitch;
+    try {
+      setSwap({
+        source: {...swap.destination, token: undefined, value: undefined},
+        destination: {...swap.source, token: undefined, value: undefined}
+      })
+      isSwitch = !isSwitch;
+      setReloadSwitch(isSwitch);
+      await walletSwitchChain(Number(swap.destination.chain));
+    } catch (error) {
+      console.error(error);
+      setSwap(beforeSwitchSwapObj);
+      setReloadSwitch(!isSwitch);
+      alert(error);
+    } 
   };
 
   return (
