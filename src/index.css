@@ -32,3 +32,8 @@ code {
 .btn-close:hover {
   @apply shadow-lg bg-red-600;
 }
+
+.dropdown .dropdown-content.show {
+  visibility: visible;
+  opacity: 1;
+}
