@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { Web3Context } from "src/contexts/web3.context";
 import { shortenAddress } from "src/utils/shortenAddress.util";
+import { DEFAULT_CHAIN } from "src/utils/constants";
 
 // Assets
 import MdexLogo from "../assets/images/logo/mdex_logo.png";
@@ -12,9 +13,35 @@ const navData = [
   }
 ];
 
-const Navbar = () => {
-  const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
+const ConnectButton: FC = () => {
+  const { walletAddress, isConnected, isSupported, handleConnectWallet, walletSwitchChain } = useContext(Web3Context);
+  if (isConnected && isSupported) {
+    return (
+      <div
+        className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mx-2 lg:mt-0 cursor-pointer"
+        onClick={() => { }}
+      >
+        {shortenAddress(walletAddress)}
+      </div>
+    );
+  } else if (isConnected && !isSupported) {
+    return (
+      <div
+        className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mx-2 lg:mt-0 cursor-pointer"
+        onClick={() => walletSwitchChain(DEFAULT_CHAIN)}
+      >
+        Network Error
+      </div>
+    );
+  }
+  return (
+    <button className="btn btn-connect" onClick={() => handleConnectWallet()}>
+      Connect Wallet
+    </button>
+  );
+};
 
+const Navbar: FC = () => {
   return (
     <div className="flex flex-col">
       <div className="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8 py-3">
@@ -47,12 +74,8 @@ const Navbar = () => {
           })}
         </ul>
         </div>
-        <div className="hidden lg:flex navbar-end">
-          {!isConnected ? (
-            <button className="btn btn-connect" onClick={() => handleConnectWallet}>Connect Wallet</button>
-          ) : (
-            <div className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0 cursor-pointer">{shortenAddress(walletAddress)}</div>
-          )}
+        <div className="lg:flex navbar-end">
+          <ConnectButton />
         </div>
       </div>
     </div>

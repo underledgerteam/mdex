@@ -1,19 +1,22 @@
 import { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
+import { SUPPORT_CHAIN } from "src/utils/constants";
 
 import { SWAP_CONTRACTS } from "src/utils/constants";
 export interface Web3ContextInterface {
   walletAddress: string;
   isConnected: boolean;
-  walletSwitchChain: (chainId: number) => void,
+  isSupported: boolean;
   handleConnectWallet: Function;
+  walletSwitchChain: (chainId: number) => void;
 }
 
 const defaultValue: Web3ContextInterface = {
   walletAddress: "",
   isConnected: false,
+  isSupported: false,
+  handleConnectWallet: () => { },
   walletSwitchChain: () => { },
-  handleConnectWallet: () => { }
 };
 
 const { ethereum } = window;
@@ -24,6 +27,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
   // user
   const [walletAddress, setWalletAddresss] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const [isSupported, setIsSupported] = useState(false);
 
   const checkWalletIsConnected = async (): Promise<void> => {
     try {
@@ -32,13 +36,16 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       }
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
+      const { chainId } = await provider.getNetwork();
+
       setWalletAddresss(await signer.getAddress());
       setIsConnected(true);
+      setIsSupported(SUPPORT_CHAIN.includes(chainId));
     } catch (e) {
       console.error(e);
     }
   };
-  const walletAddChain = async (chainId: number) => {
+  const walletAddChain = async (chainId: number): Promise<void> => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       await provider.send("wallet_addEthereumChain", [{
@@ -56,7 +63,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       throw new Error(`Can't Add ${SWAP_CONTRACTS[chainId].NETWORK_NAME} to Wallet`);
     }
   };
-  const walletSwitchChain = async (chainId: number) => {
+  const walletSwitchChain = async (chainId: number): Promise<void> => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId: currentChain } = await provider.getNetwork();
@@ -74,26 +81,41 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      setWalletAddresss(await signer.getAddress());
-      setIsConnected(true);
     } catch (e) {
       console.error(e);
     }
   };
+  const handleAccountChange = (accounts: Array<string>): void => {
+    if (accounts.length > 0) {
+      setWalletAddresss(accounts[0]);
+    } else {
+      window.location.reload();
+    }
+  };
+  const handleChainChange = (chainId: string): void => {
+    window.location.reload();
+  };
 
   useEffect(() => {
-    if (walletAddress === "" && !isConnected) {
-      checkWalletIsConnected();
-    }
-  }, []);
+    const init = async () => {
+      await checkWalletIsConnected();
+      ethereum?.on("accountsChanged", handleAccountChange);
+      ethereum?.on("chainChanged", handleChainChange);
+    };
+    init();
+    return () => {
+      ethereum?.removeListener("accountsChanged", handleAccountChange);
+      ethereum?.removeListener("chainChanged", handleChainChange);
+    };
+  }, [walletAddress]);
 
   return (
     <Web3Context.Provider value={{
       walletAddress,
       isConnected,
+      isSupported,
+      handleConnectWallet,
       walletSwitchChain,
-      handleConnectWallet
     }}>
       {children}
     </Web3Context.Provider>

@@ -23,7 +23,7 @@ const SwapPage = (): JSX.Element => {
         </div>
         <SelectionSwap title="Destination" />
         {!isConnected ? (
-          <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet}>Connect Wallet</button>
+          <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
         ) : (
           <button className="btn btn-primary mt-8">Swap</button>
         )}
