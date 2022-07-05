@@ -25,7 +25,7 @@ const SwapPage = (): JSX.Element => {
   
   return (
     <Card
-      className="glass w-full md:w-2/3"
+      className="glass w-full md:w-2/3 overflow-visible"
       titleClassName="text-4xl mb-5"
       title="Swap"
     >
