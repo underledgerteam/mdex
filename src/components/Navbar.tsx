@@ -18,6 +18,7 @@ const ConnectButton: FC = () => {
   if (isConnected && isSupported) {
     return (
       <div
+        id="walletAddress"
         className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mx-2 lg:mt-0 cursor-pointer"
         onClick={() => { }}
       >
@@ -27,6 +28,7 @@ const ConnectButton: FC = () => {
   } else if (isConnected && !isSupported) {
     return (
       <div
+        id="networkError"
         className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mx-2 lg:mt-0 cursor-pointer"
         onClick={() => walletSwitchChain(DEFAULT_CHAIN)}
       >
@@ -35,7 +37,11 @@ const ConnectButton: FC = () => {
     );
   }
   return (
-    <button className="btn btn-connect" onClick={() => handleConnectWallet()}>
+    <button
+      id="connectButton"
+      className="btn btn-connect"
+      onClick={() => handleConnectWallet()}
+    >
       Connect Wallet
     </button>
   );
@@ -53,9 +59,11 @@ const Navbar: FC = () => {
             <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
               {navData.map((item, key) => {
                 return (
-
-                  <li key={key}><a className="uppercase font-bold" href={item.href}>{item.name}</a></li>
-
+                  <li id={`menu-${item.name}`} key={key}>
+                    <a className="uppercase font-bold cursor-pointer" href={item.href}>
+                      {item.name}
+                    </a>
+                  </li>
                 );
               })}
             </ul>
@@ -67,9 +75,11 @@ const Navbar: FC = () => {
         <div className="hidden lg:flex navbar-center"><ul className="menu menu-horizontal p-0">
           {navData.map((item, key) => {
             return (
-
-              <li key={key}><a href={item.href} className="text-xl flex text-center text-xl text-white uppercase font-bold cursor-pointer">{item.name}</a></li>
-
+              <li id={`menu-${item.name}`} key={key}>
+                <a href={item.href} className="text-xl flex text-center text-xl text-white uppercase font-bold cursor-pointer">
+                  {item.name}
+                </a>
+              </li>
             );
           })}
         </ul>
