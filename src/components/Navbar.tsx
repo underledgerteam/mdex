@@ -20,10 +20,10 @@ const Navbar = () => {
       <div className="navbar bg-custom-navbar w-full lg:mx-auto justify-between items-center font-bold lg:px-8 py-3">
         <div className="navbar-start">
           <div className="md:hidden flex dropdown">
-            <label tabIndex="0" className="btn btn-white mr-4">
+            <label className="btn btn-white mr-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
             </label>
-            <ul tabIndex="0" className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+            <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
               {navData.map((item, key) => {
                 return (
 
@@ -51,7 +51,7 @@ const Navbar = () => {
           {!isConnected ? (
             <button className="btn btn-connect" onClick={() => handleConnectWallet}>Connect Wallet</button>
           ) : (
-            <div className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0">{shortenAddress(walletAddress)}</div>
+            <div className="inline-block text-xl px-4 py-2 leading-none border rounded-lg text-white mt-4 lg:mt-0 cursor-pointer">{shortenAddress(walletAddress)}</div>
           )}
         </div>
       </div>

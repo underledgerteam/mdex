@@ -42,7 +42,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       await provider.send("wallet_addEthereumChain", [{
-        chainId: ethers.utils.hexlify(Number(chainId))?.replace("0x0", "0x"),
+        chainId: ethers.utils.hexValue(Number(chainId)),
         chainName: SWAP_CONTRACTS[chainId].NETWORK_NAME,
         nativeCurrency: {
           name: SWAP_CONTRACTS[chainId].NATIVE_CURRENCY!.NAME,
@@ -60,11 +60,11 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId: currentChain } = await provider.getNetwork();
-      if(chainId !== currentChain){
-        await provider.send("wallet_switchEthereumChain", [{ chainId: ethers.utils.hexlify(chainId)?.replace("0x0", "0x") }]);
+      if (chainId !== currentChain) {
+        await provider.send("wallet_switchEthereumChain", [{ chainId: ethers.utils.hexValue(chainId) }]);
       }
     } catch (error: any) {
-      if(error.code === 4902){
+      if (error.code === 4902) {
         await walletAddChain(chainId);
       }
       throw new Error("Can't Switch Chain");
