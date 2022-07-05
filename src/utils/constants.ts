@@ -69,3 +69,22 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     BLOCK_EXPLORER_URLS: ["https://explorer.binance.org/smart-testnet"],
   },
 };
+
+export const ROPSTEN: number = 3;
+export const RINKEBY: number = 4;
+export const GOERLI: number = 5;
+export const KOVAN: number = 42;
+export const BSC_CHAPEL: number = 97;
+export const POLYGON_MUMBAI: number = 80001;
+export const ARBITRUM_RINKEBY: number = 421611;
+export const AVALANCHE_FUJI: number = 43113;
+
+export const SUPPORT_CHAIN: number[] = [
+  RINKEBY,
+  BSC_CHAPEL,
+  POLYGON_MUMBAI,
+  ARBITRUM_RINKEBY,
+  AVALANCHE_FUJI,
+];
+
+export const DEFAULT_CHAIN: number = RINKEBY;
