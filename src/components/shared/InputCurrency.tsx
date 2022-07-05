@@ -3,24 +3,24 @@ import { InputCurrencyInterface } from "src/types/InputCurrency";
 
 import { SwapContext } from "src/contexts/swap.context";
 
-const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max", maxCurrency = false}: InputCurrencyInterface): JSX.Element => {  
-  const {updateSwap, swap } = useContext(SwapContext);
-  
+const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max", maxCurrency = false}: InputCurrencyInterface): JSX.Element => { 
   const regexInputCurrency: RegExp = /^[0-9]{1,10}((\.)[0-9]{0,10}){0,1}$/g;
+  const regexRemoveString: RegExp = /[^\d\.]/g; 
 
-  const [number, setNumber] = useState<number | undefined>(undefined);
+  const {updateSwap, swap } = useContext(SwapContext);
+  const [number, setNumber] = useState<string>("");
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputCurrency = e.target.value, validateNumber = inputCurrency.match(regexInputCurrency) || undefined;
+    const inputCurrency = e.target.value.replace(regexRemoveString, ''), validateNumber = inputCurrency.match(regexInputCurrency);
     if(validateNumber || !inputCurrency){
-      const value = Number(validateNumber?.[0]);
-      updateSwap({...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}})
+      const value = validateNumber?.[0] || "";
+      updateSwap(selectionUpdate, "value", {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}})
       setNumber(value);
     }
   };
 
-  const setMaxCurrency = (number: number) => {
-    setNumber(Number(String(number).replace(/\D/g, '')));
+  const setMaxCurrency = (number: string) => {
+    setNumber(number.replace(regexRemoveString, ''));
   };
 
   useEffect(()=>{
@@ -35,8 +35,8 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
 
   return (
     <div className={`flex py-2 px-2 border-2 border-blue-300 rounded-lg ${className}`}>
-      <input type="text" placeholder="0.0" name={`input${selectionUpdate}`} className="input focus:outline-none w-full" onInput={onInput} value={number}/>
-      { maxCurrency && <button className="btn" onClick={()=> setMaxCurrency(123)}>{maxLabel}</button> }
+      <input type="text" placeholder="0.0" name={`input${selectionUpdate}`} className="input focus:outline-none w-full" onChange={onInput} value={number}/>
+      { maxCurrency && <button className="btn" onClick={()=> setMaxCurrency("12345.7890")}>{maxLabel}</button> }
     </div>
   );
 };
