@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import InputCurrency from 'src/components/shared/InputCurrency';
-import InputSelect from 'src/components/shared/InputSelect';
+import InputSelectNetwork from 'src/components/shared/InputSelectNetwork';
 import Card from 'src/components/shared/Card';
 import { SelectionSwapInterface } from "src/types/SelectionSwapInterface";
 
@@ -14,10 +14,9 @@ const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInt
           className="bg-base-100 shadow-xl col-span-3 lg:col-span-1 overflow-visible"
           bodyClassName="grid"
         >
-          <InputSelect 
+          <InputSelectNetwork 
             listOption={listOptionNetwork}
             selectionUpdate={title}
-            keyUpdate="chain"
             selectLabel="Select Network"
           />
         </Card>
@@ -27,19 +26,8 @@ const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInt
           bodyClassName="grid grid-cols-2 gap-4"
         >
           <Fragment>
-            <InputSelect 
-              listOption={[{
-                value: "1",
-                label: "TEST Token 1"
-              },{
-                value: "2",
-                label: "TEST Token 2"
-              },{
-                value: "3",
-                label: "TEST Token 3"
-              }]}
+            <InputSelectNetwork 
               selectionUpdate={title}
-              keyUpdate="token"
               className="col-span-2 lg:col-span-1"
               selectLabel="Select a Token"
             />
