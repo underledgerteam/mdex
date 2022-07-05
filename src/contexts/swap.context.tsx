@@ -1,9 +1,11 @@
 import { useState, useEffect, createContext, useContext } from "react";
+import { useNotifier } from 'react-headless-notifier';
+import { DangerNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { SwapContextInterface, SwapProviderInterface, SwapType } from  "src/types/contexts/swap.context"
 const defaultValue: SwapContextInterface = {
   reloadSwitch: false,
-  swap:{
+  swap: {
     source: { chain: undefined, token: undefined, value: undefined },
     destination: { chain: undefined, token: undefined,value: undefined }
   },
@@ -13,7 +15,8 @@ const defaultValue: SwapContextInterface = {
 export const SwapContext = createContext<SwapContextInterface>(defaultValue);
 
 export const SwapProvider = ({ children }: SwapProviderInterface) => {
-  const { walletSwitchChain } = useContext(Web3Context);
+  const { walletSwitchChain, currentNetwork } = useContext(Web3Context);
+  const { notify } = useNotifier();
   const [swap, setSwap] = useState<SwapType>(defaultValue.swap);
   const [reloadSwitch, setReloadSwitch] = useState<boolean>(defaultValue.reloadSwitch);
 
@@ -24,11 +27,15 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         await walletSwitchChain(Number(objSwap.source.chain));
       }
       setSwap(objSwap);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setSwap(beforeSwitchSwapObj);
       setReloadSwitch(!reloadSwitch);
-      alert(error);
+      notify(
+        <DangerNotification
+          message={error.toString()}
+        />
+      );
     }
   };
 
@@ -43,14 +50,28 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       isSwitch = !isSwitch;
       setReloadSwitch(isSwitch);
       await walletSwitchChain(Number(swap.destination.chain));
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setSwap(beforeSwitchSwapObj);
       setReloadSwitch(!isSwitch);
-      alert(error);
+      notify(
+        <DangerNotification
+          message={error.toString()}
+        />
+      );
     } 
   };
 
+  useEffect(()=>{
+    (async()=>{
+      const currentChain = await currentNetwork();
+      setSwap({
+        source: { chain: currentChain.toString(), token: undefined, value: undefined },
+        destination: { chain: undefined, token: undefined,value: undefined }
+      });
+      setReloadSwitch(!reloadSwitch);
+    })();
+  },[])
   return (
     <SwapContext.Provider
       value={{

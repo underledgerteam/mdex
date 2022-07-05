@@ -7,6 +7,7 @@ export interface Web3ContextInterface {
   walletAddress: string;
   isConnected: boolean;
   isSupported: boolean;
+  currentNetwork: () => Promise<number>;
   handleConnectWallet: Function;
   walletSwitchChain: (chainId: number) => void;
 }
@@ -15,6 +16,7 @@ const defaultValue: Web3ContextInterface = {
   walletAddress: "",
   isConnected: false,
   isSupported: false,
+  currentNetwork: async() => { return 0; },
   handleConnectWallet: () => { },
   walletSwitchChain: () => { },
 };
@@ -63,10 +65,15 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       throw new Error(`Can't Add ${SWAP_CONTRACTS[chainId].NETWORK_NAME} to Wallet`);
     }
   };
+  const currentNetwork = async() => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const { chainId } = await provider.getNetwork();
+    return chainId;
+  };
   const walletSwitchChain = async (chainId: number): Promise<void> => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      const { chainId: currentChain } = await provider.getNetwork();
+      const currentChain = await currentNetwork();
       if (chainId !== currentChain) {
         await provider.send("wallet_switchEthereumChain", [{ chainId: ethers.utils.hexValue(chainId) }]);
       }
@@ -114,6 +121,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       walletAddress,
       isConnected,
       isSupported,
+      currentNetwork,
       handleConnectWallet,
       walletSwitchChain,
     }}>
