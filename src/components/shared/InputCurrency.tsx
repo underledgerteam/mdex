@@ -34,7 +34,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   },[number]);
 
   return (
-    <div className={`flex py-2 px-2 border-2 border-blue-300 rounded-lg ${className}`}>
+    <div className={`flex py-2 px-2 border border-black border-opacity-20 rounded-lg ${className}`}>
       <input type="text" placeholder="0.0" name={`input${selectionUpdate}`} className="input focus:outline-none w-full" onChange={onInput} value={number}/>
       { maxCurrency && <button className="btn" onClick={()=> setMaxCurrency("12345.7890")}>{maxLabel}</button> }
     </div>
