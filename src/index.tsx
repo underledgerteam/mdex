@@ -3,13 +3,20 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Web3Provider } from 'src/contexts/web3.context';
+
+import { SwapProvider } from "src/contexts/swap.context";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Web3Provider>
+      <SwapProvider>
+        <App />
+      </SwapProvider>
+    </Web3Provider>
   </React.StrictMode>
 );
 
