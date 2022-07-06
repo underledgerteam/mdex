@@ -18,6 +18,9 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
   };
 
   const handelSelectNetwork = (value: string, label: JSX.Element | string) => {
+    if(selectionUpdate === "Destination" && swap.source.chain === value){
+      return false;
+    }
     updateSwap(selectionUpdate, "chain", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], chain: value}});
     setValue(label);
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-chain`)?.classList.toggle("show");
@@ -44,7 +47,14 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
         <label id="dropdown-title" className="select select-bordered items-center m-1 w-full" onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
         <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-chain`} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full">
           { listOption?.map((list, key)=>{
-            return(<li key={key}><div onClick={()=> handelSelectNetwork(list.value, list.label)}>{list.label}</div></li>);
+            return(<li key={key}>
+              <div 
+                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/50 bg-slate-300/20": ""}`}
+                onClick={()=> handelSelectNetwork(list.value, list.label)} 
+                >
+                {list.label}
+              </div>
+            </li>);
           }) }
         </ul>
       </div>
