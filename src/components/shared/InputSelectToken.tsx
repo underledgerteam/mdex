@@ -11,7 +11,7 @@ const mockSelect = [{
   label: "AVAX", subLabel: "Avalance", value: "1", img: "https://placeimg.com/160/160/arch", balance: 1235
 }]
 
-const InputSelectToken = ({className, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface) => {
+const InputSelectToken = ({className, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
   const { updateSwap, swap, reloadSwitch } = useContext(SwapContext);
   const [value, setValue] = useState<string | JSX.Element>(defaultValue);
   const [tokenList, setTokenList] = useState<any>(null);

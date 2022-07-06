@@ -3,7 +3,7 @@ import { InputSelectInterface } from "src/types/InputSelect";
 
 import { SwapContext } from "src/contexts/swap.context";
 
-const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface) => {
+const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
   const { updateSwap, swap, reloadSwitch } = useContext(SwapContext);
   const [value, setValue] = useState<string | JSX.Element>(defaultValue);
 
