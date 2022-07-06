@@ -37,6 +37,17 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
   };
 
   useEffect(()=>{
+    const modelCloseOutside = (e: any)  => {
+      const dropdown = document.querySelectorAll(`.modal.modal-open`);
+      if(dropdown.length > 0 && e.path[0].id === `dropdown-content-${selectionUpdate.toLowerCase()}-token`){
+        dropdown[0].classList.remove("modal-open");
+      }
+    }
+    document.body.addEventListener("click", modelCloseOutside);
+    return () => document.body.removeEventListener("click", modelCloseOutside);
+  },[]);
+
+  useEffect(()=>{
     if(inputSearchToken.value !== "" ){
       const delayInput = setTimeout(() => {
         setInputSearchToken({...inputSearchToken, isDisabled: true});
@@ -77,7 +88,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
               disabled={inputSearchToken.isDisabled}
               value={inputSearchToken.value}
             />
-            
+
             { inputSearchToken.isDisabled && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full" /></div>) }
 
             { !inputSearchToken.isDisabled && inputSearchToken.value === "0x0" && (
