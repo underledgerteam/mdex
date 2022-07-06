@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import InputCurrency from 'src/components/shared/InputCurrency';
 import InputSelectNetwork from 'src/components/shared/InputSelectNetwork';
+import InputSelectToken from 'src/components/shared/InputSelectToken';
 import Card from 'src/components/shared/Card';
 import { SelectionSwapInterface } from "src/types/SelectionSwapInterface";
 
@@ -26,7 +27,7 @@ const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInt
           bodyClassName="grid grid-cols-2 gap-4"
         >
           <Fragment>
-            <InputSelectNetwork 
+            <InputSelectToken 
               selectionUpdate={title}
               className="col-span-2 lg:col-span-1"
               selectLabel="Select a Token"
