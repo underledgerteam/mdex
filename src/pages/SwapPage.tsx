@@ -17,36 +17,36 @@ const SwapPage = (): JSX.Element => {
 
   const handelSwapSwitch = () => {
     swapSwitch();
-  }
+  };
 
   return (
     <div className=" flex justify-center items-center p-8">
       <Card
-      className="glass w-full md:w-2/3 overflow-visible"
-      titleClassName="text-4xl mb-5"
-      title="Swap"
-    >
-      <Fragment>
-        <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} />
-        <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch?" bg-black/20 cursor-no-drop": "bg-black/10"}`}>
-          <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
-        </div>
-        <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
-        {!isConnected ? (
-          <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
-        ) : (
-          <button 
-            className="btn btn-primary mt-8" 
-            disabled={!swapStatus.isSwap || !swapStatus.isTokenPool} 
-            onClick={()=> document.getElementById("swap-modal")?.classList.toggle("modal-open")}
-          >
-            {!swapStatus.isTokenPool? "No Source/Destination Token in Pool System": !swapStatus.isSwap? "Please Select Chain/Token or Enter Amount": "Swap"}
-          </button>
-        )}
-        <SwapModal
-        />
-      </Fragment>
-    </Card>
+        className="glass w-full md:w-2/3 overflow-visible lg:overflow-hidden"
+        titleClassName="text-4xl mb-5"
+        title="Swap"
+      >
+        <Fragment>
+          <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} />
+          <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch ? " bg-black/20 cursor-no-drop" : "bg-black/10"}`}>
+            <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
+          </div>
+          <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
+          {!isConnected ? (
+            <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
+          ) : (
+            <button
+              className="btn btn-primary mt-8"
+              disabled={!swapStatus.isSwap || !swapStatus.isTokenPool}
+              onClick={() => document.getElementById("swap-modal")?.classList.toggle("modal-open")}
+            >
+              {!swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" : !swapStatus.isSwap ? "Please Select Chain/Token or Enter Amount" : "Swap"}
+            </button>
+          )}
+          <SwapModal
+          />
+        </Fragment>
+      </Card>
     </div>
   );
 };
