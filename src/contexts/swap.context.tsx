@@ -44,8 +44,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
       if(keyUpdate === "token"){
         const select = selectTokenList.filter((x)=> x.value === objSwap[selectionUpdate.toLocaleLowerCase()].token)?.[0];
-        rete = select.rate;
         setSelectToken({...selectToken, [selectionUpdate.toLocaleLowerCase()]: {...select, label: <div className="flex items-center"><img className="mask mask-squircle mr-1" src={select.img} width={30} /> {select.label}</div>} });
+        
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination"
           if(objSwap.destination.value !== "" && objSwap.destination.value !== undefined){
@@ -53,13 +53,14 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           }
         }else{
           if(objSwap.source.value !== "" && objSwap.source.value !== undefined){
-            calCurrency = Number(objSwap.source.value || 0) / rete;
+            rete = select.rate;
+            calCurrency = Number(objSwap.source.value || 0) * rete;
           }
         }
       }
 
       if(keyUpdate === "value"){
-        rete = selectToken.source.rate;
+        rete = selectToken.destination.rate;
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination";
           calCurrency = Number(objSwap.source.value || 0) * rete;
