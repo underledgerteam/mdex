@@ -7,36 +7,43 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   const regexInputCurrency: RegExp = /^[0-9]{1,10}((\.)[0-9]{0,10}){0,1}$/g;
   const regexRemoveString: RegExp = /[^\d\.]/g; 
 
-  const {updateSwap, swap } = useContext(SwapContext);
-  const [number, setNumber] = useState<string>("");
+  const {updateSwap, swap, selectToken } = useContext(SwapContext);
+  const [inputCurrency, setInputCurrency] = useState({isDisabled: false, value: ""});
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputCurrency = e.target.value.replace(regexRemoveString, ''), validateNumber = inputCurrency.match(regexInputCurrency);
-    if(validateNumber || !inputCurrency){
+    const getValue = e.target.value.replace(regexRemoveString, ''), validateNumber = getValue.match(regexInputCurrency);
+    if(validateNumber || !getValue){
       const value = validateNumber?.[0] || "";
       updateSwap(selectionUpdate, "value", {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}})
-      setNumber(value);
+      setInputCurrency({...inputCurrency, value: value});
     }
   };
 
   const setMaxCurrency = (number: string) => {
-    setNumber(number.replace(regexRemoveString, ''));
+    updateSwap(selectionUpdate, "value", {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: number.replace(regexRemoveString, '')}})
+    setInputCurrency({...inputCurrency, value: number.replace(regexRemoveString, '')});
   };
 
   useEffect(()=>{
-    if(number){
-      const delayInput = setTimeout(() => {
-        // something code
-        console.log("delay type, input=> ", selectionUpdate, number);
-      }, delay);
-      return () => { clearTimeout(delayInput) };
+    if(swap[selectionUpdate.toLowerCase()].token === undefined || swap[selectionUpdate.toLowerCase()].token === ""){
+      setInputCurrency({...inputCurrency, value: "", isDisabled: true});
+    }else{
+      setInputCurrency({...inputCurrency, isDisabled: false, value: swap[selectionUpdate.toLowerCase()].value || ""});
     }
-  },[number]);
+  },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token, swap[selectionUpdate.toLowerCase()].value]);
 
   return (
-    <div className={`flex py-2 px-2 border border-black border-opacity-20 rounded-lg ${className}`}>
-      <input type="text" placeholder="0.0" name={`input${selectionUpdate}`} className="input focus:outline-none w-full" onChange={onInput} value={number}/>
-      { maxCurrency && <button className="btn" onClick={()=> setMaxCurrency("12345.7890")}>{maxLabel}</button> }
+    <div className={`flex items-center py-2 px-2 border border-black border-opacity-20 rounded-lg ${className} ${inputCurrency.isDisabled? "bg-[#f2f2f2]": ""}`}>
+      <input 
+        type="text" 
+        placeholder="0.0" 
+        name={`input${selectionUpdate}`} 
+        className="input focus:outline-none w-full" 
+        disabled={inputCurrency.isDisabled}
+        onChange={onInput} 
+        value={inputCurrency.value}
+      />
+      { maxCurrency && <button className="btn" disabled={inputCurrency.isDisabled} onClick={()=> setMaxCurrency((selectToken.source.maxAmount || "").toString())}>{maxLabel}</button> }
     </div>
   );
 };

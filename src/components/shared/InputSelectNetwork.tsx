@@ -4,7 +4,7 @@ import { InputSelectInterface } from "src/types/InputSelect";
 import { SwapContext } from "src/contexts/swap.context";
 
 const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
-  const { updateSwap, swap, reloadSwitch } = useContext(SwapContext);
+  const { updateSwap, swap } = useContext(SwapContext);
   const [value, setValue] = useState<string | JSX.Element>(defaultValue);
 
   const handelShowSelectNetwork = () => {
@@ -18,17 +18,14 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
   };
 
   const handelSelectNetwork = (value: string, label: JSX.Element | string) => {
-    if(selectionUpdate === "Destination" && swap.source.chain === value){
-      return false;
-    }
-    updateSwap(selectionUpdate, "chain", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], chain: value}});
+    updateSwap(selectionUpdate, "chain", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], chain: value, token: undefined, value: undefined}});
     setValue(label);
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-chain`)?.classList.toggle("show");
   };
 
   useEffect(()=>{
     setValue(listOption?.find((x)=>x.value === swap[selectionUpdate.toLowerCase()].chain)?.label || "");
-  },[reloadSwitch]);
+  },[swap[selectionUpdate.toLowerCase()].chain]);
 
   useEffect(()=>{
     const dropdownClose = (e: any)  => {
@@ -49,7 +46,7 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
           { listOption?.map((list, key)=>{
             return(<li key={key}>
               <div 
-                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/50 bg-slate-300/20": ""}`}
+                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/50 bg-slate-300/20 pointer-events-none": ""}`}
                 onClick={()=> handelSelectNetwork(list.value, list.label)} 
                 >
                 {list.label}

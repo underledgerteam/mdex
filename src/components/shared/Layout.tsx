@@ -5,8 +5,8 @@ import Navbar from 'src/components/Navbar';
 const Layout: FC = () => {
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen min-w-screen flex justify-center items-center p-8">
+      <div className="min-h-screen min-w-screen">
+        <Navbar />
         <Outlet />
       </div>
     </>

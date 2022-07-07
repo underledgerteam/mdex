@@ -3,36 +3,22 @@ import { InputSelectInterface } from "src/types/InputSelect";
 
 import { SwapContext } from "src/contexts/swap.context";
 
-const mockSelect = [{
-  label: "ETH", subLabel: "Ether", value: "1", img: "https://placeimg.com/160/160/arch", balance: 1000
-},{
-  label: "BNB", subLabel: "Binance Coin", value: "1", img: "https://placeimg.com/160/160/arch", balance: 500
-},{
-  label: "AVAX", subLabel: "Avalance", value: "1", img: "https://placeimg.com/160/160/arch", balance: 1235
-}]
-
 const InputSelectToken = ({className, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
-  const { updateSwap, swap, reloadSwitch } = useContext(SwapContext);
-  const [value, setValue] = useState<string | JSX.Element>(defaultValue);
-  const [tokenList, setTokenList] = useState<any>(null);
-  const [inputSearchToken, setInputSearchToken] = useState({
-    isDisabled: false,
-    value: ""
-  });
+  const { updateSwap, debounceSelectToken, swap, selectToken, selectTokenList } = useContext(SwapContext);
+  const [inputSearchToken, setInputSearchToken] = useState({ isDisabled: false, isLoading: false, value: "" });
 
   const handelShowSelectToken = () => {
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
   };
   const handelCloseSelectToken = () => {
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
-    setInputSearchToken({...inputSearchToken, value: ""});
+    setInputSearchToken({...inputSearchToken, isLoading: false,  value: ""});
   };
   const handelSearchToken = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputSearchToken({...inputSearchToken, value: e.target.value});
   };
-  const handelSelectToken = (value: string, label: JSX.Element | string) => {
-    updateSwap(selectionUpdate, "token", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], token: value}});
-    setValue(label);
+  const handelSelectToken = (value: string | undefined) => {
+    updateSwap(selectionUpdate, "token", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], token: value, value: undefined}});
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
   };
 
@@ -50,26 +36,37 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
   useEffect(()=>{
     if(inputSearchToken.value !== "" ){
       const delayInput = setTimeout(() => {
-        setInputSearchToken({...inputSearchToken, isDisabled: true});
-        setTokenList(null);
-        setTimeout(() => {
+        setInputSearchToken({...inputSearchToken, isDisabled: true, isLoading: true});
+        setTimeout(async() => {
           console.log("delay type, input token => ", selectionUpdate, inputSearchToken.value);
-          setInputSearchToken({...inputSearchToken, isDisabled: false});
-          setTokenList(mockSelect);
-        }, 5000)
-      }, 3000);
+          setInputSearchToken({...inputSearchToken, isDisabled: false, isLoading: false});
+          debounceSelectToken(inputSearchToken.value);
+        }, 1000)
+      }, 500);
       return () => { clearTimeout(delayInput) };
     }
   },[inputSearchToken.value]);
 
   useEffect(()=>{
-    setValue("");
-  },[reloadSwitch]);
+    if(swap[selectionUpdate.toLowerCase()].token === "" || swap[selectionUpdate.toLowerCase()].token === undefined){
+      setInputSearchToken({ isDisabled: false, isLoading: false, value: "" });
+    }
+    if(swap[selectionUpdate.toLowerCase()].chain === undefined){
+      setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: false });
+    }
+  },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token]);
 
   return(
     <div className={`flex items-center ${className}`}>
       <div className="dropdown w-full">
-        <label id="dropdown-title" className="select select-bordered items-center m-1 w-full" onClick={()=> handelShowSelectToken()}>{value || selectLabel}</label>
+        <label 
+          id="dropdown-title" 
+          className={`select select-bordered items-center m-1 w-full ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300/60": ""}`} 
+          onClick={()=> handelShowSelectToken()}
+        >
+          {selectToken[selectionUpdate.toLowerCase()].label || selectLabel}
+        </label>
+          { selectionUpdate === "Source" && swap.source.token !== undefined && (<p className="text-center font-medium text-sm">Available: {selectToken[selectionUpdate.toLowerCase()].maxAmount}</p>) }
           <div id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="modal overflow-visible">
           <div className="modal-box">
             <label 
@@ -89,30 +86,30 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
               value={inputSearchToken.value}
             />
 
-            { inputSearchToken.isDisabled && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full" /></div>) }
+            { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full" /></div>) }
 
-            { !inputSearchToken.isDisabled && inputSearchToken.value === "0x0" && (
+            { (!inputSearchToken.isLoading && !selectTokenList) && (
               <Fragment>
                 <div className="border-[2px] rounded-lg mb-4" />
                 <p className="py-4 text-center">No results found.</p>
               </Fragment>
             )}
 
-            { tokenList && (
+            { selectTokenList?.length > 0 && (
               <Fragment>
               <div className="border-[2px] rounded-lg mb-4" />
                 <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="menu p-2 shadow bg-base-100 rounded-box w-full">
                   <div>
-                    { tokenList.map((list: any, key: any)=>{
+                    { selectTokenList.map((list, key: any)=>{
                       return (
                         <li key={key}>
-                          <div onClick={()=> handelSelectToken(list.value, <Fragment><img className="mask mask-squircle mr-1" src={list.img} width={30} /> {list.label}</Fragment>)}>
+                          <div onClick={()=> handelSelectToken(list.value)}>
                             <img className="mask mask-squircle mr-1" src={list.img} width="40" /> 
                             <div>
                               <p className="font-semibold">{list.label}</p>
                               <p className="text-sm">{list.subLabel}</p>
                             </div>
-                            <p className="text-lg text-right">{list.balance}</p>
+                            <p className="text-md font-semibold text-right">{list.maxAmount}</p>
                           </div>
                         </li>
                       )

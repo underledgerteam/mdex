@@ -4,7 +4,7 @@ import { SwapConfirmModalInterface } from "src/types/SwapConfirmModal";
 import { SwapContext } from "src/contexts/swap.context";
 
 const SwapConfirmModal = (): JSX.Element => {
-  const { updateSwap, swap } = useContext(SwapContext);
+  const { updateSwap, swap, swapStatus } = useContext(SwapContext);
   return(
     <div id="swap-modal" className="modal">
       <div className="modal-box relative">
@@ -14,7 +14,7 @@ const SwapConfirmModal = (): JSX.Element => {
         >
           ✕
         </label>
-        <h3 className="text-2xl font-bold text-center mb-5">Approve | Confirm Swap</h3>
+        <h3 className="text-2xl font-bold text-center mb-5">{swapStatus.isApprove? "Confirm Swap": "Approve"}</h3>
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           <img className="mask mask-squircle mr-2" src="https://placeimg.com/160/160/arch" width={45} />
           <p className="font-semibold text-lg">TEST</p>
@@ -28,23 +28,25 @@ const SwapConfirmModal = (): JSX.Element => {
         </div>
 
         <div className="px-5 py-5">
-          {/* Approve */}
-          <div className="flex">
-            <p className="font-semibold text-lg">Price per SIP</p>
-            <p className="font-semibold text-lg text-right">300.1293</p>
-          </div>
-          {/* Confirm */}
-          <div className="flex">
-            <p className="font-semibold text-lg">Fee</p>
-            <p className="font-semibold text-lg text-right">0.075 SIP</p>
-          </div>
-          <div className="flex">
-            <p className="font-semibold text-lg">Recieve</p>
-            <p className="font-semibold text-lg text-right">29.925 SIP</p>
-          </div>
-
+          { swapStatus.isApprove? (
+            <Fragment>
+              <div className="flex">
+                <p className="font-semibold text-lg">Fee</p>
+                <p className="font-semibold text-lg text-right">0.075 SIP</p>
+              </div>
+              <div className="flex">
+                <p className="font-semibold text-lg">Recieve</p>
+                <p className="font-semibold text-lg text-right">29.925 SIP</p>
+              </div>
+            </Fragment>
+          ): (
+            <div className="flex">
+              <p className="font-semibold text-lg">Price per SIP</p>
+              <p className="font-semibold text-lg text-right">300.1293</p>
+            </div>
+          ) }
         </div>
-        <button className="btn loading btn-block">Approve | Confirm Swap</button>
+        <button className={`btn ${swapStatus.isLoading? "loading": ""} btn-block`}>{swapStatus.isApprove? "Confirm Swap": "Approve"}</button>
       </div>
     </div>
   );
