@@ -88,7 +88,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
 
             { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full" /></div>) }
 
-            { (!inputSearchToken.isLoading && !selectTokenList) && (
+            { (!inputSearchToken.isLoading && inputSearchToken.value !== "" && selectTokenList?.length <= 0) && (
               <Fragment>
                 <div className="border-[2px] rounded-lg mb-4" />
                 <p className="py-4 text-center">No results found.</p>
