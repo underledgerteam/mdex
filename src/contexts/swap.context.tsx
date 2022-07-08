@@ -163,7 +163,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
               message="Swap Success"
             />
           );
-          setSwapStatus({...swapStatus, isSuccess: false});
         }, 1500);
       }else{
         setTimeout(()=>{
