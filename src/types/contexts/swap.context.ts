@@ -17,7 +17,11 @@ export type SwapType = {
   [key: string]: {
     chain?: string,
     token?: string,
-    value?: string
+    value?: string,
+    
+    fee?: string,
+    recieve?: string,
+    expected?: string
   }
 };
 
@@ -36,6 +40,7 @@ export type SelectTokenType = {
 export type SelectTokenList = {
   label: JSX.Element | string,
   subLabel: string,
+  tokenName: string,
   value: string,
   img: string,
   maxAmount: number,
