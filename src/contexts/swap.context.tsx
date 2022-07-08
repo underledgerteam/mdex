@@ -1,7 +1,9 @@
 import { useState, useEffect, createContext, useContext } from "react";
+import Decimal from 'decimal.js';
 import { useNotifier } from 'react-headless-notifier';
 import { DangerNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenList, SelectTokenType } from  "src/types/contexts/swap.context"
 const defaultValue: SwapContextInterface = {
   swap: {
@@ -40,7 +42,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       if(selectionUpdate === "Source" && keyUpdate === "chain"){
         await walletSwitchChain(Number(objSwap.source.chain));
       }
-      let rete = 0, calCurrency = 0;
+      let rete = 0, calCurrency: Decimal = toBigNumber(0);
 
       if(keyUpdate === "token"){
         const select = selectTokenList.filter((x)=> x.value === objSwap[selectionUpdate.toLocaleLowerCase()].token)?.[0];
@@ -49,12 +51,12 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination"
           if(objSwap.destination.value !== "" && objSwap.destination.value !== undefined){
-            calCurrency = 0;
+            calCurrency = toBigNumber(0);
           }
         }else{
           if(objSwap.source.value !== "" && objSwap.source.value !== undefined){
             rete = select.rate;
-            calCurrency = Number(objSwap.source.value || 0) * rete;
+            calCurrency = toBigNumber(objSwap.source.value || 0).mul(rete);
           }
         }
       }
@@ -63,14 +65,14 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         rete = selectToken.destination.rate;
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination";
-          calCurrency = Number(objSwap.source.value || 0) * rete;
+          calCurrency = toBigNumber(objSwap.source.value || 0).mul(rete);
         }else{
           selectionUpdate = "source";
-          calCurrency = Number(objSwap.destination.value || 0) / rete;
+          calCurrency = toBigNumber(objSwap.destination.value || 0).div(rete);
         }
       }
       
-      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (calCurrency !== 0? calCurrency: "").toString()}};
+      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(calCurrency) !== 0? calCurrency.toDP(10, Decimal.ROUND_UP): "").toString()}};
       const checkSwapUndefined = Object.values({...objSwap.source, ...objSwap.destination}).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       setSwapStatus({
         ...swapStatus, 
@@ -127,6 +129,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         label: "BNB (Rate 0.7)", subLabel: "Binance Coin (Fix Rate 0.7)", value: "2", img: "https://placeimg.com/160/160/arch", maxAmount: 500, rate: 0.7
       },{
         label: "AVAX (Rate 1.75)", subLabel: "Avalance (Fix Rate 1.75)", value: "3", img: "https://placeimg.com/160/160/arch", maxAmount: 1235, rate: 1.75
+      },{
+        label: "BTC (Rate 3)", subLabel: "BitCoin (Fix Rate 3)", value: "4", img: "https://placeimg.com/160/160/arch", maxAmount: 48, rate: 3
       }]);
     }
   };
