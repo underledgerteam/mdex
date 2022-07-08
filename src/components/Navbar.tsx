@@ -69,14 +69,14 @@ const Navbar: FC = () => {
             </ul>
           </div>
           <div className="w-14">
-            <button className="text-xl flex text-2xl text-white uppercase font-bold cursor-pointer"><img src={MdexLogo} /></button>
+            <button className="flex text-2xl text-white uppercase font-bold cursor-pointer"><img src={MdexLogo} /></button>
           </div>
         </div>
         <div className="hidden lg:flex navbar-center"><ul className="menu menu-horizontal p-0">
           {navData.map((item, key) => {
             return (
               <li id={`menu-${item.name}`} key={key}>
-                <a href={item.href} className="text-xl flex text-center text-xl text-white uppercase font-bold cursor-pointer">
+                <a href={item.href} className="flex text-center text-xl text-white uppercase font-bold cursor-pointer">
                   {item.name}
                 </a>
               </li>

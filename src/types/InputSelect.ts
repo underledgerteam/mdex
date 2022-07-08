@@ -1,4 +1,4 @@
-type KeyUpdateType = "chain" | "value" | "token";
+type KeyUpdateType = "chain" | "token" | "value";
 
 export type listOptionType = {
   value: string,
@@ -6,8 +6,7 @@ export type listOptionType = {
 };
 export interface InputSelectInterface {
   className?: string,
-  listOption: listOptionType[],
-  keyUpdate: KeyUpdateType,
+  listOption?: listOptionType[],
   selectionUpdate: string,
   defaultValue?: string,
   selectLabel: string
