@@ -4,7 +4,7 @@ import { SwapConfirmModalInterface } from "src/types/SwapConfirmModal";
 import { SwapContext } from "src/contexts/swap.context";
 
 const SwapConfirmModal = (): JSX.Element => {
-  const { updateSwap, swap, swapStatus } = useContext(SwapContext);
+  const { updateSwap, swap, swapStatus, selectToken } = useContext(SwapContext);
   return(
     <div id="swap-modal" className="modal">
       <div className="modal-box relative">
@@ -16,15 +16,15 @@ const SwapConfirmModal = (): JSX.Element => {
         </label>
         <h3 className="text-2xl font-bold text-center mb-5">{swapStatus.isApprove? "Confirm Swap": "Approve"}</h3>
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
-          <img className="mask mask-squircle mr-2" src="https://placeimg.com/160/160/arch" width={45} />
-          <p className="font-semibold text-lg">TEST</p>
-          <p className="font-semibold text-lg text-right">1000</p>
+          {/* <img className="mask mask-squircle mr-2" src={selectToken.source.img} width={45} /> */}
+          <p className="font-semibold text-lg">{selectToken.source.tokenName}</p>
+          <p className="font-semibold text-lg text-right">{swap.source.value}</p>
         </div>
         <div className="flex justify-center text-3xl py-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700">▼</div>
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
-          <img className="mask mask-squircle mr-2" src="https://placeimg.com/160/160/arch" width={45} />
-          <p className="font-semibold text-lg">TEST</p>
-          <p className="font-semibold text-lg text-right">1000</p>
+          {/* <img className="mask mask-squircle mr-2" src={selectToken.destination.img} width={45} /> */}
+          <p className="font-semibold text-lg">{selectToken.destination.tokenName}</p>
+          <p className="font-semibold text-lg text-right">{swap.destination.value}</p>
         </div>
 
         <div className="px-5 py-5">
@@ -32,17 +32,21 @@ const SwapConfirmModal = (): JSX.Element => {
             <Fragment>
               <div className="flex">
                 <p className="font-semibold text-lg">Fee</p>
-                <p className="font-semibold text-lg text-right">0.075 SIP</p>
+                <p className="font-semibold text-lg text-right">{swap.summary.fee} {selectToken.source.tokenName}</p>
               </div>
               <div className="flex">
                 <p className="font-semibold text-lg">Recieve</p>
-                <p className="font-semibold text-lg text-right">29.925 SIP</p>
+                <p className="font-semibold text-lg text-right">{swap.summary.recieve} {selectToken.source.tokenName}</p>
+              </div>
+              <div className="flex">
+                <p className="font-semibold text-lg">Expected Output(ETH)</p>
+                <p className="font-semibold text-lg text-right">{swap.summary.expected} {selectToken.destination.tokenName}</p>
               </div>
             </Fragment>
           ): (
             <div className="flex">
-              <p className="font-semibold text-lg">Price per SIP</p>
-              <p className="font-semibold text-lg text-right">300.1293</p>
+              <p className="font-semibold text-lg">Price per {selectToken.source.tokenName}</p>
+              <p className="font-semibold text-lg text-right">{selectToken.source.rate}</p>
             </div>
           ) }
         </div>

@@ -9,17 +9,18 @@ const defaultValue: SwapContextInterface = {
   swap: {
     source: { chain: undefined, token: undefined, value: undefined },
     destination: { chain: undefined, token: undefined,value: undefined },
+    summary: { fee: undefined, recieve: undefined, expected: undefined },
   },
   swapStatus: {
-    isApprove: false,
+    isApprove: true,
     isSwitch: true,
     isSwap: false,
     isTokenPool: true,
     isLoading: false
   },
   selectToken: {
-    source: {label: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
-    destination: {label: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
+    source: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
+    destination: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
   },
   selectTokenList: [],
   swapSwitch: ()=>{},
@@ -38,41 +39,53 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   const updateSwap = async(selectionUpdate: string, keyUpdate: string, objSwap: SwapType) => {
     const beforeSwitchSwapObj = {...swap};
+    let _rete = 0, _fixFee = 2.5, _calCurrency: Decimal = toBigNumber(0), _selectToken = {...selectToken};
     try {
       if(selectionUpdate === "Source" && keyUpdate === "chain"){
         await walletSwitchChain(Number(objSwap.source.chain));
       }
-      let rete = 0, calCurrency: Decimal = toBigNumber(0);
-
       if(keyUpdate === "token"){
         const select = selectTokenList.filter((x)=> x.value === objSwap[selectionUpdate.toLocaleLowerCase()].token)?.[0];
-        setSelectToken({...selectToken, [selectionUpdate.toLocaleLowerCase()]: {...select, label: <div className="flex items-center"><img className="mask mask-squircle mr-1" src={select.img} width={30} /> {select.label}</div>} });
+        _selectToken = {...selectToken, [selectionUpdate.toLocaleLowerCase()]: {...select, label: <div className="flex items-center"><img className="mask mask-squircle mr-1" src={select.img} width={30} /> {select.label}</div>} }
+        setSelectToken(_selectToken);
         
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination"
           if(objSwap.destination.value !== "" && objSwap.destination.value !== undefined){
-            calCurrency = toBigNumber(0);
+            _calCurrency = toBigNumber(0);
           }
         }else{
           if(objSwap.source.value !== "" && objSwap.source.value !== undefined){
-            rete = select.rate;
-            calCurrency = toBigNumber(objSwap.source.value || 0).mul(rete);
+            _rete = _selectToken.destination.rate;
+            _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
           }
         }
       }
 
       if(keyUpdate === "value"){
-        rete = selectToken.destination.rate;
+        _rete = _selectToken.destination.rate;
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination";
-          calCurrency = toBigNumber(objSwap.source.value || 0).mul(rete);
+          _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
         }else{
           selectionUpdate = "source";
-          calCurrency = toBigNumber(objSwap.destination.value || 0).div(rete);
+          _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rete);
         }
       }
       
-      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(calCurrency) !== 0? calCurrency.toDP(10, Decimal.ROUND_UP): "").toString()}};
+      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(_calCurrency) !== 0? _calCurrency.toDP(10, Decimal.ROUND_UP): "").toString()}};
+      
+      // start calculator fee / recieve / expected
+      let reteSource = _selectToken.source.rate, reteDestination = _selectToken.destination.rate;
+      const sourceValue = toBigNumber(objSwap.source.value || 0);
+      const fee = (sourceValue.mul(_fixFee)).div(100);
+      const recieve = sourceValue.minus(fee);
+      const expected = (recieve.mul(reteDestination)).div(reteSource);
+      objSwap = {...objSwap, summary: { fee: fee.toDP(10, Decimal.ROUND_UP).toString(), recieve: recieve.toDP(10, Decimal.ROUND_UP).toString(), expected: expected.toDP(10, Decimal.ROUND_UP).toString() } };
+      // end calculator fee / recieve / expected
+      console.log("reteSource =>", reteSource)
+      console.log("reteDestination =>", reteDestination)
+      console.log({...objSwap.summary})
       const checkSwapUndefined = Object.values({...objSwap.source, ...objSwap.destination}).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       setSwapStatus({
         ...swapStatus, 
@@ -97,18 +110,20 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       setSwapStatus({...swapStatus, isSwitch: true});
       setSwap({
         source: {...swap.destination, token: undefined, value: undefined},
-        destination: {...swap.source, token: undefined, value: undefined}
+        destination: {...swap.source, token: undefined, value: undefined},
+        summary: { fee: undefined, recieve: undefined, expected: undefined },
       });
       setSelectToken({
-        source: {label: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
-        destination: {label: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0}
+        source: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
+        destination: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
       });
       await walletSwitchChain(Number(swap.destination.chain));
       setSwapStatus({...swapStatus, isSwitch: false});
     } catch (error: any) {
       setSwap({
         source: {...beforeSwitchSwapObj.source, token: undefined, value: undefined},
-        destination: {...beforeSwitchSwapObj.destination, token: undefined, value: undefined}
+        destination: {...beforeSwitchSwapObj.destination, token: undefined, value: undefined},
+        summary: { fee: undefined, recieve: undefined, expected: undefined },
       });
       notify(
         <DangerNotification
@@ -124,13 +139,13 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       setSelectTokenList([]);
     }else{
       setSelectTokenList([{
-        label: "ETH (Rate 1.5)", subLabel: "Ether (Fix Rate 1.5)", value: "1", img: "https://placeimg.com/160/160/arch", maxAmount: 1000, rate: 1.5
+        label: "ETH (Rate 1.5)", tokenName: "ETH", subLabel: "Ether (Fix Rate 1.5)", value: "1", img: "https://placeimg.com/160/160/arch", maxAmount: 1000, rate: 1.5
       },{
-        label: "BNB (Rate 0.7)", subLabel: "Binance Coin (Fix Rate 0.7)", value: "2", img: "https://placeimg.com/160/160/arch", maxAmount: 500, rate: 0.7
+        label: "BNB (Rate 0.7)", tokenName: "BNB", subLabel: "Binance Coin (Fix Rate 0.7)", value: "2", img: "https://placeimg.com/160/160/arch", maxAmount: 500, rate: 0.7
       },{
-        label: "AVAX (Rate 1.75)", subLabel: "Avalance (Fix Rate 1.75)", value: "3", img: "https://placeimg.com/160/160/arch", maxAmount: 1235, rate: 1.75
+        label: "AVAX (Rate 1.75)", tokenName: "AVAX", subLabel: "Avalance (Fix Rate 1.75)", value: "3", img: "https://placeimg.com/160/160/arch", maxAmount: 1235, rate: 1.75
       },{
-        label: "BTC (Rate 3)", subLabel: "BitCoin (Fix Rate 3)", value: "4", img: "https://placeimg.com/160/160/arch", maxAmount: 48, rate: 3
+        label: "BTC (Rate 3)", tokenName: "BTC", subLabel: "BitCoin (Fix Rate 3)", value: "4", img: "https://placeimg.com/160/160/arch", maxAmount: 48, rate: 3
       }]);
     }
   };
@@ -140,7 +155,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
       setSwap({
         source: { chain: currentChain.toString(), token: undefined, value: undefined },
-        destination: { chain: undefined, token: undefined,value: undefined }
+        destination: { chain: undefined, token: undefined,value: undefined },
+        summary: { fee: undefined, recieve: undefined, expected: undefined },
       });
     })();
   },[walletAddress, isConnected]);
