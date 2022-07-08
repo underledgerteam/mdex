@@ -12,9 +12,13 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
     dropdown && dropdown.forEach((list)=>{
       if(list.id !== `dropdown-content-${selectionUpdate.toLowerCase()}-chain`){
         list.classList.remove("show");
+        // document.getElementById(`root`)?.classList.remove("fix-h-screen");
       }
     });
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-chain`)?.classList.toggle("show");
+    // if(selectionUpdate === "Destination"){
+    //   document.getElementById(`root`)?.classList.toggle("fix-h-screen");
+    // }
   };
 
   const handelSelectNetwork = (value: string, label: JSX.Element | string) => {
@@ -31,7 +35,10 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
     const dropdownClose = (e: any)  => {
       const dropdown = document.querySelectorAll(".dropdown-content.show");
       if(dropdown.length > 0 && !e.path[0].id){
-        dropdown.forEach((list)=>{ list.classList.remove("show"); });
+        dropdown.forEach((list)=>{ 
+          list.classList.remove("show"); 
+          // document.getElementById(`root`)?.classList.remove("fix-h-screen");
+        });
       }
     }
     document.body.addEventListener("click", dropdownClose);
@@ -40,13 +47,13 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
 
   return(
     <div className={`flex items-center ${className}`}>
-      <div className="dropdown w-full">
+      <div className={`dropdown w-full ${selectionUpdate==="Destination"? "dropdown-top": ""}`}>
         <label id="dropdown-title" className="select select-bordered items-center m-1 w-full" onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
-        <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-chain`} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full">
+        <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-chain`} className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-full">
           { listOption?.map((list, key)=>{
             return(<li key={key}>
               <div 
-                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/50 bg-slate-300/20 pointer-events-none": ""}`}
+                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/70 bg-slate-400/30 pointer-events-none": ""}`}
                 onClick={()=> handelSelectNetwork(list.value, list.label)} 
                 >
                 {list.label}

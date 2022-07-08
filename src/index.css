@@ -33,7 +33,15 @@ code {
   @apply shadow-lg bg-red-600;
 }
 
+.dropdown .dropdown-content {
+  display: none;
+}
 .dropdown .dropdown-content.show {
   visibility: visible;
   opacity: 1;
+  display: block;
+}
+
+.fix-h-screen {
+  padding-bottom: 10rem;
 }
