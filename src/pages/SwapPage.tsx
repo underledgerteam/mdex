@@ -1,7 +1,8 @@
 import { Fragment, useContext, useEffect, useState } from 'react';
 import Card from 'src/components/shared/Card';
 import SelectionSwap from 'src/components/SelectionSwap';
-import SwapModal from "src/components/shared/SwapConfirmModal";
+import SwapConfirmModal from "src/components/shared/SwapConfirmModal";
+import SwapSuccessModal from "src/components/SwapSuccessModal";
 import { SwapContext } from "src/contexts/swap.context";
 import { Web3Context } from "src/contexts/web3.context";
 
@@ -10,6 +11,7 @@ import { SWAP_CONTRACTS } from "src/utils/constants";
 const SwapPage = (): JSX.Element => {
   const { swap, swapStatus, swapSwitch } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
+  const [isSuccessModal, setIsSuccessModal] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
     return { value: key, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> {SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</Fragment>) };
@@ -18,6 +20,16 @@ const SwapPage = (): JSX.Element => {
   const handelSwapSwitch = () => {
     swapSwitch();
   };
+
+  const handelCloseSuccessModal = () => {
+    setIsSuccessModal(false);
+  };
+
+  useEffect(()=>{
+    if(swapStatus.isSuccess){
+      setIsSuccessModal(true);
+    }
+  },[swapStatus.isSuccess])
 
   return (
     <div className=" flex justify-center items-center p-8">
@@ -43,8 +55,9 @@ const SwapPage = (): JSX.Element => {
               {!swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" : !swapStatus.isSwap ? "Please Select Chain/Token or Enter Amount" : "Swap"}
             </button>
           )}
-          <SwapModal
+          <SwapConfirmModal
           />
+          { isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={()=> handelCloseSuccessModal()} /> }
         </Fragment>
       </Card>
     </div>

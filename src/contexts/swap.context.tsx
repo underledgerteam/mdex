@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import Decimal from 'decimal.js';
 import { useNotifier } from 'react-headless-notifier';
-import { DangerNotification } from 'src/components/shared/Notification';
+import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenList, SelectTokenType } from  "src/types/contexts/swap.context"
@@ -16,7 +16,9 @@ const defaultValue: SwapContextInterface = {
     isSwitch: true,
     isSwap: false,
     isTokenPool: true,
-    isLoading: false
+    isLoading: false,
+    isSuccess: false,
+    isLink: "#"
   },
   selectToken: {
     source: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
@@ -25,7 +27,8 @@ const defaultValue: SwapContextInterface = {
   selectTokenList: [],
   swapSwitch: ()=>{},
   updateSwap: ()=>{},
-  debounceSelectToken: async(value: string)=>{}
+  debounceSelectToken: async(value: string)=>{},
+  swapConfirm: async()=>{},
 };
 export const SwapContext = createContext<SwapContextInterface>(defaultValue);
 
@@ -83,9 +86,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const expected = (recieve.mul(reteDestination)).div(reteSource);
       objSwap = {...objSwap, summary: { fee: fee.toDP(10, Decimal.ROUND_UP).toString(), recieve: recieve.toDP(10, Decimal.ROUND_UP).toString(), expected: expected.toDP(10, Decimal.ROUND_UP).toString() } };
       // end calculator fee / recieve / expected
-      console.log("reteSource =>", reteSource)
-      console.log("reteDestination =>", reteDestination)
-      console.log({...objSwap.summary})
+      
       const checkSwapUndefined = Object.values({...objSwap.source, ...objSwap.destination}).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       setSwapStatus({
         ...swapStatus, 
@@ -150,6 +151,38 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     }
   };
 
+  const swapConfirm = async(isApprove: boolean, handelSuccess: Function = ()=>{}, handelFail: Function = ()=>{}) => {
+    try {
+      setSwapStatus({...swapStatus, isLoading: true});
+      if(isApprove){
+        setTimeout(()=>{
+          setSwapStatus({...swapStatus, isSuccess: true, isLink: "https://mumbai.polygonscan.com/", isLoading: false});
+          handelSuccess();
+          notify(
+            <SuccessNotification 
+              message="Swap Success"
+            />
+          );
+          setSwapStatus({...swapStatus, isSuccess: false});
+        }, 1500);
+      }else{
+        setTimeout(()=>{
+          setSwapStatus({...swapStatus, isLoading: false});
+          handelSuccess();
+          notify(
+            <SuccessNotification 
+              message="Approve Success"
+            />
+          );
+        }, 1500);
+      }
+    } catch (error: any) {
+      setSwapStatus({...swapStatus, isLoading: false});
+      handelFail();
+      throw new Error("Can't Swap Token");
+    }
+  };
+
   useEffect(()=>{
     (async()=>{
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
@@ -170,7 +203,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         selectTokenList,
         swapSwitch,
         updateSwap,
-        debounceSelectToken
+        debounceSelectToken,
+        swapConfirm
       }}
     >
       {children}

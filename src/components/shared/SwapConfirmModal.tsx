@@ -4,13 +4,26 @@ import { SwapConfirmModalInterface } from "src/types/SwapConfirmModal";
 import { SwapContext } from "src/contexts/swap.context";
 
 const SwapConfirmModal = (): JSX.Element => {
-  const { updateSwap, swap, swapStatus, selectToken } = useContext(SwapContext);
+  const { updateSwap, swap, swapStatus, selectToken, swapConfirm } = useContext(SwapContext);
+
+  const handelCloseModal = () => {
+    document.getElementById("swap-modal")?.classList.toggle("modal-open")
+  };
+
+  const handelSwapConfirm = () => {
+    swapConfirm(
+      swapStatus.isApprove,
+      ()=> { handelCloseModal() },
+      ()=> {}
+    );
+  };
+
   return(
     <div id="swap-modal" className="modal">
       <div className="modal-box relative">
         <label 
           className="btn btn-sm btn-circle absolute right-2 top-2" 
-          onClick={()=> document.getElementById("swap-modal")?.classList.toggle("modal-open")}
+          onClick={()=> handelCloseModal()}
         >
           ✕
         </label>
@@ -50,7 +63,12 @@ const SwapConfirmModal = (): JSX.Element => {
             </div>
           ) }
         </div>
-        <button className={`btn ${swapStatus.isLoading? "loading": ""} btn-block`}>{swapStatus.isApprove? "Confirm Swap": "Approve"}</button>
+        <button 
+          className={`btn ${swapStatus.isLoading? "loading": ""} btn-block`}
+          onClick={()=> handelSwapConfirm()}
+        >
+          {swapStatus.isApprove? "Confirm Swap": "Approve"}
+        </button>
       </div>
     </div>
   );

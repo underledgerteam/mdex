@@ -6,7 +6,8 @@ export interface SwapContextInterface {
   selectTokenList: SelectTokenList[],
   swapSwitch: ()=> void,
   updateSwap: (selectionUpdate: string, keyUpdate: string, objSwap: SwapType)=> void,
-  debounceSelectToken: (value: string)=> void
+  debounceSelectToken: (value: string)=> void,
+  swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function)=> void
 };
 
 export interface SwapProviderInterface {
@@ -30,7 +31,9 @@ export type SwapStatusType = {
   isSwap: boolean,
   isSwitch: boolean,
   isTokenPool: boolean,
-  isLoading: boolean
+  isLoading: boolean,
+  isSuccess: boolean,
+  isLink: string
 }
 
 export type SelectTokenType = {
