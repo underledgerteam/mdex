@@ -48,10 +48,11 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
   },[inputSearchToken.value]);
 
   useEffect(()=>{
+    console.log(swap[selectionUpdate.toLowerCase()].chain)
     if(swap[selectionUpdate.toLowerCase()].token === "" || swap[selectionUpdate.toLowerCase()].token === undefined){
       setInputSearchToken({ isDisabled: false, isLoading: false, value: "" });
     }
-    if(swap[selectionUpdate.toLowerCase()].chain === undefined){
+    if(swap[selectionUpdate.toLowerCase()].chain === undefined || swap[selectionUpdate.toLowerCase()].chain === ""){
       setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: false });
     }
   },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token]);

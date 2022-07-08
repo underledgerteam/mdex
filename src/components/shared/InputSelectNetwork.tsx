@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { InputSelectInterface } from "src/types/InputSelect";
 
+import { Web3Context } from "src/contexts/web3.context";
 import { SwapContext } from "src/contexts/swap.context";
 
 const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
   const { updateSwap, swap } = useContext(SwapContext);
+  const { walletAddress, isConnected } = useContext(Web3Context);
   const [value, setValue] = useState<string | JSX.Element>(defaultValue);
 
   const handelShowSelectNetwork = () => {
@@ -44,11 +46,11 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
     document.body.addEventListener("click", dropdownClose);
     return () => document.body.removeEventListener("click", dropdownClose);
   },[]);
-
+  
   return(
     <div className={`flex items-center ${className}`}>
       <div className={`dropdown w-full ${selectionUpdate==="Destination"? "dropdown-top": ""}`}>
-        <label id="dropdown-title" className="select select-bordered items-center m-1 w-full" onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
+        <label id="dropdown-title" className={`select select-bordered items-center m-1 w-full ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300/60": ""}`} onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
         <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-chain`} className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-full">
           { listOption?.map((list, key)=>{
             return(<li key={key}>
