@@ -47,5 +47,6 @@ export type SelectTokenList = {
   value: string,
   img: string,
   maxAmount: number,
-  rate: number
+  rate: number,
+  address?: string
 }
