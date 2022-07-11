@@ -3,10 +3,13 @@ import Card from 'src/components/shared/Card';
 import SelectionSwap from 'src/components/SelectionSwap';
 import SwapConfirmModal from "src/components/shared/SwapConfirmModal";
 import SwapSuccessModal from "src/components/SwapSuccessModal";
+import TransferRateCollapse from "src/components/TransferRateCollapse";
 import { SwapContext } from "src/contexts/swap.context";
 import { Web3Context } from "src/contexts/web3.context";
 
 import { SWAP_CONTRACTS } from "src/utils/constants";
+
+import { mockData } from "src/assets/transferCollapseMockData";
 
 const SwapPage = (): JSX.Element => {
   const { swap, swapStatus, swapSwitch } = useContext(SwapContext);
@@ -25,16 +28,16 @@ const SwapPage = (): JSX.Element => {
     setIsSuccessModal(false);
   };
 
-  useEffect(()=>{
-    if(swapStatus.isSuccess){
+  useEffect(() => {
+    if (swapStatus.isSuccess) {
       setIsSuccessModal(true);
     }
-  },[swapStatus.isSuccess])
+  }, [swapStatus.isSuccess]);
 
   return (
     <div className=" flex justify-center items-center p-8">
       <Card
-        className="glass w-full md:w-2/3 overflow-visible lg:overflow-hidden"
+        className="glass w-full md:w-2/3 overflow-visible"
         titleClassName="text-4xl mb-5"
         title="Swap"
       >
@@ -44,6 +47,11 @@ const SwapPage = (): JSX.Element => {
             <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
           </div>
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
+          {true ? (
+            <TransferRateCollapse {...mockData} />
+          ) : (
+            null
+          )}
           {!isConnected ? (
             <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
           ) : (
@@ -57,7 +65,7 @@ const SwapPage = (): JSX.Element => {
           )}
           <SwapConfirmModal
           />
-          { isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={()=> handelCloseSuccessModal()} /> }
+          {isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={() => handelCloseSuccessModal()} />}
         </Fragment>
       </Card>
     </div>
