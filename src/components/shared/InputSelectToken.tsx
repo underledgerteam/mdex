@@ -108,8 +108,9 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
                             <div>
                               <p className="font-semibold">{list.label}</p>
                               <p className="text-sm">{list.subLabel}</p>
+                              <p className="text-sm block sm:hidden">Available: {list.maxAmount}</p>
                             </div>
-                            <p className="text-md font-semibold text-right">{list.maxAmount}</p>
+                            <p className="text-md font-semibold text-right hidden sm:block">{list.maxAmount}</p>
                           </div>
                         </li>
                       )

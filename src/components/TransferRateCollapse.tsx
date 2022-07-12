@@ -14,7 +14,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   const { title, source, destination, fee, recieve, expect } = props;
   return (
     <>
-      <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+      <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mt-5">
         <input type="checkbox" className="peer" />
         <div className="collapse-title text-xl font-medium mx-4">
           {title}
