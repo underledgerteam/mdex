@@ -45,10 +45,10 @@ const SwapPage = (): JSX.Element => {
           </div>
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
           {!isConnected ? (
-            <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
+            <button className="btn btn-connect mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
           ) : (
             <button
-              className="btn btn-primary mt-8"
+              className="btn btn-connect mt-8 disabled:text-white/60"
               disabled={!swapStatus.isSwap || !swapStatus.isTokenPool}
               onClick={() => document.getElementById("swap-modal")?.classList.toggle("modal-open")}
             >

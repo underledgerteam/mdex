@@ -22,7 +22,7 @@ const SwapConfirmModal = (): JSX.Element => {
     <div id="swap-modal" className="modal">
       <div className="modal-box relative">
         <label 
-          className="btn btn-sm btn-circle absolute right-2 top-2" 
+          className="btn btn-sm btn-circle absolute right-2 top-2 bg-red-500 border-0 hover:bg-red-600" 
           onClick={()=> handelCloseModal()}
         >
           ✕
