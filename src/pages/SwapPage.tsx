@@ -3,18 +3,21 @@ import Card from 'src/components/shared/Card';
 import SelectionSwap from 'src/components/SelectionSwap';
 import SwapConfirmModal from "src/components/shared/SwapConfirmModal";
 import SwapSuccessModal from "src/components/SwapSuccessModal";
+import TransferRateCollapse from "src/components/TransferRateCollapse";
 import { SwapContext } from "src/contexts/swap.context";
 import { Web3Context } from "src/contexts/web3.context";
 
 import { SWAP_CONTRACTS } from "src/utils/constants";
 
+import { mockData } from "src/assets/transferCollapseMockData";
+
 const SwapPage = (): JSX.Element => {
-  const { swap, swapStatus, swapSwitch } = useContext(SwapContext);
+  const { swap, swapStatus, selectToken, swapSwitch } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
-    return { value: key, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> {SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</Fragment>) };
+    return { value: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> {SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</Fragment>) };
   });
 
   const handelSwapSwitch = () => {
@@ -25,30 +28,54 @@ const SwapPage = (): JSX.Element => {
     setIsSuccessModal(false);
   };
 
-  useEffect(()=>{
-    if(swapStatus.isSuccess){
+  useEffect(() => {
+    if (swapStatus.isSuccess) {
       setIsSuccessModal(true);
     }
-  },[swapStatus.isSuccess])
+  }, [swapStatus.isSuccess]);
 
   return (
     <div className=" flex justify-center items-center p-8">
       <Card
-        className="glass w-full md:w-2/3 overflow-visible lg:overflow-hidden"
+        className="glass w-full md:w-2/3 overflow-visible"
         titleClassName="text-4xl mb-5"
         title="Swap"
       >
         <Fragment>
           <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} />
-          <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch ? " bg-black/20 cursor-no-drop" : "bg-black/10"}`}>
+          <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch ? " bg-slate-100/5 border border-spacing-1 border-slate-100/20 cursor-no-drop" : "bg-slate-100/20"}`}>
             <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
           </div>
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
+          {swapStatus.isSwap ? (
+            <TransferRateCollapse {...{
+              title: `1 ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
+              source: {
+                chainName: listOptionNetwork?.find((x)=>x.value === swap.source.chain)?.chainName,
+                networkName: selectToken.source.subLabel,
+                imageSrc: selectToken.source.img,
+                value: swap.source.value,
+                currencySymbol: selectToken.source.tokenName,
+              },
+              destination: {
+                chainName: listOptionNetwork?.find((x)=>x.value === swap.destination.chain)?.chainName,
+                networkName: selectToken.destination.subLabel,
+                imageSrc: selectToken.destination.img,
+                value: swap.destination.value,
+                currencySymbol: SWAP_CONTRACTS[Number(4)].CURRENCY_SYMBOL,
+              },
+              fee: swap.summary.fee,
+              recieve: swap.summary.recieve,
+              expect: swap.summary.expected,
+            }} />
+          ) : (
+            null
+          )}
           {!isConnected ? (
-            <button className="btn btn-primary mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
+            <button className="btn btn-connect mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
           ) : (
             <button
-              className="btn btn-primary mt-8"
+              className="btn btn-connect mt-8 disabled:text-white/60 h-fit p-2"
               disabled={!swapStatus.isSwap || !swapStatus.isTokenPool}
               onClick={() => document.getElementById("swap-modal")?.classList.toggle("modal-open")}
             >
@@ -57,7 +84,7 @@ const SwapPage = (): JSX.Element => {
           )}
           <SwapConfirmModal
           />
-          { isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={()=> handelCloseSuccessModal()} /> }
+          {isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={() => handelCloseSuccessModal()} />}
         </Fragment>
       </Card>
     </div>

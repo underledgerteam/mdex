@@ -22,7 +22,7 @@ const SwapConfirmModal = (): JSX.Element => {
     <div id="swap-modal" className="modal">
       <div className="modal-box relative">
         <label 
-          className="btn btn-sm btn-circle absolute right-2 top-2" 
+          className="btn btn-sm btn-circle absolute right-2 top-2 bg-red-500 border-0 hover:bg-red-600" 
           onClick={()=> handelCloseModal()}
         >
           ✕
@@ -44,22 +44,22 @@ const SwapConfirmModal = (): JSX.Element => {
           { swapStatus.isApprove? (
             <Fragment>
               <div className="flex">
-                <p className="font-semibold text-lg">Fee</p>
-                <p className="font-semibold text-lg text-right">{swap.summary.fee} {selectToken.source.tokenName}</p>
+                <p className="font-semibold text-sm md:text-lg">Fee</p>
+                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.fee} {selectToken.source.tokenName}</p>
               </div>
               <div className="flex">
-                <p className="font-semibold text-lg">Recieve</p>
-                <p className="font-semibold text-lg text-right">{swap.summary.recieve} {selectToken.source.tokenName}</p>
+                <p className="font-semibold text-sm md:text-lg">Recieve</p>
+                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.recieve} {selectToken.source.tokenName}</p>
               </div>
               <div className="flex">
-                <p className="font-semibold text-lg">Expected Output(ETH)</p>
-                <p className="font-semibold text-lg text-right">{swap.summary.expected} {selectToken.destination.tokenName}</p>
+                <p className="font-semibold text-sm md:text-lg">Expected Output(ETH)</p>
+                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.expected} {selectToken.destination.tokenName}</p>
               </div>
             </Fragment>
           ): (
             <div className="flex">
-              <p className="font-semibold text-lg">Price per {selectToken.source.tokenName}</p>
-              <p className="font-semibold text-lg text-right">{selectToken.source.rate}</p>
+              <p className="font-semibold text-sm md:text-lg">Price per {selectToken.source.tokenName}</p>
+              <p className="font-semibold text-sm md:text-lg text-right">{selectToken.source.rate}</p>
             </div>
           ) }
         </div>

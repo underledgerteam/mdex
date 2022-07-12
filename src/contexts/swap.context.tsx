@@ -1,10 +1,16 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import Decimal from 'decimal.js';
 import { useNotifier } from 'react-headless-notifier';
+import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall';
+import ERC20_ABI from "src/utils/erc20.json";
+import { ethers, utils } from "ethers";
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenList, SelectTokenType } from  "src/types/contexts/swap.context"
+
+const { ethereum } = window;
+
 const defaultValue: SwapContextInterface = {
   swap: {
     source: { chain: undefined, token: undefined, value: undefined },
@@ -136,18 +142,47 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   };
 
   const debounceSelectToken = async(value: string) => {
-    if(value === "0x0"){
+    try {
+      if(value.indexOf("0x") !== -1){
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const multicall = new Multicall({ ethersProvider: provider, tryAggregate: false });
+        const contractCallContext: ContractCallContext[] = [{
+          reference: 'selectToken',
+          contractAddress: value,
+          abi: ERC20_ABI,
+          calls: [
+            { reference: 'getName', methodName: 'name', methodParameters: [] },
+            { reference: 'getSymbol', methodName: 'symbol', methodParameters: [] },
+            { reference: 'getDecimals', methodName: 'decimals', methodParameters: [] },
+            { reference: 'getBalanceOf', methodName: 'balanceOf', methodParameters: [walletAddress] },
+          ]
+        }];
+    
+        const results: ContractCallResults = await multicall.call(contractCallContext);
+        setSelectTokenList([{
+          label: results.results.selectToken.callsReturnContext[1].returnValues[0], 
+          tokenName: results.results.selectToken.callsReturnContext[1].returnValues[0], 
+          subLabel: results.results.selectToken.callsReturnContext[0].returnValues[0], 
+          value: "1", 
+          address: value,
+          img: "https://placeimg.com/160/160/arch", 
+          maxAmount: Number(toBigNumber(utils.formatEther(results.results.selectToken.callsReturnContext[3].returnValues[0].hex)).toDP(10).toString()), rate: 1.5
+        }]);
+      }else{
+        const mockData = [{
+          label: "ETH (Rate 1.5)", tokenName: "ETH", subLabel: "Ether (Fix Rate 1.5)", value: "1", img: "https://placeimg.com/160/160/arch", maxAmount: 1000, rate: 1.5
+        },{
+          label: "BNB (Rate 0.7)", tokenName: "BNB", subLabel: "Binance Coin (Fix Rate 0.7)", value: "2", img: "https://placeimg.com/160/160/arch", maxAmount: 500, rate: 0.7
+        },{
+          label: "AVAX (Rate 1.75)", tokenName: "AVAX", subLabel: "Avalance (Fix Rate 1.75)", value: "3", img: "https://placeimg.com/160/160/arch", maxAmount: 1235, rate: 1.75
+        },{
+          label: "BTC (Rate 3)", tokenName: "BTC", subLabel: "BitCoin (Fix Rate 3)", value: "4", img: "https://placeimg.com/160/160/arch", maxAmount: 48, rate: 3
+        }];
+        setSelectTokenList(mockData.filter((x)=> x.tokenName.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1));
+      }
+    } catch (error) {
+      console.log("Token No results found.");
       setSelectTokenList([]);
-    }else{
-      setSelectTokenList([{
-        label: "ETH (Rate 1.5)", tokenName: "ETH", subLabel: "Ether (Fix Rate 1.5)", value: "1", img: "https://placeimg.com/160/160/arch", maxAmount: 1000, rate: 1.5
-      },{
-        label: "BNB (Rate 0.7)", tokenName: "BNB", subLabel: "Binance Coin (Fix Rate 0.7)", value: "2", img: "https://placeimg.com/160/160/arch", maxAmount: 500, rate: 0.7
-      },{
-        label: "AVAX (Rate 1.75)", tokenName: "AVAX", subLabel: "Avalance (Fix Rate 1.75)", value: "3", img: "https://placeimg.com/160/160/arch", maxAmount: 1235, rate: 1.75
-      },{
-        label: "BTC (Rate 3)", tokenName: "BTC", subLabel: "BitCoin (Fix Rate 3)", value: "4", img: "https://placeimg.com/160/160/arch", maxAmount: 48, rate: 3
-      }]);
     }
   };
 

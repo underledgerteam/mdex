@@ -18,11 +18,11 @@ code {
 @tailwind utilities;
 
 .btn-connect {
-  @apply font-bold text-xl text-white bg-gradient-to-r from-custom-purple1 to-custom-blue1 rounded;
+  @apply font-bold text-xl text-white bg-gradient-to-r from-custom-purple1 to-custom-blue1 rounded border-opacity-0 focus:border-opacity-0 ;
 }
 
 .btn-connect:hover {
-  @apply from-custom-purple1/80 to-custom-blue1/80;
+  @apply from-custom-purple1/80 to-custom-blue1/80 border-opacity-0;
 }
 
 .btn-close {

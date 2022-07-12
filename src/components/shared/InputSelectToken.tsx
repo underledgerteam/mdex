@@ -61,7 +61,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
       <div className="dropdown w-full">
         <label 
           id="dropdown-title" 
-          className={`select select-bordered items-center m-1 w-full ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300/60": ""}`} 
+          className={`select select-bordered items-center m-1 w-full border-black/20 ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300/60": ""}`} 
           onClick={()=> handelShowSelectToken()}
         >
           {selectToken[selectionUpdate.toLowerCase()].label || selectLabel}
@@ -70,7 +70,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
           <div id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="modal overflow-visible">
           <div className="modal-box">
             <label 
-              className="btn btn-sm btn-circle absolute right-2 top-2"
+              className="btn btn-sm btn-circle absolute right-2 top-2 bg-red-500 border-0 hover:bg-red-600"
               onClick={()=> handelCloseSelectToken()}
             >
               ✕
@@ -86,7 +86,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
               value={inputSearchToken.value}
             />
 
-            { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full" /></div>) }
+            { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full bg-slate-50/80" /></div>) }
 
             { (!inputSearchToken.isLoading && inputSearchToken.value !== "" && selectTokenList?.length <= 0) && (
               <Fragment>
@@ -108,8 +108,9 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
                             <div>
                               <p className="font-semibold">{list.label}</p>
                               <p className="text-sm">{list.subLabel}</p>
+                              <p className="text-sm block sm:hidden">Available: {list.maxAmount}</p>
                             </div>
-                            <p className="text-md font-semibold text-right">{list.maxAmount}</p>
+                            <p className="text-md font-semibold text-right hidden sm:block">{list.maxAmount}</p>
                           </div>
                         </li>
                       )
