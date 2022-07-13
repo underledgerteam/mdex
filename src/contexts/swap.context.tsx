@@ -39,7 +39,7 @@ const defaultValue: SwapContextInterface = {
 export const SwapContext = createContext<SwapContextInterface>(defaultValue);
 
 export const SwapProvider = ({ children }: SwapProviderInterface) => {
-  const { walletSwitchChain, currentNetwork, walletAddress, isConnected } = useContext(Web3Context);
+  const { walletSwitchChain, currentNetwork, walletAddress, isConnected, isChainChangeReload } = useContext(Web3Context);
   const { notify } = useNotifier();
   const [swap, setSwap] = useState<SwapType>(defaultValue.swap);
   const [swapStatus, setSwapStatus] = useState<SwapStatusType>(defaultValue.swapStatus);
@@ -55,7 +55,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       }
       if(keyUpdate === "token"){
         const select = selectTokenList.filter((x)=> x.value === objSwap[selectionUpdate.toLocaleLowerCase()].token)?.[0];
-        _selectToken = {...selectToken, [selectionUpdate.toLocaleLowerCase()]: {...select, label: <div className="flex items-center"><img className="mask mask-squircle mr-1" src={select.img} width={30} /> {select.label}</div>} }
+        _selectToken = {...selectToken, [selectionUpdate.toLocaleLowerCase()]: {...select, label: <div className="flex items-center"><img className="mask mask-squircle mr-1" src={select.img} width={30} /> <p className="text-ellipsis-1">{select.label}</p></div>} }
         setSelectToken(_selectToken);
         
         if(selectionUpdate === "Source"){
@@ -113,24 +113,35 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   const swapSwitch = async() => {
     const beforeSwitchSwapObj = {...swap};
+    const beforeSwitchTokenObj = {...selectToken};
+    const _fixFee = 2.5;
     try {
       setSwapStatus({...swapStatus, isSwitch: true});
+      
+      // start calculator fee / recieve / expected
+      let reteSource = selectToken.destination.rate, reteDestination = selectToken.source.rate;
+      const sourceValue = toBigNumber(swap.destination.value || 0);
+      const fee = (sourceValue.mul(_fixFee)).div(100);
+      const recieve = sourceValue.minus(fee);
+      const expected = (recieve.mul(reteDestination)).div(reteSource);
+      // end calculator fee / recieve / expected
+
       setSwap({
-        source: {...swap.destination, token: undefined, value: undefined},
-        destination: {...swap.source, token: undefined, value: undefined},
-        summary: { fee: undefined, recieve: undefined, expected: undefined },
+        source: {...swap.destination},
+        destination: {...swap.source},
+        summary: { fee: fee.toDP(10, Decimal.ROUND_UP).toString(), recieve: recieve.toDP(10, Decimal.ROUND_UP).toString(), expected: expected.toDP(10, Decimal.ROUND_UP).toString() },
       });
       setSelectToken({
-        source: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
-        destination: {label: "", tokenName: "", subLabel: "", value: "", img: "", maxAmount: 0, rate: 0},
+        source: beforeSwitchTokenObj.destination,
+        destination: beforeSwitchTokenObj.source,
       });
       await walletSwitchChain(Number(swap.destination.chain));
       setSwapStatus({...swapStatus, isSwitch: false});
     } catch (error: any) {
       setSwap({
-        source: {...beforeSwitchSwapObj.source, token: undefined, value: undefined},
-        destination: {...beforeSwitchSwapObj.destination, token: undefined, value: undefined},
-        summary: { fee: undefined, recieve: undefined, expected: undefined },
+        source: {...beforeSwitchSwapObj.source},
+        destination: {...beforeSwitchSwapObj.destination},
+        summary: {...beforeSwitchSwapObj.summary},
       });
       notify(
         <DangerNotification
@@ -225,8 +236,10 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         destination: { chain: undefined, token: undefined,value: undefined },
         summary: { fee: undefined, recieve: undefined, expected: undefined },
       });
+      setSelectTokenList(defaultValue.selectTokenList);
+      setSwapStatus(defaultValue.swapStatus);
     })();
-  },[walletAddress, isConnected]);
+  },[walletAddress, isConnected, isChainChangeReload]);
 
   return (
     <SwapContext.Provider

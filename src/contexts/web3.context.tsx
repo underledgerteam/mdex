@@ -7,6 +7,7 @@ export interface Web3ContextInterface {
   walletAddress: string;
   isConnected: boolean;
   isSupported: boolean;
+  isChainChangeReload: boolean;
   currentNetwork: () => Promise<number>;
   handleConnectWallet: Function;
   walletSwitchChain: (chainId: number) => void;
@@ -16,6 +17,7 @@ const defaultValue: Web3ContextInterface = {
   walletAddress: "",
   isConnected: false,
   isSupported: false,
+  isChainChangeReload: false,
   currentNetwork: async() => { return 0; },
   handleConnectWallet: () => { },
   walletSwitchChain: () => { },
@@ -30,6 +32,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [walletAddress, setWalletAddresss] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [isChainChangeReload, setIsChainChangeReload] = useState(false);
 
   const checkWalletIsConnected = async (): Promise<void> => {
     try {
@@ -100,7 +103,8 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
   };
   const handleChainChange = (chainId: string): void => {
-    window.location.reload();
+    // window.location.reload();
+    setIsChainChangeReload(!isChainChangeReload);
   };
 
   useEffect(() => {
@@ -121,6 +125,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       walletAddress,
       isConnected,
       isSupported,
+      isChainChangeReload,
       currentNetwork,
       handleConnectWallet,
       walletSwitchChain,
