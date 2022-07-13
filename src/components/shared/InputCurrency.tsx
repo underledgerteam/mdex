@@ -33,7 +33,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token, swap[selectionUpdate.toLowerCase()].value]);
 
   return (
-    <div className={`flex items-center py-1 px-2 border border-black border-opacity-20 rounded-lg bg-slate-300 ${className} ${!inputCurrency.isDisabled? "bg-slate-300": "bg-white"}`}>
+    <div className={`flex items-center py-1 px-2 border border-black border-opacity-20 rounded-lg ${className} ${inputCurrency.isDisabled? "bg-slate-300": "bg-white"}`}>
       <input 
         type="text" 
         placeholder="0.0" 
