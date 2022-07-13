@@ -57,17 +57,18 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
   },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token]);
 
   return(
-    <div className={`flex items-center ${className}`}>
+    <Fragment>
+    <div className={`flex items-center py-1 border border-black border-opacity-20 rounded-lg ${className} ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": "bg-white"}`}>
       <div className="dropdown w-full">
         <label 
           id="dropdown-title" 
-          className={`select select-bordered items-center m-1 w-full border-black/20 ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300/60": ""}`} 
+          className={`select items-center w-full ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": ""}`} 
           onClick={()=> handelShowSelectToken()}
         >
           {selectToken[selectionUpdate.toLowerCase()].label || selectLabel}
         </label>
-          { selectionUpdate === "Source" && swap.source.token !== undefined && (<p className="text-center font-medium text-sm">Available: {selectToken[selectionUpdate.toLowerCase()].maxAmount}</p>) }
-          <div id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="modal overflow-visible">
+        { selectionUpdate === "Source" && swap.source.token !== undefined && (<p className="text-center w-full absolute -bottom-7 left-[50%] font-medium text-sm invisible lg:visible" style={{transform: 'translate(-50%, 0)'}}>Available: {selectToken[selectionUpdate.toLowerCase()].maxAmount}</p>) }
+        <div id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="modal overflow-visible">
           <div className="modal-box">
             <label 
               className="btn btn-sm btn-circle absolute right-2 top-2 bg-red-500 border-0 hover:bg-red-600"
@@ -86,7 +87,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
               value={inputSearchToken.value}
             />
 
-            { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full bg-slate-50/80" /></div>) }
+            { inputSearchToken.isLoading && (<div className="min-h-[1rem] flex items-center mb-4"><progress className="progress w-full bg-slate-50" /></div>) }
 
             { (!inputSearchToken.isLoading && inputSearchToken.value !== "" && selectTokenList?.length <= 0) && (
               <Fragment>
@@ -124,6 +125,9 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
         </div>
       </div>
     </div>
+    
+    
+    </Fragment>
   );
 };
 

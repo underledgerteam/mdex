@@ -45,3 +45,11 @@ code {
 .fix-h-screen {
   padding-bottom: 10rem;
 }
+
+.text-ellipsis-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}

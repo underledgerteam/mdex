@@ -17,7 +17,7 @@ const SwapPage = (): JSX.Element => {
   const [isSuccessModal, setIsSuccessModal] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
-    return { value: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> {SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</Fragment>) };
+    return { value: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> <p className="text-ellipsis-1">{SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</p></Fragment>) };
   });
 
   const handelSwapSwitch = () => {

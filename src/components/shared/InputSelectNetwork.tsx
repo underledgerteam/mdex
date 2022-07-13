@@ -48,9 +48,9 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
   },[]);
   
   return(
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-center py-1 border border-black border-opacity-20 rounded-lg ${className} ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300": "bg-white"}`}>
       <div className={`dropdown w-full ${selectionUpdate==="Destination"? "dropdown-top": ""}`}>
-        <label id="dropdown-title" className={`select select-bordered border-black/20 items-center m-1 w-full ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300/60": ""}`} onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
+        <label id="dropdown-title" className={`select items-center w-full ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300/60": ""}`} onClick={()=> handelShowSelectNetwork()}>{value || selectLabel}</label>
         <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-chain`} className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-full">
           { listOption?.map((list, key)=>{
             return(<li key={key}>
