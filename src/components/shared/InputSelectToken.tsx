@@ -58,7 +58,7 @@ const InputSelectToken = ({className, selectionUpdate, defaultValue = "", select
 
   return(
     <Fragment>
-    <div className={`flex items-center py-1 border border-black border-opacity-20 rounded-lg ${className} ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": "bg-white"}`}>
+    <div className={`flex items-center py-2 border border-black border-opacity-20 rounded-lg ${className} ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": "bg-white"}`}>
       <div className="dropdown w-full">
         <label 
           id="dropdown-title" 

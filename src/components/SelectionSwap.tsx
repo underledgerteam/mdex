@@ -40,7 +40,7 @@ const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInt
               delay={1000}
               maxCurrency={maxCurrency}
             />
-            { swap.source.token !== undefined && (<p className="text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{transform: 'translate(-50%, -50%)'}}>Available: {selectToken.source.maxAmount}</p>) }
+            { title === "Source" && swap.source.token !== undefined && (<p className="text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{transform: 'translate(-50%, -50%)'}}>Available: {selectToken.source.maxAmount}</p>) }
           </Fragment>
         </Card>
       </div>
