@@ -138,11 +138,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       await walletSwitchChain(Number(swap.destination.chain));
       setSwapStatus({...swapStatus, isSwitch: false});
     } catch (error: any) {
-      setSwap({
-        source: {...beforeSwitchSwapObj.source},
-        destination: {...beforeSwitchSwapObj.destination},
-        summary: {...beforeSwitchSwapObj.summary},
-      });
+      setSwap(beforeSwitchSwapObj);
+      setSelectToken(beforeSwitchTokenObj);
       notify(
         <DangerNotification
           message={error.toString()}
