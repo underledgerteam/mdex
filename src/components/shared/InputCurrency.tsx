@@ -43,7 +43,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
         onChange={onInput} 
         value={inputCurrency.value}
       />
-      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency.isDisabled} onClick={()=> setMaxCurrency((selectToken.source.maxAmount || "").toString())}>{maxLabel}</button> }
+      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency.isDisabled} onClick={()=> setMaxCurrency((selectToken.source.balanceOf || "").toString())}>{maxLabel}</button> }
     </div>
   );
 };

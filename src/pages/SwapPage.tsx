@@ -49,18 +49,19 @@ const SwapPage = (): JSX.Element => {
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
           {swapStatus.isSwap ? (
             <TransferRateCollapse {...{
-              title: `1 ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
+              // title: `${1*selectToken.source.rate} ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
+              title: `${1} ${selectToken.source.symbol} = ${1} ${selectToken.destination.symbol}`,
               source: {
                 chainName: listOptionNetwork?.find((x)=>x.value === swap.source.chain)?.chainName,
-                networkName: selectToken.source.subLabel,
-                imageSrc: selectToken.source.img,
+                networkName: selectToken.source.name,
+                imageSrc: selectToken.source.img || "chian/unknown_token.svg",
                 value: swap.source.value,
-                currencySymbol: selectToken.source.tokenName,
+                currencySymbol: selectToken.source.symbol,
               },
               destination: {
                 chainName: listOptionNetwork?.find((x)=>x.value === swap.destination.chain)?.chainName,
-                networkName: selectToken.destination.subLabel,
-                imageSrc: selectToken.destination.img,
+                networkName: selectToken.destination.symbol,
+                imageSrc: selectToken.destination.img || "chian/unknown_token.svg",
                 value: swap.destination.value,
                 currencySymbol: SWAP_CONTRACTS[Number(4)].CURRENCY_SYMBOL,
               },
@@ -76,10 +77,15 @@ const SwapPage = (): JSX.Element => {
           ) : (
             <button
               className="btn btn-connect mt-8 disabled:text-white/60 h-fit p-2"
-              disabled={!swapStatus.isSwap || !swapStatus.isTokenPool}
+              disabled={!swapStatus.isSwap || ((selectToken.source.balanceOf  || 0 )< Number(swap.source.value))}
               onClick={() => document.getElementById("swap-modal")?.classList.toggle("modal-open")}
             >
-              {!swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" : !swapStatus.isSwap ? "Please Select Chain/Token or Enter Amount" : "Swap"}
+              {
+                !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" 
+                  : !swapStatus.isSwap ? "Please Select Chain/Token or Enter Amount" 
+                  : ((selectToken.source.balanceOf || 0) < Number(swap.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
+                  :"Swap"
+              }
             </button>
           )}
           <SwapConfirmModal
