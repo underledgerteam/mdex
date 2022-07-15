@@ -9,7 +9,7 @@ interface ModalInterface {
 
 const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
   const { visible, selectionUpdate, onClose } = props;
-  const { updateSwap, debounceSelectToken, swap, selectToken, selectTokenList } = useContext(SwapContext);
+  const { updateSwap, debounceSelectToken, swap, selectTokenList } = useContext(SwapContext);
   const [inputSearchToken, setInputSearchToken] = useState({
     isDisabled: false,
     isLoading: false,
@@ -24,7 +24,14 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
     setInputSearchToken({ ...inputSearchToken, value: e.target.value });
   };
   const handelSelectToken = (value: string | undefined) => {
-    updateSwap(selectionUpdate, "token", { ...swap, [selectionUpdate.toLowerCase()]: { ...swap[selectionUpdate.toLowerCase()], token: value, value: undefined } });
+    updateSwap(selectionUpdate, "token", {
+      ...swap,
+      [selectionUpdate.toLowerCase()]: {
+        ...swap[selectionUpdate.toLowerCase()],
+        token: value,
+        value: undefined
+      }
+    });
     onClose();
   };
 
