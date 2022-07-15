@@ -55,7 +55,7 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
           { listOption?.map((list, key)=>{
             return(<li key={key}>
               <div 
-                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value)? "cursor-no-drop text-custom-black/70 bg-slate-400/30 pointer-events-none": ""}`}
+                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.value && false)? "cursor-no-drop text-custom-black/70 bg-slate-400/30 pointer-events-none": ""}`}
                 onClick={()=> handelSelectNetwork(list.value, list.label)} 
                 >
                 {list.label}
