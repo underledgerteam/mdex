@@ -11,7 +11,7 @@ import { Web3Context } from "src/contexts/web3.context";
 import { SWAP_CONTRACTS } from "src/utils/constants";
 
 const SwapPage = (): JSX.Element => {
-  const { swap, swapStatus, selectToken, OpenSelectToken, swapSwitch } = useContext(SwapContext);
+  const { swap, swapStatus, selectToken, swapSwitch } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [sourceModalVisible, setSourceModalVisible] = useState(false);
@@ -31,12 +31,10 @@ const SwapPage = (): JSX.Element => {
 
   const handleOpenSourceTokenModal = async() => {
     setSourceModalVisible(true);
-    await OpenSelectToken("Source");
   };
 
   const handleOpenDestinationTokenModal = async() => {
     setDestinationModalVisible(true);
-    await OpenSelectToken("Destination");
   };
 
   useEffect(() => {

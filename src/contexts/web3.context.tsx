@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext } from "react";
-import { ethers } from "ethers";
+import { ethers, ContractInterface, Contract } from "ethers";
 import { SUPPORT_CHAIN } from "src/utils/constants";
 
 import { SWAP_CONTRACTS } from "src/utils/constants";
@@ -32,7 +32,19 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [walletAddress, setWalletAddresss] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [contractToken, setContractToken] = useState<Contract | null>(null);
   const [isChainChangeReload, setIsChainChangeReload] = useState(false);
+
+  const createContract = async() => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const contract = new ethers.Contract("address", "abi", provider);
+  };
+
+  const createTokenContract = async(address: string, abi: ContractInterface) => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const getContractToken = new ethers.Contract(address, abi, provider);
+    setContractToken(getContractToken);
+  };
 
   const checkWalletIsConnected = async (): Promise<void> => {
     try {

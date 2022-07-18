@@ -7,7 +7,8 @@ import { ethers, utils } from "ethers";
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
-import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenType } from  "src/types/contexts/swap.context"
+import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenType } from  "src/types/contexts/swap.context";
+import { SWAP_CONTRACTS } from "src/utils/constants";
 
 const { ethereum } = window;
 
@@ -33,9 +34,11 @@ const defaultValue: SwapContextInterface = {
   selectTokenList: {},
   swapSwitch: ()=>{},
   updateSwap: ()=>{},
-  OpenSelectToken: ()=>{},
+  openSelectToken: ()=>{},
   debounceSelectToken: async(selectionUpdate: string, address: string)=>{},
   swapConfirm: async()=>{},
+  clearSwapStatus: ()=>{},
+  clearSelectTokenList: ()=>{},
 };
 export const SwapContext = createContext<SwapContextInterface>(defaultValue);
 
@@ -47,14 +50,36 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [selectToken, setSelectToken] = useState<SelectTokenType>(defaultValue.selectToken);
   const [selectTokenList, setSelectTokenList] = useState<SelectTokenType>(defaultValue.selectTokenList);
 
+  const contactSwapProviders = async(selectionUpdate: string) => {
+    let provider: any = new ethers.providers.Web3Provider(ethereum);
+    if(selectionUpdate === "Destination"){
+      const currentChain = Number(swap[selectionUpdate.toLocaleLowerCase()].chain);
+      if(SWAP_CONTRACTS[currentChain]?.RPC_URLS?.[0]){
+        provider = new ethers.providers.JsonRpcProvider(SWAP_CONTRACTS[currentChain]?.RPC_URLS?.[0]);
+      }else{
+        provider = ethers.getDefaultProvider(SWAP_CONTRACTS[currentChain]?.NETWORK_SHORT_NAME?.toLocaleLowerCase());
+      }
+    }
+    return provider;
+  };
+
   const isTokenApprove = async() => {
 
   };
+  
+  const summarySwap = () => {
 
-  const getBalanceOf = async(selectTokenKey: string) => {
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    const contract = new ethers.Contract(selectTokenKey, ERC20_ABI, provider);
-    return Number(toBigNumber(utils.formatEther(await contract.balanceOf(walletAddress))).toDP(10).toString())
+  };
+  
+  const getBalanceOf = async(selectionUpdate: string, selectTokenKey: string) => {
+    try {
+      const provider = await contactSwapProviders(selectionUpdate);
+      const contract = new ethers.Contract(selectTokenKey, ERC20_ABI, provider);
+      return Number(toBigNumber(utils.formatEther(await contract.balanceOf(walletAddress))).toDP(10).toString());
+    } catch (error) {
+      console.error("GetBalanceOf", error);
+      return 0;
+    }
   };
 
   const updateSwap = async(selectionUpdate: string, keyUpdate: string, objSwap: SwapType) => {
@@ -80,14 +105,14 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         //   }
         // }; 
         tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] = {...tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""], [selectTokenKey]: _selectToken[selectionUpdate.toLocaleLowerCase()]}
-        const sortToken = Object.entries(tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""]).sort((a: any, b:any) => {
-          return a[1].symbol.toLocaleLowerCase().localeCompare(b[1].symbol.toLocaleLowerCase());
+        const sortToken = Object.entries(tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] || {}).sort((objA: any, objB: any) => {
+          return objA[1].symbol.toLocaleLowerCase().localeCompare(objB[1].symbol.toLocaleLowerCase());
         });
         tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] = Object.fromEntries(sortToken);
         localStorage.setItem("token", JSON.stringify(tokenSaveList));
 
         if(selectionUpdate === "Source"){
-          _selectToken = {..._selectToken, [selectionUpdate.toLocaleLowerCase()]: { ..._selectToken[selectionUpdate.toLocaleLowerCase()], balanceOf: await getBalanceOf(selectTokenKey) }}
+          _selectToken = {..._selectToken, [selectionUpdate.toLocaleLowerCase()]: { ..._selectToken[selectionUpdate.toLocaleLowerCase()], balanceOf: await getBalanceOf(selectionUpdate, selectTokenKey) }}
         }
         setSelectToken(_selectToken);
 
@@ -149,6 +174,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     }
   };
 
+  
   const swapSwitch = async() => {
     const beforeSwitchSwapObj = {...swap};
     const beforeSwitchTokenObj = {...selectToken};
@@ -188,20 +214,12 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     } 
   };
 
-  const OpenSelectToken = async(selectionUpdate: string) => {
-    const defaultToken =  JSON.parse(localStorage.getItem("token") || "{}");
-    let defaultTokenGetBalanceOf = await Promise.all(Object.entries(defaultToken[swap[selectionUpdate.toLocaleLowerCase()].chain || ""]).map(async(list: any)=>{
-      return [ list[0], {...list[1], balanceOf: await getBalanceOf(list[0])} ];
-    }));
-    setSelectTokenList(Object.fromEntries(defaultTokenGetBalanceOf));
-  };
 
   const debounceSelectToken = async(selectionUpdate: string, address: string) => {
     try {
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
       if(address.indexOf("0x") !== -1){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        console.log(provider)
+        const provider = await contactSwapProviders(selectionUpdate);
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: false });
         const contractCallContext: ContractCallContext[] = [{
           reference: 'selectToken',
@@ -224,11 +242,11 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         });
       }else{
         let searchTokenList = JSON.parse(localStorage.getItem("token") || "{}");
-        searchTokenList = Object.fromEntries(Object.entries(searchTokenList[currentChain]).filter((token: any)=> token[1].symbol.toLocaleLowerCase().includes(address.toLocaleLowerCase()) || token[1].name.toLocaleLowerCase().includes(address.toLocaleLowerCase())));
+        searchTokenList = Object.fromEntries(Object.entries(searchTokenList[currentChain] || {}).filter((token: any)=> token[1].symbol.toLocaleLowerCase().includes(address.toLocaleLowerCase()) || token[1].name.toLocaleLowerCase().includes(address.toLocaleLowerCase())));
         setSelectTokenList(searchTokenList);
       }
     } catch (error) {
-      console.log("Token No results found.", error);
+      console.error("Token No results found.", error);
       setSelectTokenList(defaultValue.selectTokenList);
     }
   };
@@ -264,6 +282,25 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     }
   };
 
+  const clearSelectTokenList = () => {
+    setSelectTokenList(defaultValue.selectTokenList);
+  };
+
+  const clearSwapStatus = (objStatus: SwapStatusType = defaultValue.swapStatus) => {
+    setSwapStatus(objStatus);
+  };
+
+  const openSelectToken = async(selectionUpdate: string) => {
+    const defaultToken =  JSON.parse(localStorage.getItem("token") || "{}");
+    let defaultTokenGetBalanceOf = await Promise.all(Object.entries(defaultToken[swap[selectionUpdate.toLocaleLowerCase()].chain || ""] || {}).map(async(list: any)=>{
+      return [ list[0], {...list[1], balanceOf: await getBalanceOf(selectionUpdate, list[0])} ];
+    }));
+    if(defaultTokenGetBalanceOf.length > 0){
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    setSelectTokenList(Object.fromEntries(defaultTokenGetBalanceOf));
+  };
+
   useEffect(()=>{
     (async()=>{
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
@@ -286,9 +323,11 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         selectTokenList,
         swapSwitch,
         updateSwap,
-        OpenSelectToken,
+        openSelectToken,
         debounceSelectToken,
-        swapConfirm
+        swapConfirm,
+        clearSwapStatus,
+        clearSelectTokenList,
       }}
     >
       {children}

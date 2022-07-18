@@ -5,10 +5,12 @@ export interface SwapContextInterface {
   selectToken: SelectTokenType,
   selectTokenList: SelectTokenType,
   swapSwitch: ()=> void,
-  OpenSelectToken: (selectionUpdate: string)=> void
+  openSelectToken: (selectionUpdate: string)=> void,
   updateSwap: (selectionUpdate: string, keyUpdate: string, objSwap: SwapType)=> void,
   debounceSelectToken: (selectionUpdate: string, address: string)=> void,
-  swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function)=> void
+  swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function)=> void,
+  clearSwapStatus: ()=> void,
+  clearSelectTokenList: ()=> void
 };
 
 export interface SwapProviderInterface {
