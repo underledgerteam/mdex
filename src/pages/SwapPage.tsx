@@ -18,7 +18,7 @@ const SwapPage = (): JSX.Element => {
   const [destinationModalVisible, setDestinationModalVisible] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
-    return { value: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> <p className="text-ellipsis-1">{SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</p></Fragment>) };
+    return { chainId: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, symbol: SWAP_CONTRACTS[Number(key)].SYMBOL }
   });
 
   const handelSwapSwitch = () => {
@@ -61,14 +61,14 @@ const SwapPage = (): JSX.Element => {
               // title: `${1*selectToken.source.rate} ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
               title: `${1} ${selectToken.source.symbol} = ${1} ${selectToken.destination.symbol}`,
               source: {
-                chainName: listOptionNetwork?.find((x)=>x.value === swap.source.chain)?.chainName,
+                chainName: listOptionNetwork?.find((x)=>x.chainId === swap.source.chain)?.chainName,
                 networkName: selectToken.source.name,
                 imageSrc: selectToken.source.img || "chian/unknown_token.svg",
                 value: swap.source.value,
                 currencySymbol: selectToken.source.symbol,
               },
               destination: {
-                chainName: listOptionNetwork?.find((x)=>x.value === swap.destination.chain)?.chainName,
+                chainName: listOptionNetwork?.find((x)=>x.chainId === swap.destination.chain)?.chainName,
                 networkName: selectToken.destination.symbol,
                 imageSrc: selectToken.destination.img || "chian/unknown_token.svg",
                 value: swap.destination.value,

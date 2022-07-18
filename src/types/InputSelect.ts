@@ -1,8 +1,9 @@
 type KeyUpdateType = "chain" | "token" | "value";
 
 export type listOptionType = {
-  value: string,
-  label: string | JSX.Element;
+  chainId: string,
+  symbol: string
+  chainName: string;
 };
 export interface InputSelectInterface {
   className?: string,
