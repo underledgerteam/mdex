@@ -3,11 +3,14 @@ export interface SwapContextInterface {
   swap: SwapType,
   swapStatus: SwapStatusType,
   selectToken: SelectTokenType,
-  selectTokenList: SelectTokenList[],
+  selectTokenList: SelectTokenType,
   swapSwitch: ()=> void,
+  openSelectToken: (selectionUpdate: string)=> void,
   updateSwap: (selectionUpdate: string, keyUpdate: string, objSwap: SwapType)=> void,
-  debounceSelectToken: (value: string)=> void,
-  swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function)=> void
+  debounceSelectToken: (selectionUpdate: string, address: string)=> void,
+  swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function)=> void,
+  clearSwapStatus: ()=> void,
+  clearSelectTokenList: ()=> void
 };
 
 export interface SwapProviderInterface {
@@ -41,12 +44,9 @@ export type SelectTokenType = {
 }
 
 export type SelectTokenList = {
-  label: JSX.Element | string,
-  subLabel: string,
-  tokenName: string,
-  value: string,
-  img: string,
-  maxAmount: number,
-  rate: number,
-  address?: string
+  symbol: string,
+  name: string,
+  decimals: number,
+  balanceOf?: number,
+  img?: string,
 }
