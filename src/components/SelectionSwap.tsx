@@ -7,17 +7,17 @@ import { SelectionSwapInterface } from "src/types/SelectionSwapInterface";
 
 import { SwapContext } from "src/contexts/swap.context";
 
-const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInterface): JSX.Element => {
+const SelectionSwap = ({ title, listOptionNetwork, maxCurrency, onClickSelectToken }: SelectionSwapInterface): JSX.Element => {
   const { swap, selectToken } = useContext(SwapContext);
   return (
     <Fragment>
-      { title && <h1 className="text-3xl font-semibold pl-5">{title}</h1> }
+      {title && <h1 className="text-3xl font-semibold pl-5">{title}</h1>}
       <div className="grid grid-cols-3 gap-4">
         <Card
           className="bg-base-100/80 shadow-xl col-span-3 lg:col-span-1 overflow-visible"
           bodyClassName="grid"
         >
-          <InputSelectNetwork 
+          <InputSelectNetwork
             listOption={listOptionNetwork}
             selectionUpdate={title}
             selectLabel="Select Network"
@@ -29,12 +29,13 @@ const SelectionSwap = ({title, listOptionNetwork, maxCurrency}: SelectionSwapInt
           bodyClassName="grid grid-cols-2 gap-8 lg:gap-4"
         >
           <Fragment>
-            <InputSelectToken 
+            <InputSelectToken
               selectionUpdate={title}
               className="col-span-2 lg:col-span-1"
               selectLabel="Select a Token"
+              onClickSelectToken={onClickSelectToken}
             />
-            <InputCurrency 
+            <InputCurrency
               selectionUpdate={title}
               className="col-span-2 lg:col-span-1"
               delay={1000}

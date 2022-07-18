@@ -4,17 +4,18 @@ import SelectionSwap from 'src/components/SelectionSwap';
 import SwapConfirmModal from "src/components/shared/SwapConfirmModal";
 import SwapSuccessModal from "src/components/SwapSuccessModal";
 import TransferRateCollapse from "src/components/TransferRateCollapse";
+import TokenSelectModal from "src/components/shared/TokenSelectModal";
 import { SwapContext } from "src/contexts/swap.context";
 import { Web3Context } from "src/contexts/web3.context";
 
 import { SWAP_CONTRACTS } from "src/utils/constants";
 
-import { mockData } from "src/assets/transferCollapseMockData";
-
 const SwapPage = (): JSX.Element => {
-  const { swap, swapStatus, selectToken, swapSwitch } = useContext(SwapContext);
+  const { swap, swapStatus, selectToken, OpenSelectToken, swapSwitch } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
+  const [sourceModalVisible, setSourceModalVisible] = useState(false);
+  const [destinationModalVisible, setDestinationModalVisible] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
     return { value: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, label: (<Fragment><img className="mask mask-squircle mr-1" src={SWAP_CONTRACTS[Number(key)].SYMBOL} width={30} /> <p className="text-ellipsis-1">{SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME}</p></Fragment>) };
@@ -26,6 +27,16 @@ const SwapPage = (): JSX.Element => {
 
   const handelCloseSuccessModal = () => {
     setIsSuccessModal(false);
+  };
+
+  const handleOpenSourceTokenModal = async() => {
+    setSourceModalVisible(true);
+    await OpenSelectToken("Source");
+  };
+
+  const handleOpenDestinationTokenModal = async() => {
+    setDestinationModalVisible(true);
+    await OpenSelectToken("Destination");
   };
 
   useEffect(() => {
@@ -42,11 +53,11 @@ const SwapPage = (): JSX.Element => {
         title="Swap"
       >
         <Fragment>
-          <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} />
+          <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenSourceTokenModal} />
           <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch ? " bg-slate-100/5 border border-spacing-1 border-slate-100/20 cursor-no-drop" : "bg-slate-100/20"}`}>
             <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
           </div>
-          <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} />
+          <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenDestinationTokenModal} />
           {swapStatus.isSwap ? (
             <TransferRateCollapse {...{
               // title: `${1*selectToken.source.rate} ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
@@ -88,11 +99,13 @@ const SwapPage = (): JSX.Element => {
               }
             </button>
           )}
-          <SwapConfirmModal
-          />
-          {isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={() => handelCloseSuccessModal()} />}
         </Fragment>
       </Card>
+
+      <TokenSelectModal visible={sourceModalVisible} selectionUpdate="Source" onClose={() => setSourceModalVisible(false)} />
+      <TokenSelectModal visible={destinationModalVisible} selectionUpdate="Destination" onClose={() => setDestinationModalVisible(false)} />
+      <SwapConfirmModal />
+      {isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={() => handelCloseSuccessModal()} />}
     </div>
   );
 };
