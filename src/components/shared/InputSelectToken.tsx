@@ -3,53 +3,6 @@ import { InputTokenSelectInterface } from "src/types/InputSelect";
 
 import { SwapContext } from "src/contexts/swap.context";
 
-// const InputSelectToken = ({className, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
-//   const { updateSwap, OpenSelectToken, debounceSelectToken, swap, selectToken, selectTokenList } = useContext(SwapContext);
-//   const [inputSearchToken, setInputSearchToken] = useState({ isDisabled: false, isLoading: false, value: "" });
-
-//   const handelShowSelectToken = async() => {
-//     await OpenSelectToken(selectionUpdate);
-//     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
-//   };
-//   const handelCloseSelectToken = () => {
-//     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
-//     setInputSearchToken({...inputSearchToken, isLoading: false,  value: ""});
-//   };
-//   const handelSearchToken = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setInputSearchToken({...inputSearchToken, value: e.target.value});
-//   };
-//   const handelSelectToken = async(value: string | undefined) => {
-//     await updateSwap(selectionUpdate, "token", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], token: value, value: undefined}});
-//     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-token`)?.classList.toggle("modal-open");
-//   };
-
-//   useEffect(()=>{
-//     const modelCloseOutside = (e: any)  => {
-//       const dropdown = document.querySelectorAll(`.modal.modal-open`);
-//       if(dropdown.length > 0 && e.path[0].id === `dropdown-content-${selectionUpdate.toLowerCase()}-token`){
-//         dropdown[0].classList.remove("modal-open");
-//       }
-//     }
-//     document.body.addEventListener("click", modelCloseOutside);
-//     return () => document.body.removeEventListener("click", modelCloseOutside);
-//   },[]);
-
-//   useEffect(()=>{
-//     if(inputSearchToken.value !== "" ){
-//       const delayInput = setTimeout(() => {
-//         setInputSearchToken({...inputSearchToken, isDisabled: true, isLoading: true});
-//         setTimeout(async() => {
-//           console.log("delay type, input token => ", selectionUpdate, inputSearchToken.value);
-//           setInputSearchToken({...inputSearchToken, isDisabled: false, isLoading: false});
-//           debounceSelectToken(selectionUpdate, inputSearchToken.value);
-//         }, 1000)
-//       }, 500);
-//       return () => { clearTimeout(delayInput) };
-//     }
-//   },[inputSearchToken.value]);
-
-//   useEffect(()=>{
-//     if(swap[selectionUpdate.toLowerCase()].token === "" || swap[selectionUpdate.toLowerCase()].token === undefined){
 const InputSelectToken = ({ className, selectionUpdate, selectLabel, onClickSelectToken }: InputTokenSelectInterface): JSX.Element => {
   const { swap, selectToken } = useContext(SwapContext);
   const [inputSearchToken, setInputSearchToken] = useState({ isDisabled: false, isLoading: false, value: "" });
