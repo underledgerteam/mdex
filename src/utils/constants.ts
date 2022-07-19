@@ -1,4 +1,6 @@
 import { SWAP_CONTRACTS_INTERFACE } from "src/types/constants";
+import swapAbi from "./swapAbi.json"
+
 
 export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   4: {
@@ -7,6 +9,8 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     SYMBOL: "chian/ethereum.png",
     CHAIN_NAME: "Ethereum",
     CURRENCY_SYMBOL: "ETH",
+    SWAP_ADDRESS: "0x165834eDd4A46B2Bc343f5Be824B403849728E95",
+    SWAP_ABI: swapAbi
   },
   421611: {
     NETWORK_NAME: "Arbitrum Testnet",
