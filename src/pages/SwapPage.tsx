@@ -11,7 +11,7 @@ import { Web3Context } from "src/contexts/web3.context";
 import { SWAP_CONTRACTS } from "src/utils/constants";
 
 const SwapPage = (): JSX.Element => {
-  const { swap, swapStatus, selectToken, swapSwitch } = useContext(SwapContext);
+  const { swap, swapStatus, selectToken, swapSwitch, isTokenApprove } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [sourceModalVisible, setSourceModalVisible] = useState(false);
@@ -37,6 +37,11 @@ const SwapPage = (): JSX.Element => {
     setDestinationModalVisible(true);
   };
 
+  const handleOpenSwapModal = async() => {
+    isTokenApprove();
+    document.getElementById("swap-modal")?.classList.toggle("modal-open")
+  };
+
   useEffect(() => {
     if (swapStatus.isSuccess) {
       setIsSuccessModal(true);
@@ -53,10 +58,10 @@ const SwapPage = (): JSX.Element => {
         <Fragment>
           <SelectionSwap title="Source" maxCurrency={true} listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenSourceTokenModal} />
           <div className={`flex mx-auto my-5 pb-2 rounded-2xl ${swapStatus.isSwitch ? " bg-slate-100/5 border border-spacing-1 border-slate-100/20 cursor-no-drop" : "bg-slate-100/20"}`}>
-            <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch} onClick={() => handelSwapSwitch()}>⥮</button>
+            <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch || swapStatus.isSummaryLoading} onClick={() => handelSwapSwitch()}>⥮</button>
           </div>
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenDestinationTokenModal} />
-          {swapStatus.isSwap ? (
+          { swapStatus.isTokenPool && !swapStatus.isSummaryLoading && swapStatus.isSwap ? (
             <TransferRateCollapse {...{
               // title: `${1*selectToken.source.rate} ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
               title: `${1} ${selectToken.source.symbol} = ${1} ${selectToken.destination.symbol}`,
@@ -72,7 +77,7 @@ const SwapPage = (): JSX.Element => {
                 networkName: selectToken.destination.symbol,
                 imageSrc: selectToken.destination.img || "chian/unknown_token.svg",
                 value: swap.destination.value,
-                currencySymbol: SWAP_CONTRACTS[Number(4)].CURRENCY_SYMBOL,
+                currencySymbol: selectToken.destination.symbol,
               },
               fee: swap.summary.fee,
               recieve: swap.summary.recieve,
@@ -85,13 +90,15 @@ const SwapPage = (): JSX.Element => {
             <button className="btn btn-connect mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
           ) : (
             <button
-              className="btn btn-connect mt-8 disabled:text-white/60 h-fit p-2"
-              disabled={!swapStatus.isSwap || ((selectToken.source.balanceOf  || 0 )< Number(swap.source.value))}
-              onClick={() => document.getElementById("swap-modal")?.classList.toggle("modal-open")}
+              className={`btn btn-connect mt-8 disabled:text-white/60 h-fit p-2 ${swapStatus.isSummaryLoading? "loading": ""}`}
+              disabled={!swapStatus.isSwap || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || ((selectToken.source.balanceOf  || 0 )< Number(swap.source.value))}
+              onClick={() => handleOpenSwapModal()}
             >
               {
+                
                 !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" 
                   : !swapStatus.isSwap ? "Please Select Chain/Token or Enter Amount" 
+                  : swapStatus.isSummaryLoading ? "Fetching best price..."
                   : ((selectToken.source.balanceOf || 0) < Number(swap.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
                   :"Swap"
               }

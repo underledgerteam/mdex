@@ -65,7 +65,8 @@ const SwapConfirmModal = (): JSX.Element => {
           ) }
         </div>
         <button 
-          className={`btn ${swapStatus.isLoading? "loading": ""} btn-block`}
+          className={`btn ${swapStatus.isApproveLoading? "loading": ""} btn-block`}
+          disabled={swapStatus.isApproveLoading}
           onClick={()=> handelSwapConfirm()}
         >
           {swapStatus.isApprove? "Confirm Swap": "Approve"}
