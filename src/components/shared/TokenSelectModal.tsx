@@ -40,16 +40,14 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
   };
   
   useEffect(() => {
-    if (inputSearchToken.value !== "") {
-      const delayInput = setTimeout(() => {
-        setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: true });
-        setTimeout(async () => {
-          setInputSearchToken({ ...inputSearchToken, isDisabled: false, isLoading: false });
-          debounceSelectToken(selectionUpdate, inputSearchToken.value);
-        }, 1000);
-      }, 500);
-      return () => { clearTimeout(delayInput); };
-    }
+    const delayInput = setTimeout(() => {
+      setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: true });
+      setTimeout(async () => {
+        setInputSearchToken({ ...inputSearchToken, isDisabled: false, isLoading: false });
+        debounceSelectToken(selectionUpdate, inputSearchToken.value);
+      }, 1000);
+    }, 500);
+    return () => { clearTimeout(delayInput); };
   }, [inputSearchToken.value]);
 
   useEffect(() => {
