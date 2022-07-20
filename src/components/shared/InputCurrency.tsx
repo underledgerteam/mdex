@@ -7,7 +7,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   const regexInputCurrency: RegExp = /^[0-9]{1,10}((\.)[0-9]{0,10}){0,1}$/g;
   const regexRemoveString: RegExp = /[^\d\.]/g; 
 
-  const {updateSwap, swap, selectToken } = useContext(SwapContext);
+  const {updateSwap, swap, selectToken, swapStatus } = useContext(SwapContext);
   const [inputCurrency, setInputCurrency] = useState({isDisabled: false, value: ""});
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,17 +33,17 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   },[swap[selectionUpdate.toLowerCase()].chain, swap[selectionUpdate.toLowerCase()].token, swap[selectionUpdate.toLowerCase()].value]);
 
   return (
-    <div className={`flex items-center py-2 px-2 border border-black border-opacity-20 rounded-lg ${className} ${inputCurrency.isDisabled? "bg-slate-300": "bg-white"}`}>
+    <div className={`flex items-center py-2 px-2 border border-black border-opacity-20 rounded-lg ${className} ${inputCurrency.isDisabled || swapStatus.isSwitchLoading? "bg-slate-300": "bg-white"}`}>
       <input 
         type="text" 
         placeholder="0.0" 
         name={`input${selectionUpdate}`} 
-        className={`input focus:outline-none w-full disabled:border-opacity-0 disabled:bg-transparent disabled:text-white`} 
-        disabled={inputCurrency.isDisabled}
+        className={`input focus:outline-none w-full disabled:border-opacity-0 disabled:bg-transparent`} 
+        disabled={inputCurrency.isDisabled || swapStatus.isSwitchLoading}
         onChange={onInput} 
         value={inputCurrency.value}
       />
-      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency.isDisabled} onClick={()=> setMaxCurrency((selectToken.source.balanceOf || "").toString())}>{maxLabel}</button> }
+      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency.isDisabled || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading} onClick={()=> setMaxCurrency((selectToken.source.balanceOf || "").toString())}>{maxLabel}</button> }
     </div>
   );
 };

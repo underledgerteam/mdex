@@ -7,7 +7,7 @@ import { SwapContext } from "src/contexts/swap.context";
 const defaultNetworkSelect = { chainId: "", symbol: "", chainName: "" };
 
 const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValue = "", selectLabel}:InputSelectInterface): JSX.Element => {
-  const { updateSwap, swap } = useContext(SwapContext);
+  const { updateSwap, swap, swapStatus } = useContext(SwapContext);
   const { walletAddress, isConnected } = useContext(Web3Context);
   const [network, setNetwork] = useState<listOptionType>(defaultNetworkSelect);
   const [networkVisible, setNetworkVisible] = useState<{[key: string]: boolean}>({ source: true, destination: false });
@@ -51,9 +51,9 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
   },[]);
   
   return(
-    <div className={`flex items-center py-2 border border-black border-opacity-20 rounded-lg ${className} ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300": "bg-white"}`}>
+    <div className={`flex items-center py-2 border border-black border-opacity-20 rounded-lg ${className} ${!isConnected || walletAddress === "" || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading? "pointer-events-none bg-slate-300": "bg-white"}`}>
       <div className={`dropdown w-full ${selectionUpdate==="Destination"? "dropdown-top": ""}`}>
-        <label id="dropdown-title" className={`select items-center w-full ${!isConnected || walletAddress === ""? "pointer-events-none bg-slate-300/60": ""}`} onClick={()=> handelShowSelectNetwork(selectionUpdate)}>
+        <label id="dropdown-title" className={`select items-center w-full ${!isConnected || walletAddress === "" || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading? "pointer-events-none bg-slate-300/60": ""}`} onClick={()=> handelShowSelectNetwork(selectionUpdate)}>
         { network.chainId !== ""? 
           <div className="flex items-center">
             <img className="mask mask-squircle mr-2" src={network.symbol} width={35} /> 

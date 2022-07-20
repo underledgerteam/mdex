@@ -4,7 +4,7 @@ import { InputTokenSelectInterface } from "src/types/InputSelect";
 import { SwapContext } from "src/contexts/swap.context";
 
 const InputSelectToken = ({ className, selectionUpdate, selectLabel, onClickSelectToken }: InputTokenSelectInterface): JSX.Element => {
-  const { swap, selectToken } = useContext(SwapContext);
+  const { swap, selectToken, swapStatus } = useContext(SwapContext);
   const [inputSearchToken, setInputSearchToken] = useState({ isDisabled: false, isLoading: false, value: "" });
 
   useEffect(() => {
@@ -18,11 +18,11 @@ const InputSelectToken = ({ className, selectionUpdate, selectLabel, onClickSele
 
   return (
     <Fragment>
-    <div className={`flex items-center py-2 border border-black border-opacity-20 rounded-lg ${className} ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": "bg-white"}`}>
+    <div className={`flex items-center py-2 border border-black border-opacity-20 rounded-lg ${className} ${inputSearchToken.isDisabled || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading? "pointer-events-none bg-slate-300": "bg-white"}`}>
       <div className="dropdown w-full">
         <label 
           id="dropdown-title" 
-          className={`select items-center w-full ${inputSearchToken.isDisabled? "pointer-events-none bg-slate-300": ""}`} 
+          className={`select items-center w-full ${inputSearchToken.isDisabled || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading? "pointer-events-none bg-slate-300": ""}`} 
           onClick={()=> onClickSelectToken()}
         >
           {selectToken[selectionUpdate.toLowerCase()].name? (
