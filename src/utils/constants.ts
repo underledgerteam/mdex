@@ -1,4 +1,6 @@
 import { SWAP_CONTRACTS_INTERFACE } from "src/types/constants";
+import swapAbi from "./swapAbi.json"
+
 
 export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   4: {
@@ -7,6 +9,10 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     SYMBOL: "chian/ethereum.png",
     CHAIN_NAME: "Ethereum",
     CURRENCY_SYMBOL: "ETH",
+    SWAP_ADDRESS: "0x165834eDd4A46B2Bc343f5Be824B403849728E95",
+    SWAP_ABI: swapAbi,
+
+    BLOCK_EXPLORER_URLS: ["https://rinkeby.etherscan.io"],
   },
   421611: {
     NETWORK_NAME: "Arbitrum Testnet",
@@ -21,7 +27,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       DECIMALS: 18
     },
     RPC_URLS: ["https://rinkeby.arbitrum.io/rpc"],
-    BLOCK_EXPLORER_URLS: ["https://rinkeby-explorer.arbitrum.io/#/"],
+    BLOCK_EXPLORER_URLS: ["https://rinkeby-explorer.arbitrum.io"],
   },
   43113: {
     NETWORK_NAME: "AVAX Testnet Network",
@@ -36,7 +42,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       DECIMALS: 18
     },
     RPC_URLS: ["https://api.avax-test.network/ext/bc/C/rpc"],
-    BLOCK_EXPLORER_URLS: ["https://testnet.snowtrace.io/"],
+    BLOCK_EXPLORER_URLS: ["https://testnet.snowtrace.io"],
   },
   80001: {
     NETWORK_NAME: "Polygon Testnet Network",
@@ -51,7 +57,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       DECIMALS: 18
     },
     RPC_URLS: ["https://matic-mumbai.chainstacklabs.com/"],
-    BLOCK_EXPLORER_URLS: ["https://mumbai.polygonscan.com/"],
+    BLOCK_EXPLORER_URLS: ["https://mumbai.polygonscan.com"],
   },
   97: {
     NETWORK_NAME: "Binance Smart Chain Testnet",
@@ -66,7 +72,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
       DECIMALS: 18
     },
     RPC_URLS: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-    BLOCK_EXPLORER_URLS: ["https://explorer.binance.org/smart-testnet"],
+    BLOCK_EXPLORER_URLS: ["https://testnet.bscscan.com"],
   },
 };
 

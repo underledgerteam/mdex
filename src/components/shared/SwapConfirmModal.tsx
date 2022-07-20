@@ -1,9 +1,12 @@
 import { useEffect, useState, useContext, Fragment } from "react";
+import { useNotifier } from 'react-headless-notifier';
+import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { SwapConfirmModalInterface } from "src/types/SwapConfirmModal";
-
 import { SwapContext } from "src/contexts/swap.context";
 
-const SwapConfirmModal = (): JSX.Element => {
+const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.Element => {
+  const { notify } = useNotifier();
+
   const { updateSwap, swap, swapStatus, selectToken, swapConfirm } = useContext(SwapContext);
 
   const handelCloseModal = () => {
@@ -13,8 +16,24 @@ const SwapConfirmModal = (): JSX.Element => {
   const handelSwapConfirm = () => {
     swapConfirm(
       swapStatus.isApprove,
-      ()=> { handelCloseModal() },
-      ()=> {}
+      (success: string)=> { 
+        if(swapStatus.isApprove){ 
+          onOpenSuccessModal();
+          handelCloseModal(); 
+        } 
+        notify(
+          <SuccessNotification 
+            message={success}
+          />
+        );
+      },
+      (error: string)=> {
+        notify(
+          <DangerNotification 
+            message={error}
+          />
+        );
+      }
     );
   };
 
@@ -31,13 +50,13 @@ const SwapConfirmModal = (): JSX.Element => {
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           {/* <img className="mask mask-squircle mr-2" src={selectToken.source.img} width={45} /> */}
           <p className="font-semibold text-lg">{selectToken.source.symbol}</p>
-          <p className="font-semibold text-lg text-right">{swap.source.value}</p>
+          <p className="font-semibold text-lg ml-auto">{swap.source.value}</p>
         </div>
         <div className="flex justify-center text-3xl py-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700">▼</div>
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           {/* <img className="mask mask-squircle mr-2" src={selectToken.destination.img} width={45} /> */}
           <p className="font-semibold text-lg">{selectToken.destination.symbol}</p>
-          <p className="font-semibold text-lg text-right">{swap.destination.value}</p>
+          <p className="font-semibold text-lg ml-auto">{swap.destination.value}</p>
         </div>
 
         <div className="px-5 py-5">
@@ -45,27 +64,27 @@ const SwapConfirmModal = (): JSX.Element => {
             <Fragment>
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Fee</p>
-                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.fee} {selectToken.source.symbol}</p>
+                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.fee} {selectToken.source.symbol}</p>
               </div>
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Recieve</p>
-                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.recieve} {selectToken.source.symbol}</p>
+                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.recieve} {selectToken.source.symbol}</p>
               </div>
               <div className="flex">
-                <p className="font-semibold text-sm md:text-lg">Expected Output(ETH)</p>
-                <p className="font-semibold text-sm md:text-lg text-right">{swap.summary.expected} {selectToken.destination.symbol}</p>
+                <p className="font-semibold text-sm md:text-lg">Expected Output ({selectToken.destination.symbol})</p>
+                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected} {selectToken.destination.symbol}</p>
               </div>
             </Fragment>
           ): (
             <div className="flex">
               <p className="font-semibold text-sm md:text-lg">Price per {selectToken.source.symbol}</p>
-              {/* <p className="font-semibold text-sm md:text-lg text-right">{selectToken.source.rate}</p> */}
-              <p className="font-semibold text-sm md:text-lg text-right">{0}</p>
+              <p className="font-semibold text-sm md:text-lg ml-auto">{1}</p>
             </div>
           ) }
         </div>
         <button 
-          className={`btn ${swapStatus.isLoading? "loading": ""} btn-block`}
+          className={`btn ${swapStatus.isApproveLoading? "loading": ""} btn-block`}
+          disabled={swapStatus.isApproveLoading}
           onClick={()=> handelSwapConfirm()}
         >
           {swapStatus.isApprove? "Confirm Swap": "Approve"}
