@@ -25,8 +25,7 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
     setInputSearchToken({ ...inputSearchToken, value: e.target.value });
   };
   const handelSelectToken = async(value: string | undefined) => {
-    setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: true });
-    await updateSwap(selectionUpdate, "token", {
+    updateSwap(selectionUpdate, "token", {
       ...swap,
       [selectionUpdate.toLowerCase()]: {
         ...swap[selectionUpdate.toLowerCase()],
@@ -34,7 +33,6 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
         value: undefined
       }
     });
-    setInputSearchToken({ ...inputSearchToken, isDisabled: false, isLoading: false });
     onClose();
     clearSelectTokenList();
   };
@@ -117,7 +115,7 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
                               <p className="text-sm">{selectTokenList[keyToken]?.name}</p>
                               <p className="text-sm block sm:hidden">Available: {selectTokenList[keyToken]?.balanceOf || 0}</p>
                             </div>
-                            <p className="text-md font-semibold text-right hidden sm:block">{selectTokenList[keyToken]?.balanceOf || 0}</p>
+                            { selectTokenList[keyToken]?.balanceOf && <p className="text-md font-semibold text-right hidden sm:block">{selectTokenList[keyToken]?.balanceOf || 0}</p> }
                           </div>
                         </li>
                       )
