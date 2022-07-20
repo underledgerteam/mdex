@@ -38,6 +38,7 @@ export type SwapStatusType = {
   isSwap: boolean,
   isSwitch: boolean,
   isTokenPool: boolean,
+  isSwitchLoading: boolean,
   isSummaryLoading: boolean,
   isApproveLoading: boolean,
   isSuccess: boolean,
