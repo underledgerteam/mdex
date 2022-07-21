@@ -9,7 +9,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   const [transferRoute, setTransferRoute] = useState<string[]>([]);
   useEffect(()=>{
     const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
-      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex] || recieve} ${source?.currencySymbol}`]);
+      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex] || recieve} ${destination?.currencySymbol}`]);
     }, [`Fee ${fee} ${source?.currencySymbol}`]) || [];
     setTransferRoute([...transferRouteList, "Convert"]);
   },[])
