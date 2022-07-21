@@ -18,6 +18,11 @@ export interface SwapProviderInterface {
   children: JSX.Element
 };
 
+export type SwapRouteType = {
+  index: string,
+  name: string
+}
+
 export type SwapType = {
   [key: string]: {
     chain?: string,
@@ -28,7 +33,7 @@ export type SwapType = {
     recieve?: string,
     expected?: string,
     amount?: string | string[],
-    route?: string | string[],
+    route?: SwapRouteType[],
     isSplitSwap?: boolean
   }
 };

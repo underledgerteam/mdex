@@ -100,7 +100,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             fee: toBigNumber(utils.formatEther(data.fee.toString())).toDP(10).toString(), 
             recieve: (toBigNumber(objSwap.source.value || 0)).minus(toBigNumber(utils.formatEther((data.fee.toString())))).toDP(10).toString(), 
             expected: toBigNumber(utils.formatEther(data.amount.toString())).toDP(10).toString(),
-            route: data.route[0].index,
+            route: data.route,
             isSplitSwap: Boolean(data.isSplitSwap)
           };
           success = true;
@@ -292,11 +292,12 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = await currentNetwork();
       if(isApprove){
         if(swapContract){
-          let resultSwap, params = [swap.source.token, swap.destination.token, utils.parseEther(swap.source.value || "0").toString(), swap.summary.route];
+          let resultSwap, params = [swap.source.token, swap.destination.token, utils.parseEther(swap.source.value || "0").toString()];
           if(swap.summary.isSplitSwap){
-            resultSwap = await swapContract.splitSwap(...params, swap.summary.amount);
+            const resultRouteIndex = swap.summary.route?.map(route => Number(route.index));
+            resultSwap = await swapContract.splitSwap(...params, JSON.stringify(resultRouteIndex), JSON.stringify(swap.summary.amount));
           }else{
-            resultSwap = await swapContract.swap(...params);
+            resultSwap = await swapContract.swap(...params, swap.summary.route?.[0].index);
           }
           await resultSwap.wait();
           setSwapStatus({...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false});
