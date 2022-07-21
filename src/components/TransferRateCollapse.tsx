@@ -1,9 +1,19 @@
+import { useState, useEffect } from "react";
 import { TransferRateCollapseInterface } from "src/types/TransferRateCollapse";
 import TokenTransferCard from "src/components/shared/TokenTransferCard";
 import TransferRateRoute from "src/components/TransferRateRoute";
 
 const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element => {
-  const { title, source, destination, fee, recieve, expect } = props;
+  const { title, source, destination, fee, recieve, expect, route, amount } = props;
+
+  const [transferRoute, setTransferRoute] = useState<string[]>([]);
+  useEffect(()=>{
+    const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
+      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex] || recieve} ${source?.currencySymbol}`]);
+    }, [`Fee ${fee} ${source?.currencySymbol}`]) || [];
+    setTransferRoute([...transferRouteList, "Convert"]);
+  },[])
+
   return (
     <>
       <div className="collapse collapse-arrow border border-base-300 bg-base-100/80 rounded-box mt-5">
@@ -28,7 +38,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
 
             <TokenTransferCard {...source} />
 
-            <TransferRateRoute dataSrc={['step1', 'Fee 0.075 SIP', 'Recieve 29.925 SIP', 'convert']} />
+            <TransferRateRoute dataSrc={transferRoute} />
 
             <TokenTransferCard {...destination} />
           </div>

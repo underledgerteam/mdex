@@ -86,6 +86,8 @@ const SwapPage = (): JSX.Element => {
               fee: swap.summary.fee,
               recieve: swap.summary.recieve,
               expect: swap.summary.expected,
+              route: swap.summary.route,
+              amount: swap.summary.amount,
             }} />
           ) : (
             null
