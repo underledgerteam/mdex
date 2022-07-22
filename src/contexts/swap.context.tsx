@@ -156,6 +156,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     let _rete = 1, _calCurrency: Decimal = toBigNumber(0), _selectToken = {...selectToken};
     try {
       if(selectionUpdate === "Source" && keyUpdate === "chain"){
+        setSwap(objSwap);
         await walletSwitchChain(Number(objSwap.source.chain));
       }
       if(keyUpdate === "token"){
@@ -222,7 +223,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       setSwap(objSwap);
     } catch (error: any) {
       console.log(error);
-      
+
       setSwap(beforeSwitchSwapObj);
       notify(
         <DangerNotification
