@@ -5,6 +5,7 @@ export interface SwapContextInterface {
   swapStatus: SwapStatusType,
   selectToken: SelectTokenType,
   selectTokenList: SelectTokenType,
+  getSummaryBestRateSwap: (selectionUpdate: string, objSwap: SwapType)=> void,
   swapSwitch: ()=> void,
   isTokenApprove: ()=> void,
   openSelectToken: (selectionUpdate: string)=> void,
