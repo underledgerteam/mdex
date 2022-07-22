@@ -7,14 +7,15 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
   const regexInputCurrency: RegExp = /^[0-9]{1,10}((\.)[0-9]{0,10}){0,1}$/g;
   const regexRemoveString: RegExp = /[^\d\.]/g; 
 
-  const {updateSwap, swap, selectToken, swapStatus } = useContext(SwapContext);
+  const {updateSwap, controllerApiBestRate, swap, selectToken, swapStatus } = useContext(SwapContext);
   const [inputCurrency, setInputCurrency] = useState({isDisabled: false, value: ""});
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const getValue = e.target.value.replace(regexRemoveString, ''), validateNumber = getValue.match(regexInputCurrency);
     if(validateNumber || !getValue){
       const value = validateNumber?.[0] || "";
-      updateSwap(selectionUpdate, "value", {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}})
+      controllerApiBestRate?.abort("Cancelled Call Api Get Best Rate");
+      updateSwap(selectionUpdate, "value", {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: value}});
       setInputCurrency({...inputCurrency, value: value});
     }
   };

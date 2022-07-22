@@ -1,5 +1,6 @@
 // value & function in Context
 export interface SwapContextInterface {
+  controllerApiBestRate: AbortController,
   swap: SwapType,
   swapStatus: SwapStatusType,
   selectToken: SelectTokenType,
