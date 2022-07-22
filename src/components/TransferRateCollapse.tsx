@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { utils } from "ethers";
+
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { TransferRateCollapseInterface } from "src/types/TransferRateCollapse";
 import TokenTransferCard from "src/components/shared/TokenTransferCard";
 import TransferRateRoute from "src/components/TransferRateRoute";
@@ -9,7 +12,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   const [transferRoute, setTransferRoute] = useState<string[]>([]);
   useEffect(()=>{
     const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
-      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex] || recieve} ${destination?.currencySymbol}`]);
+      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex]? utils.formatEther(toBigNumber(amount?.[currentIndex]).toString()): recieve} ${destination?.currencySymbol}`]);
     }, [`Fee ${fee} ${source?.currencySymbol}`]) || [];
     setTransferRoute([...transferRouteList, "Convert"]);
   },[])
