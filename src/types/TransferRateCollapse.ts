@@ -1,3 +1,4 @@
+import { SwapRouteType } from "./contexts/swap.context";
 export interface TransferRateCollapseInterface {
   className?: string,
   title?: string,
@@ -6,7 +7,9 @@ export interface TransferRateCollapseInterface {
   expect?: string,
   source?: TokenCardInterface,
   destination?: TokenCardInterface,
-  children?: JSX.Element;
+  children?: JSX.Element,
+  route?: SwapRouteType[],
+  amount?: string | string[],
 };
 
 export interface TokenCardInterface {
