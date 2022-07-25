@@ -7,7 +7,7 @@ import { ethers, utils } from "ethers";
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
-import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenType } from  "src/types/contexts/swap.context";
+import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenType, InputCurrencyType } from  "src/types/contexts/swap.context";
 import { SWAP_CONTRACTS } from "src/utils/constants";
 import WHITE_LIST_TOKEN from "src/utils/whiteListToken.json";
 const { ethereum } = window;
@@ -34,7 +34,12 @@ const defaultValue: SwapContextInterface = {
     source: {symbol: "", name: "", decimals: 0, balanceOf: 0, img: ""},
     destination: {symbol: "", name: "", decimals: 0, balanceOf: 0, img: ""},
   },
+  inputCurrency: {
+    source: {isDisabled: true, value: ""},
+    destination: {isDisabled: true, value: ""},
+  },
   selectTokenList: {},
+  getSummaryBestRateSwap: ()=>{},
   swapSwitch: ()=>{},
   isTokenApprove: ()=>{},
   updateSwap: ()=>{},
@@ -56,6 +61,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [tokenContract, setTokenContract] = useState<ethers.Contract|null>(null);
   const [swapStatus, setSwapStatus] = useState<SwapStatusType>(defaultValue.swapStatus);
   const [selectToken, setSelectToken] = useState<SelectTokenType>(defaultValue.selectToken);
+  const [inputCurrency, setInputCurrency] = useState<InputCurrencyType>(defaultValue.inputCurrency);
   const [selectTokenList, setSelectTokenList] = useState<SelectTokenType>(defaultValue.selectTokenList);
 
   const contactSwapProviders = async(selectionUpdate: string) => {
@@ -90,39 +96,46 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     return (isExits || address === "")? true: false;
   };
 
-  const getSummaryBestRateSwap = async(objSwap: SwapType) => {
+  const getSummaryBestRateSwap = async(selectionUpdate: string, objSwap: SwapType) => {
     let retries = 5, success = false, summary = defaultValue.swap.summary;
+    setSwap({...objSwap, [selectionUpdate==="Source"?"destination":"source"]: {...objSwap[selectionUpdate==="Source"?"destination":"source"], value: objSwap[selectionUpdate.toLocaleLowerCase()].value}});
     while (retries > 0 && !success) {
+      setSwapStatus({...swapStatus, isSwap: true, isSummaryLoading: true });
       try {
         if(controllerApiBestRate.signal.aborted){
           controllerApiBestRate = new AbortController();
         }
-        const response = await fetch(`${process.env.REACT_APP_API_BAST_RATE}/api/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap.source.value || "0").toString()}&chainId=${objSwap.source.chain}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_BAST_RATE}/api/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&chainId=${objSwap.source.chain}`, {
           signal: controllerApiBestRate.signal
         });
         const data = await response.json();
         const toFee = toBigNumber(utils.formatEther((toBigNumber(data.fee || "").toString()))).toDP(10);
         summary = { 
           fee: toFee.toString(), 
-          recieve: toBigNumber(objSwap.source.value || 0).minus(toFee).toDP(10).toString(), 
+          recieve: toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || 0).minus(toFee).toDP(10).toString(), 
           route: data.route,
           isSplitSwap: Boolean(data.isSplitSwap)
         };
         if(data.isSplitSwap){
           const sumExpected = data.amount.reduce((previous: number, current: number)=>{ return  toBigNumber(previous).plus(toBigNumber((current))).toDP(10) }, 0);
-          summary = { 
-            ...summary,
-            expected: utils.formatEther(sumExpected.toString()),
-            amount: data.amount,
-          };
+          summary = { ...summary, expected: utils.formatEther(sumExpected.toString()), amount: data.amount };
         }else{
-          summary = { 
-            ...summary,
-            expected: toBigNumber(utils.formatEther(data.amount.toString())).toDP(10).toString(),
-          }
+          summary = { ...summary, expected: toBigNumber(utils.formatEther(data.amount.toString())).toDP(10).toString() }
         }
         success = true;
+        if(selectionUpdate !== ""){
+          const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
+          objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
+        }
+        setSwap({...objSwap, summary});
+        setSwapStatus({
+          ...swapStatus, 
+          isSwap: true, 
+          isSummaryLoading: false,
+          isSwitch: (objSwap.source.chain === undefined || objSwap.destination.chain === undefined) 
+        });
       } catch (error: any) {
+        setSwapStatus({...swapStatus, isSummaryLoading: false });
         if(error.name === 'AbortError'){
           success = true;
         }else{
@@ -131,7 +144,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         }
       }
     }
-    return summary;
   };
   
   const getBalanceOf = async(selectionUpdate: string, selectTokenKey: string) => {
@@ -152,11 +164,17 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   const updateSwap = async(selectionUpdate: string, keyUpdate: string, objSwap: SwapType) => {
     const beforeSwitchSwapObj = {...swap};
+    const beforeSwitchCurrency = {...inputCurrency};
+    const beforeSwitchToken = {...selectToken};
+    const beforeSwitchSwapStatus = {...swapStatus};
     const provider = new ethers.providers.Web3Provider(ethereum);
     let _rete = 1, _calCurrency: Decimal = toBigNumber(0), _selectToken = {...selectToken};
     try {
       if(selectionUpdate === "Source" && keyUpdate === "chain"){
         setSwap(objSwap);
+        setInputCurrency(defaultValue.inputCurrency);
+        setSelectToken(defaultValue.selectToken);
+        setSwapStatus({...swapStatus, isSwap: false});
         await walletSwitchChain(Number(objSwap.source.chain));
       }
       if(keyUpdate === "token"){
@@ -178,20 +196,28 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           setTokenContract(getContractToken);
         }
         setSelectToken(_selectToken);
-
+        let newInputCurrency = {...inputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...inputCurrency[selectionUpdate.toLocaleLowerCase()], isDisabled: false}};
         if(selectionUpdate === "Source"){
-          // selectionUpdate = "destination"
+          selectionUpdate = "destination"
           if(objSwap.destination.value !== "" && objSwap.destination.value !== undefined){
             _calCurrency = toBigNumber(objSwap.destination.value || 0).mul(_rete);
+            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}};
           }
         }else{
           if(objSwap.source.value !== "" && objSwap.source.value !== undefined){
             _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
+            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}};
           }
         }
+        setInputCurrency(newInputCurrency);
+        _calCurrency = toBigNumber(0);
       }
 
       if(keyUpdate === "value"){
+        let newInputCurrency = {
+          ...inputCurrency, 
+          [selectionUpdate.toLocaleLowerCase()]: {...inputCurrency[selectionUpdate.toLocaleLowerCase()], value: objSwap[selectionUpdate.toLocaleLowerCase()].value || ""}
+        };
         if(selectionUpdate === "Source"){
           selectionUpdate = "destination";
           _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
@@ -199,6 +225,11 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           selectionUpdate = "source";
           _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rete);
         }
+        if(objSwap[selectionUpdate.toLowerCase()].token !== undefined && objSwap[selectionUpdate.toLowerCase()].token !== ""){
+          newInputCurrency = {...newInputCurrency, [selectionUpdate]: {...newInputCurrency[selectionUpdate], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}}
+        }
+        setInputCurrency(newInputCurrency);
+        _calCurrency = toBigNumber(0);
       }
       objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(_calCurrency) !== 0? _calCurrency.toDP(10, Decimal.ROUND_UP): "").toString()}};
 
@@ -207,12 +238,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const isSourceTokenPool = await isTokenPool(objSwap.source.token || "");
       const isDestinationTokenPool = await isTokenPool(objSwap.destination.token || "");
 
-      if(checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool){
-        setSwap(objSwap);
-        setSwapStatus({...swapStatus, isSwap: true, isSummaryLoading: true });
-        const summary =  await getSummaryBestRateSwap(objSwap);
-        objSwap = {...objSwap, summary: summary };
-      }
       setSwapStatus({
         ...swapStatus, 
         isSummaryLoading: false,
@@ -223,8 +248,10 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       setSwap(objSwap);
     } catch (error: any) {
       console.log(error);
-
       setSwap(beforeSwitchSwapObj);
+      setInputCurrency(beforeSwitchCurrency);
+      setSelectToken(beforeSwitchToken);
+      setSwapStatus(beforeSwitchSwapStatus);
       notify(
         <DangerNotification
           message={error.toString()}
@@ -236,30 +263,33 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const swapSwitch = async() => {
     const beforeSwitchSwapObj = {...swap};
     const beforeSwitchTokenObj = {...selectToken};
+    const beforeSwitchCurrencyObj = {...inputCurrency};
     try {
       setSwapStatus({...swapStatus, isSwitch: true, isSwitchLoading: true});
       setSelectToken({
         source: {...beforeSwitchTokenObj.destination, balanceOf: beforeSwitchSwapObj.destination.token !== undefined? await getBalanceOf("Destination", beforeSwitchSwapObj.destination.token || ""): undefined},
         destination: beforeSwitchTokenObj.source,
       });
-
-      const checkSwapUndefined = Object.values({...swap.source, ...swap.destination}).every((value)=>{ return (value !== undefined && value !== "")? true: false });
+      setInputCurrency({
+        source: beforeSwitchCurrencyObj.destination,
+        destination: beforeSwitchCurrencyObj.source,
+      });
+      const checkSourceUndefined = Object.values(swap.source).every((value)=>{ return (value !== undefined && value !== "")? true: false });
+      const checkDestinationUndefined = Object.values(swap.destination).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       const isSourceTokenPool = await isTokenPool(swap.destination.token || "");
       const isDestinationTokenPool = await isTokenPool(swap.destination.token || "");
 
       setSwapStatus({...swapStatus, isSummaryLoading: true });
-      setSwap({
-        ...swap,
-        source: {...swap.destination},
-        destination: {...swap.source},
-        summary: (checkSwapUndefined && isSourceTokenPool && isDestinationTokenPool)? await getSummaryBestRateSwap({source: {...swap.destination}, destination: {...swap.source}}): defaultValue.swap.summary
-      });
-
+      setSwap({...swap, source: {...swap.destination}, destination: {...swap.source}, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined }});
+      if(checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool){
+        await getSummaryBestRateSwap("Source", {...swap, source: {...swap.destination}, destination: {...swap.source}});
+      }
       await walletSwitchChain(Number(swap.destination.chain));
       setSwapStatus({...swapStatus, isSwitch: false, isSwitchLoading: false});
     } catch (error: any) {
       setSwap(beforeSwitchSwapObj);
       setSelectToken(beforeSwitchTokenObj);
+      setInputCurrency(beforeSwitchCurrencyObj);
       notify(
         <DangerNotification
           message={error.toString()}
@@ -379,7 +409,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       setSwap({
         source: { chain: currentChain.toString(), token: undefined, value: undefined },
         destination: { chain: currentChain.toString(), token: undefined,value: undefined },
-        summary: { fee: undefined, recieve: undefined, expected: undefined },
+        summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined },
       });
       setSelectTokenList(defaultValue.selectTokenList);
       setSwapStatus(defaultValue.swapStatus);
@@ -393,7 +423,9 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         swap,
         swapStatus,
         selectToken,
+        inputCurrency,
         selectTokenList,
+        getSummaryBestRateSwap,
         swapSwitch,
         isTokenApprove,
         updateSwap,
