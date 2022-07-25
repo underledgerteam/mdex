@@ -105,7 +105,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if(controllerApiBestRate.signal.aborted){
           controllerApiBestRate = new AbortController();
         }
-        const response = await fetch(`${process.env.REACT_APP_API_BAST_RATE}/api/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&chainId=${objSwap.source.chain}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/api/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&chainId=${objSwap.source.chain}`, {
           signal: controllerApiBestRate.signal
         });
         const data = await response.json();
