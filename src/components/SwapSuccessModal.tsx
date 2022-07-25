@@ -28,11 +28,7 @@ const SwapSuccessModal = ({ link, onCloseModal }: SwapSuccessInterface) => {
               </p>
               <p className="my-6 mx-6 mt-5 text-lg text-success text-center cursor-pointer">
                 <a href={link}>
-<<<<<<< HEAD
                   View Your Transactions
-=======
-                  View your transaction
->>>>>>> 6f46d705c13609de92bd0dd7e13fa75c5905c5c0
                 </a>
               </p>
             </div>
