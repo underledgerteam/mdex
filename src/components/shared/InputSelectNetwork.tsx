@@ -27,7 +27,7 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
   };
 
   const handelSelectNetwork = (objChain: listOptionType) => {
-    updateSwap(selectionUpdate, "chain", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], chain: objChain.chainId, token: undefined, value: undefined}});
+    updateSwap(selectionUpdate, "chain", {...swap, [selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], chain: objChain.chainId, token: undefined, value: undefined}, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined },});
     // setNetwork(objChain);
     document.getElementById(`dropdown-content-${selectionUpdate.toLowerCase()}-chain`)?.classList.toggle("show");
   };

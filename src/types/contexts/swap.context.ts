@@ -4,6 +4,7 @@ export interface SwapContextInterface {
   swap: SwapType,
   swapStatus: SwapStatusType,
   selectToken: SelectTokenType,
+  inputCurrency: InputCurrencyType,
   selectTokenList: SelectTokenType,
   getSummaryBestRateSwap: (selectionUpdate: string, objSwap: SwapType)=> void,
   swapSwitch: ()=> void,
@@ -54,6 +55,13 @@ export type SwapStatusType = {
 
 export type SelectTokenType = {
   [key: string]: SelectTokenList
+}
+
+export type InputCurrencyType = {
+  [key: string]: {
+    isDisabled: boolean, 
+    value: string
+  }
 }
 
 export type SelectTokenList = {
