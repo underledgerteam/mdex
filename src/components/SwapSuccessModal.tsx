@@ -28,7 +28,7 @@ const SwapSuccessModal = ({ link, onCloseModal }: SwapSuccessInterface) => {
               </p>
               <p className="my-6 mx-6 mt-5 text-lg text-success text-center cursor-pointer">
                 <a href={link}>
-                  View on BscScan
+                  View Your Transactions
                 </a>
               </p>
             </div>

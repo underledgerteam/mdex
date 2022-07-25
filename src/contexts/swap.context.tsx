@@ -139,7 +139,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if(error.name === 'AbortError'){
           success = true;
         }else{
-          console.error(`Retries ${retries} GetSummaryBestRateSwap`, error);
+          console.error(error);
           --retries;
         }
       }
@@ -155,7 +155,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         balance = Number(toBigNumber(utils.formatEther(await contract.balanceOf(walletAddress))).toDP(10).toString());
         success = true;
       } catch (error) {
-        console.error(`Retries ${retries} GetBalanceOf`, error);
+        console.error(error);
         --retries;
       }
     }
@@ -247,7 +247,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       });
       setSwap(objSwap);
     } catch (error: any) {
-      console.log(error);
       setSwap(beforeSwitchSwapObj);
       setInputCurrency(beforeSwitchCurrency);
       setSelectToken(beforeSwitchToken);
@@ -333,7 +332,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         setSelectTokenList(Object.fromEntries(searchTokenList));
       }
     } catch (error) {
-      console.error("Token No results found.", error);
+      console.error(error);
       setSelectTokenList(defaultValue.selectTokenList);
     }
   };
@@ -354,6 +353,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           await resultSwap.wait();
           setSwapStatus({...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false});
           setSelectToken({...selectToken, source: {...selectToken.source, balanceOf: toBigNumber(selectToken.source.balanceOf || "").minus(toBigNumber(swap.source.value || "")).toDP(10).toNumber() }});
+          setInputCurrency({ source: {isDisabled: false, value: ""}, destination: {isDisabled: false, value: ""}});
           setSwap({
             ...swap,
             source: { ...swap.source, value: undefined },

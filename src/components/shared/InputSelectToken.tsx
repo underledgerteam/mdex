@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext, Fragment } from "react";
 import { InputTokenSelectInterface } from "src/types/InputSelect";
 
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SwapContext } from "src/contexts/swap.context";
 
 const InputSelectToken = ({ className, selectionUpdate, selectLabel, onClickSelectToken }: InputTokenSelectInterface): JSX.Element => {
@@ -32,7 +33,7 @@ const InputSelectToken = ({ className, selectionUpdate, selectLabel, onClickSele
             </div>
             ): selectLabel}
         </label>
-        { selectionUpdate === "Source" && swap.source.token !== undefined && (<p className="text-center w-full absolute -bottom-7 left-[50%] font-medium text-sm invisible lg:visible" style={{transform: 'translate(-50%, 0)'}}>Available: {selectToken[selectionUpdate.toLowerCase()].balanceOf || 0}</p>) }
+        { selectionUpdate === "Source" && swap.source.token !== undefined && (<p className="text-center w-full absolute -bottom-7 left-[50%] font-medium text-sm invisible lg:visible" style={{transform: 'translate(-50%, 0)'}}>Available: {toBigNumber(selectToken[selectionUpdate.toLowerCase()].balanceOf || 0).toString()}</p>) }
         </div>
       </div>
     </Fragment>

@@ -30,7 +30,6 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
     let debounceCurrency: NodeJS.Timeout;
     if(inputCurrency[selectionUpdate.toLocaleLowerCase()].value !== "" && swapStatus.isTokenPool && (swap[selectionUpdate === "Source"?"destination": "source"].value === "") && (swap.source.token !== "" && swap.destination.token !== "" && swap.source.token !== undefined && swap.destination.token !== undefined)){
       debounceCurrency = setTimeout(()=>{
-        console.log(selectionUpdate.toLowerCase(), "=> Call Api");
         getSummaryBestRateSwap(selectionUpdate, {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: inputCurrency[selectionUpdate.toLocaleLowerCase()].value}});
       }, 1500);
     }

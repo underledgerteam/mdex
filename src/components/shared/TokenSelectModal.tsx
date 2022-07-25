@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, Fragment } from "react";
 import { SwapContext } from "src/contexts/swap.context";
-
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 interface ModalInterface {
   visible: boolean,
   selectionUpdate: string,
@@ -113,9 +113,9 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
                             <div className="w-full">
                               <p className="font-semibold">{selectTokenList[keyToken]?.symbol}</p>
                               <p className="text-sm">{selectTokenList[keyToken]?.name}</p>
-                              <p className="text-sm block sm:hidden">Available: {selectTokenList[keyToken]?.balanceOf || 0}</p>
+                              <p className="text-sm block sm:hidden">Available: {toBigNumber(selectTokenList[keyToken]?.balanceOf || 0).toString()}</p>
                             </div>
-                            { selectTokenList[keyToken]?.balanceOf && <p className="text-md font-semibold text-right hidden sm:block">{selectTokenList[keyToken]?.balanceOf || 0}</p> }
+                            { selectTokenList[keyToken]?.balanceOf && <p className="text-md font-semibold text-right hidden sm:block">{toBigNumber(selectTokenList[keyToken]?.balanceOf || 0).toString()}</p> }
                           </div>
                         </li>
                       )

@@ -4,6 +4,7 @@ import InputSelectNetwork from 'src/components/shared/InputSelectNetwork';
 import InputSelectToken from 'src/components/shared/InputSelectToken';
 import Card from 'src/components/shared/Card';
 import { SelectionSwapInterface } from "src/types/SelectionSwapInterface";
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 
 import { SwapContext } from "src/contexts/swap.context";
 
@@ -41,7 +42,7 @@ const SelectionSwap = ({ title, listOptionNetwork, maxCurrency, onClickSelectTok
               delay={1000}
               maxCurrency={maxCurrency}
             />
-            { title === "Source" && swap.source.token !== undefined && (<p className="text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{transform: 'translate(-50%, -50%)'}}>Available: {selectToken.source.balanceOf || 0}</p>) }
+            { title === "Source" && swap.source.token !== undefined && (<p className="text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{transform: 'translate(-50%, -50%)'}}>Available: {toBigNumber(selectToken.source.balanceOf || 0).toString()}</p>) }
           </Fragment>
         </Card>
       </div>
