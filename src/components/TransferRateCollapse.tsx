@@ -12,8 +12,8 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   const [transferRoute, setTransferRoute] = useState<string[]>([]);
   useEffect(()=>{
     const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
-      return previousValue.concat([`Step ${currentIndex+1}`, currentValue.name, `Recieve ${amount?.[currentIndex]? utils.formatEther(toBigNumber(amount?.[currentIndex]).toString()): recieve} ${destination?.currencySymbol}`]);
-    }, [`Fee ${fee} ${source?.currencySymbol}`]) || [];
+      return previousValue.concat([`${currentValue.name} Fee ${0.00} ${source?.currencySymbol}`]);
+    }, [`MDEX Fee ${fee} ${source?.currencySymbol}`]) || [];
     setTransferRoute([...transferRouteList, "Convert"]);
   },[])
 
@@ -27,13 +27,23 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
         <div className="collapse-content">
           <div className="lg:p-4">
             <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4">
-              <div>{`Fee`}</div>
+              <div>{`MDEX Fee`}</div>
               <div>{`${fee} ${source?.currencySymbol}`}</div>
             </div>
             <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4">
               <div>{`Recieve(${source?.currencySymbol})`}</div>
               <div>{`${recieve} ${source?.currencySymbol}`}</div>
             </div>
+            {
+              route?.map((list, key)=>{
+                return(
+                  <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4" key={key}>
+                    <div>{`${list.name} Fee`}</div>
+                    <div>{`${0.00} ${source?.currencySymbol}`}</div>
+                  </div>
+                )
+              })
+            }
             <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl lg:mb-4">
               <div className="underline">{`Expected output(${destination?.currencySymbol})`}</div>
               <div className="underline">{`${expect} ${destination?.currencySymbol}`}</div>

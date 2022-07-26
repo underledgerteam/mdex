@@ -80,7 +80,7 @@ const SwapPage = (): JSX.Element => {
                 chainName: listOptionNetwork?.find((x)=>x.chainId === swap.destination.chain)?.chainName,
                 networkName: selectToken.destination.symbol,
                 imageSrc: selectToken.destination.img || "chian/unknown_token.svg",
-                value: swap.destination.value,
+                value: swap.summary.expected,
                 currencySymbol: selectToken.destination.symbol,
               },
               fee: swap.summary.fee,
