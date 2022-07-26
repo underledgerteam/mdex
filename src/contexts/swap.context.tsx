@@ -152,7 +152,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       try {
         const provider = await contactSwapProviders(selectionUpdate);
         const contract = new ethers.Contract(selectTokenKey, ERC20_ABI, provider);
-        balance = Number(toBigNumber(utils.formatEther(await contract.balanceOf(walletAddress))).toDP(10).toString());
+        balance = Number(toBigNumber(utils.formatEther(await contract.balanceOf(walletAddress))).toDP(10, Decimal.ROUND_DOWN).toString());
         success = true;
       } catch (error) {
         console.error(error);
@@ -320,7 +320,9 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           [address]: {
             symbol: results.results.selectToken.callsReturnContext[1].returnValues[0], 
             name: results.results.selectToken.callsReturnContext[0].returnValues[0], 
-            decimals: results.results.selectToken.callsReturnContext[2].returnValues[0]
+            decimals: results.results.selectToken.callsReturnContext[2].returnValues[0],
+            balanceOf:  Number(toBigNumber(utils.formatEther(results.results.selectToken.callsReturnContext[3].returnValues[0].hex)).toDP(10, Decimal.ROUND_DOWN).toString())
+           
           }
         });
       }else{
