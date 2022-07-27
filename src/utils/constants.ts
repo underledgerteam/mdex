@@ -1,9 +1,10 @@
 import { SWAP_CONTRACTS_INTERFACE } from "src/types/constants";
 import swapAbi from "./swapAbi.json"
-
+import crossSwapAbi from "./crossSwapAbi.json"
 
 export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   4: {
+    DOMAIN_CHAIN: 1111,
     NETWORK_NAME: "Rinkeby Testnet Network",
     NETWORK_SHORT_NAME: "Rinkeby",
     SYMBOL: "chian/ethereum.png",
@@ -12,7 +13,25 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     SWAP_ADDRESS: "0x165834eDd4A46B2Bc343f5Be824B403849728E95",
     SWAP_ABI: swapAbi,
 
+    CROSS_SWAP_ADDRESS: "0x8e61Fb5bB993143F9689111d5BBdf5498870aCb3",
+    CROSS_SWAP_ABI: crossSwapAbi,
+
     BLOCK_EXPLORER_URLS: ["https://rinkeby.etherscan.io"],
+  },
+  5: {
+    DOMAIN_CHAIN: 3331,
+    NETWORK_NAME: "Goerli Testnet Network",
+    NETWORK_SHORT_NAME: "Goerli",
+    SYMBOL: "chian/ethereum.png",
+    CHAIN_NAME: "Ethereum",
+    CURRENCY_SYMBOL: "ETH",
+    SWAP_ADDRESS: "0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a",
+    SWAP_ABI: swapAbi,
+    
+    CROSS_SWAP_ADDRESS: "0x98bc0964247a367BDE859aD584F934e439B5D3ab",
+    CROSS_SWAP_ABI: crossSwapAbi,
+
+    BLOCK_EXPLORER_URLS: ["https://goerli.etherscan.io"],
   },
   421611: {
     NETWORK_NAME: "Arbitrum Testnet",
@@ -87,6 +106,7 @@ export const AVALANCHE_FUJI: number = 43113;
 
 export const SUPPORT_CHAIN: number[] = [
   RINKEBY,
+  GOERLI,
   BSC_CHAPEL,
   POLYGON_MUMBAI,
   ARBITRUM_RINKEBY,
