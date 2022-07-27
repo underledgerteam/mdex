@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { utils } from "ethers";
 
-import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { TransferRateCollapseInterface } from "src/types/TransferRateCollapse";
 import TokenTransferCard from "src/components/shared/TokenTransferCard";
 import TransferRateRoute from "src/components/TransferRateRoute";
@@ -30,10 +28,10 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
               <div>{`MDEX Fee`}</div>
               <div>{`${fee} ${source?.currencySymbol}`}</div>
             </div>
-            <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4">
+            {/* <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4">
               <div>{`Recieve(${source?.currencySymbol})`}</div>
               <div>{`${recieve} ${source?.currencySymbol}`}</div>
-            </div>
+            </div> */}
             {
               route?.map((list, key)=>{
                 return(
