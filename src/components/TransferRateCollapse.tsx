@@ -12,7 +12,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   const [transferRoute, setTransferRoute] = useState<string[]>([]);
   useEffect(()=>{
     const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
-      return previousValue.concat([`${currentValue.name} Fee ${0.00} ${source?.currencySymbol}`]);
+      return previousValue.concat([`${currentValue.name} Fee ${currentValue.fee} ${source?.currencySymbol}`]);
     }, [`MDEX Fee ${fee} ${source?.currencySymbol}`]) || [];
     setTransferRoute([...transferRouteList, "Convert"]);
   },[])
@@ -39,7 +39,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
                 return(
                   <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4" key={key}>
                     <div>{`${list.name} Fee`}</div>
-                    <div>{`${0.00} ${source?.currencySymbol}`}</div>
+                    <div>{`${list.fee} ${source?.currencySymbol}`}</div>
                   </div>
                 )
               })
