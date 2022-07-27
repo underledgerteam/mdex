@@ -3,6 +3,7 @@ import { useNotifier } from 'react-headless-notifier';
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { SwapConfirmModalInterface } from "src/types/SwapConfirmModal";
 import { SwapContext } from "src/contexts/swap.context";
+import { toBigNumber } from "src/utils/calculatorCurrency.util";
 
 const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.Element => {
   const { notify } = useNotifier();
@@ -66,10 +67,10 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
                 <p className="font-semibold text-sm md:text-lg">MDEX Fee</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.fee} {selectToken.source.symbol}</p>
               </div>
-              <div className="flex">
+              {/* <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Recieve</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.recieve} {selectToken.source.symbol}</p>
-              </div>
+              </div> */}
               {
               swap.summary.route?.map((list, key)=>{
                 return(
@@ -88,7 +89,7 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
           ): (
             <div className="flex">
               <p className="font-semibold text-sm md:text-lg">Price {selectToken.destination.symbol} per {selectToken.source.symbol}</p>
-              <p className="font-semibold text-sm md:text-lg ml-auto">{1}</p>
+              <p className="font-semibold text-sm md:text-lg ml-auto">{toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "")).toString()}</p>
             </div>
           ) }
         </div>
