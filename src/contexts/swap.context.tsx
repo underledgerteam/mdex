@@ -110,10 +110,13 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         });
         const data = await response.json();
         const toFee = toBigNumber(utils.formatEther((toBigNumber(data.fee || "").toString()))).toDP(10);
+        const route = data.route.map((list: any)=> {
+          return {...list, fee: toBigNumber(utils.formatEther((toBigNumber(list.fee || "").toString()))).toString()}
+        });
         summary = { 
           fee: toFee.toString(), 
           recieve: toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || 0).minus(toFee).toDP(10).toString(), 
-          route: data.route,
+          route: route,
           isSplitSwap: Boolean(data.isSplitSwap)
         };
         if(data.isSplitSwap){
