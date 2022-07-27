@@ -1,4 +1,8 @@
 [
   {"tokenName": "Latte Token", "address": "0xe842709994fd15889C77749806F7D4C0e9775D41"},
-  {"tokenName": "Mocha Token", "address": "0x985623ec22501b59954B5Fe6557C8Fe518B00B67"}
+  {"tokenName": "Mocha Token", "address": "0x985623ec22501b59954B5Fe6557C8Fe518B00B67"},
+
+
+  {"tokenName": "Latte Token", "address": "0xfd88678C924B140c84232Ea907d5a60D709B8f9a"},
+  {"tokenName": "Mocha Token", "address": "0xa3C91B4e8051c155AE080A6A16B4923F6FB711f3"}
 ]
