@@ -65,7 +65,7 @@ const InputSelectNetwork = ({className, listOption, selectionUpdate, defaultValu
           { listOption?.map((list, key)=>{
             return(<li key={key}>
               <div 
-                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.chainId && false)? "cursor-no-drop text-custom-black/70 bg-slate-400/30 pointer-events-none": ""}`}
+                className={`${(selectionUpdate === "Destination" && swap.source.chain === list.chainId)? "cursor-no-drop text-custom-black/70 bg-slate-400/30 pointer-events-none": ""}`}
                 onClick={()=> handelSelectNetwork(list)} 
                 >
                 <img className="mask mask-squircle mr-1" src={list.symbol} width={30} /> 

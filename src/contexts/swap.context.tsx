@@ -442,7 +442,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
       setSwap({
         source: { chain: currentChain.toString(), token: undefined, value: undefined },
-        destination: { chain: currentChain.toString(), token: undefined,value: undefined },
+        destination: { chain: undefined, token: undefined,value: undefined },
         summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined },
       });
       setSelectTokenList(defaultValue.selectTokenList);
