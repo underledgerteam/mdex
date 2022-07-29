@@ -48,7 +48,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
         onChange={onInput} 
         value={inputCurrency[selectionUpdate.toLocaleLowerCase()].value}
       />
-      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency[selectionUpdate.toLocaleLowerCase()].isDisabled || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading} onClick={()=> setMaxCurrency(toBigNumber(selectToken.source.balanceOf || "").toString() || "")}>{maxLabel}</button> }
+      { maxCurrency && <button className="btn btn-outline  btn-ghost" disabled={inputCurrency[selectionUpdate.toLocaleLowerCase()].isDisabled || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading} onClick={()=> setMaxCurrency(toBigNumber(selectToken.source.balanceOf || "").toDP(10, Decimal.ROUND_DOWN).toString() || "")}>{maxLabel}</button> }
     </div>
   );
 };

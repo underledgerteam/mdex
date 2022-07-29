@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
-Decimal.set({ toExpNeg: -11, toExpPos: 999 })
+Decimal.set({ toExpNeg: -20, toExpPos: 999 })
 const toBigNumber = (number: string | number) => {
-  return new Decimal(number).toDP(10, Decimal.ROUND_DOWN);
+  return new Decimal(number).toDP(18, Decimal.ROUND_DOWN);
 };
 
 export {

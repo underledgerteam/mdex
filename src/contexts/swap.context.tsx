@@ -188,8 +188,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     try {
       if(keyUpdate === "chain"){
         setSwap(objSwap);
-        setInputCurrency(defaultValue.inputCurrency);
-        setSelectToken(defaultValue.selectToken);
+        setInputCurrency({...inputCurrency, [selectionUpdate.toLocaleLowerCase()]:{...selectToken[selectionUpdate.toLocaleLowerCase()], ...defaultValue.inputCurrency.source}});
+        setSelectToken({...selectToken, [selectionUpdate.toLocaleLowerCase()]:{...selectToken[selectionUpdate.toLocaleLowerCase()], ...defaultValue.selectToken.source}});
         setSwapStatus({...swapStatus, isSwap: false});
         if(selectionUpdate === "Source" ){
           await walletSwitchChain(Number(objSwap.source.chain));
@@ -219,12 +219,12 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           selectionUpdate = "destination"
           if(objSwap.destination.value !== "" && objSwap.destination.value !== undefined){
             _calCurrency = toBigNumber(objSwap.destination.value || 0).mul(_rete);
-            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}};
+            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toString()}};
           }
         }else{
           if(objSwap.source.value !== "" && objSwap.source.value !== undefined){
             _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
-            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}};
+            newInputCurrency = {...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: {...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toString()}};
           }
         }
         setInputCurrency(newInputCurrency);
@@ -244,12 +244,12 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rete);
         }
         if(objSwap[selectionUpdate.toLowerCase()].token !== undefined && objSwap[selectionUpdate.toLowerCase()].token !== ""){
-          newInputCurrency = {...newInputCurrency, [selectionUpdate]: {...newInputCurrency[selectionUpdate], value: _calCurrency.toDP(10, Decimal.ROUND_UP).toString()}}
+          newInputCurrency = {...newInputCurrency, [selectionUpdate]: {...newInputCurrency[selectionUpdate], value: _calCurrency.toString()}}
         }
         setInputCurrency(newInputCurrency);
         _calCurrency = toBigNumber(0);
       }
-      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(_calCurrency) !== 0? _calCurrency.toDP(10, Decimal.ROUND_UP): "").toString()}};
+      objSwap = {...objSwap, [selectionUpdate.toLocaleLowerCase()]: {...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(_calCurrency) !== 0? _calCurrency: "").toString()}};
 
       const checkSourceUndefined = Object.values(objSwap.source).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       const checkDestinationUndefined = Object.values(objSwap.destination).every((value)=>{ return (value !== undefined && value !== "")? true: false });
