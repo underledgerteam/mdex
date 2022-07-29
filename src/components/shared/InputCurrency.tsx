@@ -29,7 +29,7 @@ const InputCurrency = ({className, selectionUpdate, delay = 0, maxLabel = "Max",
 
   useEffect(()=>{
     let debounceCurrency: NodeJS.Timeout;
-    if(inputCurrency[selectionUpdate.toLocaleLowerCase()].value !== "" && swapStatus.isTokenPool && (swap[selectionUpdate === "Source"?"destination": "source"].value === "") && (swap.source.token !== "" && swap.destination.token !== "" && swap.source.token !== undefined && swap.destination.token !== undefined)){
+    if(inputCurrency[selectionUpdate.toLocaleLowerCase()].value !== "" && inputCurrency[selectionUpdate.toLocaleLowerCase()].value !== "0" && swapStatus.isTokenPool && (swap[selectionUpdate === "Source"?"destination": "source"].value === "") && (swap.source.token !== "" && swap.destination.token !== "" && swap.source.token !== undefined && swap.destination.token !== undefined)){
       debounceCurrency = setTimeout(()=>{
         getSummaryBestRateSwap(selectionUpdate, {...swap,[selectionUpdate.toLowerCase()]: {...swap[selectionUpdate.toLowerCase()], value: inputCurrency[selectionUpdate.toLocaleLowerCase()].value}});
       }, 1500);
