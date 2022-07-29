@@ -98,13 +98,13 @@ const SwapPage = (): JSX.Element => {
           ) : (
             <button
               className={`btn btn-connect mt-8 disabled:text-white/60 h-fit p-2 ${swapStatus.isSummaryLoading? "loading": ""}`}
-              disabled={!swapStatus.isSwap || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf  || 0 )< Number(swap.source.value) || (swap.summary.expected || 0) > 1)}
+              disabled={!swapStatus.isSwap || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf  || 0 ) < Number(swap.source.value))}
               onClick={() => handleOpenSwapModal()}
             >
               {
                 swapStatus.isSummaryLoading ? "Fetching best price..."
                   : !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" 
-                  : !swapStatus.isSwap || (swap.summary.expected || 0) > 1 ? "Please Select Chain/Token or Enter Amount" 
+                  : !swapStatus.isSwap? "Please Select Chain/Token or Enter Amount" 
                   : ((selectToken.source.balanceOf || 0) < Number(swap.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
                   :"Swap"
               }
