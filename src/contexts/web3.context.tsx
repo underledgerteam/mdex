@@ -29,12 +29,12 @@ export const Web3Context = createContext<Web3ContextInterface>(defaultValue);
 
 export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) => {
   // user
+  let isChainChange = false;
   const [walletAddress, setWalletAddresss] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [contractToken, setContractToken] = useState<Contract | null>(null);
-  const [isChainChangeReload, setIsChainChangeReload] = useState(false);
-
+  const [isChainChangeReload, setIsChainChangeReload] = useState(isChainChange);
   const createContract = async() => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const contract = new ethers.Contract("address", "abi", provider);
@@ -116,7 +116,8 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
   };
   const handleChainChange = (chainId: string): void => {
     // window.location.reload();
-    setIsChainChangeReload(!isChainChangeReload);
+    isChainChange = !isChainChange;
+    setIsChainChangeReload(isChainChange);
   };
 
   useEffect(() => {

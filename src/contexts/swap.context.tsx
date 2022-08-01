@@ -296,13 +296,13 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const isSourceTokenPool = await isTokenPool(swap.destination.token || "");
       const isDestinationTokenPool = await isTokenPool(swap.destination.token || "");
 
-      setSwapStatus({...swapStatus, isSummaryLoading: true });
+      setSwapStatus({...swapStatus, isSwitchLoading: true, isSummaryLoading: true });
       setSwap({...swap, source: {...swap.destination}, destination: {...swap.source}, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined }});
       if(checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool){
         await getSummaryBestRateSwap("Source", {...swap, source: {...swap.destination}, destination: {...swap.source}});
       }
       await walletSwitchChain(Number(swap.destination.chain));
-      setSwapStatus({...swapStatus, isSwitch: false, isSwitchLoading: false});
+      setSwapStatus({...swapStatus, isSwitchLoading: true, isSwitch: false});
     } catch (error: any) {
       setSwap(beforeSwitchSwapObj);
       setSelectToken(beforeSwitchTokenObj);
@@ -439,14 +439,20 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   useEffect(()=>{
     (async()=>{
-      const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
-      setSwap({
-        source: { chain: currentChain.toString(), token: undefined, value: undefined },
-        destination: { chain: undefined, token: undefined,value: undefined },
-        summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined },
-      });
-      setSelectTokenList(defaultValue.selectTokenList);
-      setSwapStatus(defaultValue.swapStatus);
+      // if SwitchLoading eq true because user click btn switch chain
+      if(swapStatus.isSwitchLoading === false){ 
+        // if user click btn switch chain, this condition is not required.
+        const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
+        setSwap({
+          source: { chain: currentChain.toString(), token: undefined, value: undefined },
+          destination: { chain: undefined, token: undefined,value: undefined },
+          summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined },
+        });
+        setSelectTokenList(defaultValue.selectTokenList);
+        setSwapStatus(defaultValue.swapStatus);
+      }
+      // Every time the chain changes including switch chain, this useEffect is running. because onListener chainChanged
+      setSwapStatus({...swapStatus, isSwitchLoading: false});
     })();
   },[walletAddress, isConnected, isChainChangeReload]);
 
