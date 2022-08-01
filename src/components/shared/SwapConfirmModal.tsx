@@ -57,16 +57,18 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           {/* <img className="mask mask-squircle mr-2" src={selectToken.destination.img} width={45} /> */}
           <p className="font-semibold text-lg">{selectToken.destination.symbol}</p>
-          <p className="font-semibold text-lg ml-auto">{swap.summary.expected}</p>
+          <p className="font-semibold text-lg ml-auto">{swap.summary.expected || swap.source.value}</p>
         </div>
 
         <div className="px-5 py-5">
           { swapStatus.isApprove? (
             <Fragment>
+              { swap?.summary?.fee && (
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">MDEX Fee</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.fee} {selectToken.source.symbol}</p>
               </div>
+              ) }
               {/* <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Recieve</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.recieve} {selectToken.source.symbol}</p>
@@ -83,13 +85,13 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
             }
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Expected Output ({selectToken.destination.symbol})</p>
-                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected} {selectToken.destination.symbol}</p>
+                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected || swap.source.value} {selectToken.destination.symbol}</p>
               </div>
             </Fragment>
           ): (
             <div className="flex">
               <p className="font-semibold text-sm md:text-lg">Price {selectToken.destination.symbol} per {selectToken.source.symbol}</p>
-              <p className="font-semibold text-sm md:text-lg ml-auto">{toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "")).toString()}</p>
+              <p className="font-semibold text-sm md:text-lg ml-auto">{toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "1")).toString()}</p>
             </div>
           ) }
         </div>
