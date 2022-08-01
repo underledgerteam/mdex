@@ -91,7 +91,7 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
           ): (
             <div className="flex">
               <p className="font-semibold text-sm md:text-lg">Price {selectToken.destination.symbol} per {selectToken.source.symbol}</p>
-              <p className="font-semibold text-sm md:text-lg ml-auto">{toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "1")).toString()}</p>
+              <p className="font-semibold text-sm md:text-lg ml-auto">{toBigNumber(swap.summary.fee || "0").plus(toBigNumber(swap.summary.expected || "1")).toString()}</p>
             </div>
           ) }
         </div>
