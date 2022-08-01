@@ -47,10 +47,6 @@ const SwapPage = (): JSX.Element => {
     isTokenApprove();
     document.getElementById("swap-modal")?.classList.toggle("modal-open")
   };
-
-  useEffect(()=>{
-    console.log(swapStatus.isSwap);
-  },[swapStatus.isSwap])
   return (
     <div className=" flex justify-center items-center p-8">
       <Card
