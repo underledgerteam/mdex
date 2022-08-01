@@ -8,7 +8,7 @@ import { toBigNumber } from "src/utils/calculatorCurrency.util";
 const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.Element => {
   const { notify } = useNotifier();
 
-  const { updateSwap, swap, swapStatus, selectToken, swapConfirm } = useContext(SwapContext);
+  const { updateSwap, swap, swapStatus, selectToken, inputCurrency, swapConfirm } = useContext(SwapContext);
 
   const handelCloseModal = () => {
     document.getElementById("swap-modal")?.classList.toggle("modal-open")
@@ -51,23 +51,23 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           {/* <img className="mask mask-squircle mr-2" src={selectToken.source.img} width={45} /> */}
           <p className="font-semibold text-lg">{selectToken.source.symbol}</p>
-          <p className="font-semibold text-lg ml-auto">{swap.source.value}</p>
+          <p className="font-semibold text-lg ml-auto">{toBigNumber(inputCurrency.source.value || "0").toDP(10).toString()}</p>
         </div>
         <div className="flex justify-center text-3xl py-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700">▼</div>
         <div className="flex items-center px-5 py-5 border-2 rounded-2xl">
           {/* <img className="mask mask-squircle mr-2" src={selectToken.destination.img} width={45} /> */}
           <p className="font-semibold text-lg">{selectToken.destination.symbol}</p>
-          <p className="font-semibold text-lg ml-auto">{swap.summary.expected || swap.source.value}</p>
+          <p className="font-semibold text-lg ml-auto">{swap.summary.expected || toBigNumber(inputCurrency.source.value || "0").toDP(10).toString()}</p>
         </div>
 
         <div className="px-5 py-5">
           { swapStatus.isApprove? (
             <Fragment>
               { swap?.summary?.fee && (
-              <div className="flex">
-                <p className="font-semibold text-sm md:text-lg">MDEX Fee</p>
-                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.fee} {selectToken.source.symbol}</p>
-              </div>
+                <div className="flex">
+                  <p className="font-semibold text-sm md:text-lg">MDEX Fee</p>
+                  <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.fee} {selectToken.source.symbol}</p>
+                </div>
               ) }
               {/* <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Recieve</p>
@@ -85,7 +85,7 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
             }
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Expected Output ({selectToken.destination.symbol})</p>
-                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected || swap.source.value} {selectToken.destination.symbol}</p>
+                <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected || toBigNumber(inputCurrency.source.value || "0").toString()} {selectToken.destination.symbol}</p>
               </div>
             </Fragment>
           ): (

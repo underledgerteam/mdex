@@ -94,7 +94,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         params = SWAP_CONTRACTS[currentChain].CROSS_SWAP_ADDRESS;
       }
       const tokenStatus = await tokenContract.allowance(walletAddress, params);
-      setSwapStatus({...swapStatus, isApprove: Number(utils.formatEther(tokenStatus.toString())) >= Number(swap.source.value)? true: false, isApproveLoading: false});
+      setSwapStatus({...swapStatus, isApprove: Number(utils.formatEther(tokenStatus.toString())) >= Number(inputCurrency.source.value)? true: false, isApproveLoading: false});
     }
   };
   
@@ -141,7 +141,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
             objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
           }
-          
         } catch (error: any) {
           setSwapStatus({...swapStatus, isSummaryLoading: false });
           if(error.name === 'AbortError'){
@@ -188,7 +187,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     try {
       if(keyUpdate === "chain"){
         setSwap(objSwap);
-        setInputCurrency({...inputCurrency, [selectionUpdate.toLocaleLowerCase()]:{...selectToken[selectionUpdate.toLocaleLowerCase()], ...defaultValue.inputCurrency.source}});
+        setInputCurrency({...inputCurrency, [selectionUpdate.toLocaleLowerCase()]:{...inputCurrency[selectionUpdate.toLocaleLowerCase()], ...defaultValue.inputCurrency.source}});
         setSelectToken({...selectToken, [selectionUpdate.toLocaleLowerCase()]:{...selectToken[selectionUpdate.toLocaleLowerCase()], ...defaultValue.selectToken.source}});
         setSwapStatus({...swapStatus, isSwap: false});
         if(selectionUpdate === "Source" ){
@@ -255,7 +254,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const checkDestinationUndefined = Object.values(objSwap.destination).every((value)=>{ return (value !== undefined && value !== "")? true: false });
       const isSourceTokenPool = await isTokenPool(objSwap.source.token || "");
       const isDestinationTokenPool = await isTokenPool(objSwap.destination.token || "");
-
       setSwapStatus({
         ...swapStatus, 
         isSummaryLoading: false,
@@ -363,7 +361,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = await currentNetwork();
       if(isApprove){
         if(swapContract && crossSwapContract){
-          let resultSwap, params = [swap.source.token, utils.parseEther(swap.source.value || "0").toString()];
+          let resultSwap, params = [swap.source.token, utils.parseEther(inputCurrency.source.value || "0").toString()];
           if(swap.source.chain !== swap.destination.chain){
             const payload = utils.defaultAbiCoder.encode(
               ["address", "address", "uint", "uint"], 
@@ -371,7 +369,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             );
             resultSwap = await crossSwapContract.swap(...params, payload);
           }else{
-            params = [swap.source.token, swap.destination.token, utils.parseEther(swap.source.value || "0").toString()]
+            params = [swap.source.token, swap.destination.token, utils.parseEther(inputCurrency.source.value || "0").toString()]
             if(swap.summary.isSplitSwap){
               const resultRouteIndex = swap.summary.route?.map(route => Number(route.index));
               resultSwap = await swapContract.splitSwap(...params, JSON.stringify(resultRouteIndex), JSON.stringify(swap.summary.amount));
@@ -382,7 +380,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           
           await resultSwap.wait();
           setSwapStatus({...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false});
-          setSelectToken({...selectToken, source: {...selectToken.source, balanceOf: toBigNumber(selectToken.source.balanceOf || "").minus(toBigNumber(swap.source.value || "")).toNumber() }});
+          setSelectToken({...selectToken, source: {...selectToken.source, balanceOf: toBigNumber(selectToken.source.balanceOf || "").minus(toBigNumber(inputCurrency.source.value || "")).toNumber() }});
           setInputCurrency({ source: {isDisabled: false, value: ""}, destination: {isDisabled: false, value: ""}});
           setSwap({
             ...swap,
@@ -400,7 +398,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           if(swap.source.chain !== swap.destination.chain){
             params = SWAP_CONTRACTS[currentChain].CROSS_SWAP_ADDRESS;
           }
-          const resultApprove = await tokenContract.approve(params, utils.parseEther(swap.source.value || "0").toString());
+          const resultApprove = await tokenContract.approve(params, utils.parseEther(inputCurrency.source.value || "0").toString());
           await resultApprove.wait();
           setSwapStatus({...swapStatus, isApproveLoading: false, isApprove: true});
           handelSuccess("Approve Success");

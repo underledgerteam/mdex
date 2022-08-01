@@ -12,7 +12,7 @@ import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SWAP_CONTRACTS } from "src/utils/constants";
 
 const SwapPage = (): JSX.Element => {
-  const { swap, swapStatus, selectToken, clearSwapStatus, swapSwitch, isTokenApprove } = useContext(SwapContext);
+  const { swap, swapStatus, selectToken, inputCurrency, clearSwapStatus, swapSwitch, isTokenApprove } = useContext(SwapContext);
   const { walletAddress, isConnected, handleConnectWallet } = useContext(Web3Context);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [sourceModalVisible, setSourceModalVisible] = useState(false);
@@ -48,6 +48,9 @@ const SwapPage = (): JSX.Element => {
     document.getElementById("swap-modal")?.classList.toggle("modal-open")
   };
 
+  useEffect(()=>{
+    console.log(swapStatus.isSwap);
+  },[swapStatus.isSwap])
   return (
     <div className=" flex justify-center items-center p-8">
       <Card
@@ -74,7 +77,7 @@ const SwapPage = (): JSX.Element => {
                 chainName: listOptionNetwork?.find((x)=>x.chainId === swap.source.chain)?.chainName,
                 networkName: selectToken.source.name,
                 imageSrc: selectToken.source.img || "chian/unknown_token.svg",
-                value: swap.source.value,
+                value: inputCurrency.source.value,
                 currencySymbol: selectToken.source.symbol,
               },
               destination: {
@@ -98,14 +101,14 @@ const SwapPage = (): JSX.Element => {
           ) : (
             <button
               className={`btn btn-connect mt-8 disabled:text-white/60 h-fit p-2 ${swapStatus.isSummaryLoading? "loading": ""}`}
-              disabled={!swapStatus.isSwap || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf  || 0 ) < Number(swap.source.value))}
+              disabled={!swapStatus.isSwap  || Number(inputCurrency.source.value) <= 0 || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf  || 0 ) < Number(inputCurrency.source.value))}
               onClick={() => handleOpenSwapModal()}
             >
               {
                 swapStatus.isSummaryLoading ? "Fetching best price..."
                   : !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" 
-                  : !swapStatus.isSwap? "Please Select Chain/Token or Enter Amount" 
-                  : ((selectToken.source.balanceOf || 0) < Number(swap.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
+                  : !swapStatus.isSwap || Number(inputCurrency.source.value) <= 0? "Please Select Chain/Token or Enter Amount" 
+                  : ((selectToken.source.balanceOf || 0) < Number(inputCurrency.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
                   :"Swap"
               }
             </button>
