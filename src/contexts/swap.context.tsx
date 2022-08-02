@@ -64,6 +64,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [selectToken, setSelectToken] = useState<SelectTokenType>(defaultValue.selectToken);
   const [inputCurrency, setInputCurrency] = useState<InputCurrencyType>(defaultValue.inputCurrency);
   const [selectTokenList, setSelectTokenList] = useState<SelectTokenType>(defaultValue.selectTokenList);
+  const [loadDefaultChain, setLoadDefaultChain] = useState(true);
 
   const contactSwapProviders = async(selectionUpdate: string) => {
     let provider: any = new ethers.providers.Web3Provider(ethereum);
@@ -185,12 +186,17 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     let _rete = 1, _calCurrency: Decimal = toBigNumber(0), _selectToken = {...selectToken};
     try {
-      if(keyUpdate === "chain"){
-        setSwap(objSwap);
+      setLoadDefaultChain(false);
+      if(keyUpdate === "chain" && objSwap[selectionUpdate.toLocaleLowerCase()].chain !== swap[selectionUpdate.toLocaleLowerCase()].chain){
         setInputCurrency({...inputCurrency, [selectionUpdate.toLocaleLowerCase()]:{...inputCurrency[selectionUpdate.toLocaleLowerCase()], ...defaultValue.inputCurrency.source}});
         setSelectToken({...selectToken, [selectionUpdate.toLocaleLowerCase()]:{...selectToken[selectionUpdate.toLocaleLowerCase()], ...defaultValue.selectToken.source}});
         setSwapStatus({...swapStatus, isSwap: false});
-        if(selectionUpdate === "Source" ){
+        if(selectionUpdate === "Source"){
+          if(objSwap.source.chain === objSwap.destination.chain){
+            objSwap = {...objSwap, [selectionUpdate==="Source"?"destination":"source"]: defaultValue.swap.source, summary: defaultValue.swap.summary};
+            setInputCurrency(defaultValue.inputCurrency);
+            setSelectToken(defaultValue.selectToken);
+          }
           await walletSwitchChain(Number(objSwap.source.chain));
         } 
       }
@@ -437,9 +443,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   useEffect(()=>{
     (async()=>{
-      // if SwitchLoading eq true because user click btn switch chain
-      if(swapStatus.isSwitchLoading === false){ 
-        // if user click btn switch chain, this condition is not required.
+      if(loadDefaultChain){ 
+        // if user click btn change or switch chain, this condition is not required.
         const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
         setSwap({
           source: { chain: currentChain.toString(), token: undefined, value: undefined },
@@ -449,7 +454,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         setSelectTokenList(defaultValue.selectTokenList);
         setSwapStatus(defaultValue.swapStatus);
       }
-      // Every time the chain changes including switch chain, this useEffect is running. because onListener chainChanged
+      // Every time the chain changes including change ro switch chain, this useEffect is running. because onListener chainChanged
       setSwapStatus({...swapStatus, isSwitchLoading: false});
     })();
   },[walletAddress, isConnected, isChainChangeReload]);
