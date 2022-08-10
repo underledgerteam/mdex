@@ -11,7 +11,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
   useEffect(()=>{
     const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
       return previousValue.concat([`${currentValue.name} ${currentValue.fee !== "0"? `Fee ${currentValue.fee} ${source?.currencySymbol}`: ""}`]);
-    }, [`MDEX Fee ${fee} ${source?.currencySymbol}`]) || [];
+    }, []) || [];
     setTransferRoute([...transferRouteList, "Convert"]);
   },[])
   
@@ -32,7 +32,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
               <div>{`Recieve(${source?.currencySymbol})`}</div>
               <div>{`${recieve} ${source?.currencySymbol}`}</div>
             </div> */}
-            {
+            {/* {
               route?.map((list, key)=>{
                 return(
                   <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4" key={key}>
@@ -41,7 +41,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
                   </div>
                 )
               })
-            }
+            } */}
             <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl lg:mb-4">
               <div className="underline">{`Expected output(${destination?.currencySymbol})`}</div>
               <div className="underline">{`${expect} ${destination?.currencySymbol}`}</div>
