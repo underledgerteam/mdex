@@ -114,60 +114,50 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     while (retries > 0 && !success) {
       setSwapStatus({...swapStatus, isSwap: true, isSummaryLoading: true });
       try {
+        let mergeRoute = [], toFee: Decimal, sumExpected: Decimal, mergeAmount, data;
         if(objSwap.source.chain === objSwap.destination.chain){
           const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&chainId=${objSwap.source.chain}`, {
             signal: controllerApiBestRate.signal
           });
-          const data = await response.json();
-          const toFee = toBigNumber(utils.formatEther(toBigNumber(data.fee).toString()));
-          const route = data.route.map((list: any)=> {
-            const fee = list.fee.toString().includes(".")? list.fee.toString().split(".")[0]: list.fee.toString();
-            return {...list, fee: toBigNumber(utils.formatEther(toBigNumber(fee).toString())).toString()}
-          });
-          summary = { 
-            fee: toFee.toString(), 
-            recieve: toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || 0).minus(toFee).toString(), 
-            route: route,
-            isSplitSwap: Boolean(data.isSplitSwap)
-          };
+          data = await response.json();
+
+          mergeRoute = data.route;
+          mergeAmount = Array.isArray(data.amount)? data.amount: [data.amount];
+          summary = { ...summary, isSplitSwap: Boolean(data.isSplitSwap) };
+
           if(data.isSplitSwap){
-            const sumExpected = data.amount.reduce((previous: number, current: number)=>{ return  toBigNumber(previous).plus(toBigNumber((current))) }, 0);
-            summary = { ...summary, expected: utils.formatEther(sumExpected.toString()), amount: data.amount };
-          }else{
-            const amount = data.amount.toString().includes(".")? data.amount.toString().split(".")[0]: data.amount;
-            summary = { ...summary, expected: toBigNumber(utils.formatEther(amount.toString())).toString() }
-          }
-          success = true;
-          if(selectionUpdate !== ""){
-            const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
-            objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
+            summary = { ...summary, amount: data.amount };
           }
         }else{
           const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/cross-rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&sourceChainId=${objSwap.source.chain}&destinationChainId=${objSwap.destination.chain}`, {
             signal: controllerApiBestRate.signal
           });
-          const data = await response.json();
-          const toFee = toBigNumber(utils.formatEther(toBigNumber(data.fee).toString()));
-          const mergeAmount = [...data.destination.amount];
-          const sumExpected = mergeAmount.reduce((previous: number, current: number)=>{ return  toBigNumber(previous).plus(toBigNumber((current))).toNumber() }, 0);
-          const mergeRoute = [...data.source.route, {index: "0", name: "Cross Chain Swap", fee: "0"}, ...data.destination.route];
-          const route = mergeRoute.map((list: any)=> {
-            const fee = list.fee.toString().includes(".")? list.fee.toString().split(".")[0]: list.fee.toString();
-            // const fee = list.fee;
-            return {...list, fee: toBigNumber(utils.formatEther(toBigNumber(fee).toString())).toString()}
-          });
-          summary =  { 
-            fee: toFee.toString(), 
-            recieve: toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || 0).minus(toFee).toString(), 
-            expected: utils.formatEther(toBigNumber(sumExpected).toString()), 
-            isSplitSwap: false, 
-            route: route
-          }
-          success = true;
-          if(selectionUpdate !== ""){
-            const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
-            objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
-          }
+          data = await response.json();
+          
+          mergeRoute = [...data.source.route, {index: "0", name: "Cross Chain Swap", fee: "0"}, ...data.destination.route];
+          mergeAmount = [...data.destination.amount];
+          summary =  { ...summary, isSplitSwap: false }
+        }
+
+        const route = mergeRoute.map((list: any)=> {
+          return {...list, fee: toBigNumber(utils.formatEther(toBigNumber(list.fee).toString())).toString()}
+        });
+        
+        toFee = toBigNumber(utils.formatEther(toBigNumber(data.fee).toString()));
+        sumExpected = mergeAmount.reduce((previous: number, current: number)=>{ return  toBigNumber(previous).plus(toBigNumber((current))) }, 0);
+
+        summary =  { 
+          ...summary,
+          fee: toFee.toString(), 
+          recieve: toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || 0).minus(toFee).toString(), 
+          expected: utils.formatEther(sumExpected.toString()), 
+          isSplitSwap: false, 
+          route: route
+        }
+        success = true;
+        if(selectionUpdate !== ""){
+          const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
+          objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
         }
         setSwap({...objSwap, summary});
         setSwapStatus({
@@ -469,6 +459,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
 
   useEffect(()=>{
     (async()=>{
+      // console.log(toBigNumber(2.9699951297057846335e+21).toString());
+      
       if(loadDefaultChain){ 
         // if user click btn change or switch chain, this condition is not required.
         const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
