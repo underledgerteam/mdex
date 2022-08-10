@@ -73,7 +73,7 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
                 <p className="font-semibold text-sm md:text-lg">Recieve</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.recieve} {selectToken.source.symbol}</p>
               </div> */}
-              {
+              {/* {
               swap.summary.route?.map((list, key)=>{
                 return(
                   <div className="flex" key={key}>
@@ -82,7 +82,7 @@ const SwapConfirmModal = ({onOpenSuccessModal}: SwapConfirmModalInterface): JSX.
                   </div>
                 )
               })
-            }
+            } */}
               <div className="flex">
                 <p className="font-semibold text-sm md:text-lg">Expected Output ({selectToken.destination.symbol})</p>
                 <p className="font-semibold text-sm md:text-lg ml-auto">{swap.summary.expected || toBigNumber(inputCurrency.source.value || "0").toString()} {selectToken.destination.symbol}</p>
