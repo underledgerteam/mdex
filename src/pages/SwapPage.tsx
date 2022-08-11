@@ -19,7 +19,7 @@ const SwapPage = (): JSX.Element => {
   const [destinationModalVisible, setDestinationModalVisible] = useState(false);
 
   const listOptionNetwork = Object.keys(SWAP_CONTRACTS).map((key) => {
-    return { chainId: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, symbol: SWAP_CONTRACTS[Number(key)].SYMBOL }
+    return { chainId: key, chainName: SWAP_CONTRACTS[Number(key)].NETWORK_SHORT_NAME, symbol: SWAP_CONTRACTS[Number(key)].SYMBOL };
   });
 
   const handelSwapSwitch = () => {
@@ -35,27 +35,28 @@ const SwapPage = (): JSX.Element => {
     setIsSuccessModal(false);
   };
 
-  const handleOpenSourceTokenModal = async() => {
+  const handleOpenSourceTokenModal = async () => {
     setSourceModalVisible(true);
   };
 
-  const handleOpenDestinationTokenModal = async() => {
+  const handleOpenDestinationTokenModal = async () => {
     setDestinationModalVisible(true);
   };
 
-  const handleOpenSwapModal = async() => {
+  const handleOpenSwapModal = async () => {
     isTokenApprove();
-    document.getElementById("swap-modal")?.classList.toggle("modal-open")
+    document.getElementById("swap-modal")?.classList.toggle("modal-open");
   };
   return (
-    <div className=" flex justify-center items-center p-8">
+    <div className=" flex justify-center items-center lg:p-8">
       <Card
         className="glass w-full md:w-2/3 overflow-visible"
         titleClassName="text-4xl mb-5"
+        bodyClassName="p-4 lg:p-8"
         title="Swap"
       >
         <Fragment>
-          { swapStatus.isSwitchLoading && 
+          {swapStatus.isSwitchLoading &&
             <Card className="bg-slate-600/40 w-full h-full absolute z-50 -m-8">
               <div className="flex justify-center items-center h-full text-4xl text-white font-bold">Waiting Get Balance of Token. . .</div>
             </Card>
@@ -65,19 +66,18 @@ const SwapPage = (): JSX.Element => {
             <button className="btn btn-link text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700" disabled={swapStatus.isSwitch || swapStatus.isSummaryLoading} onClick={() => handelSwapSwitch()}>⥮</button>
           </div>
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenDestinationTokenModal} />
-          { swapStatus.isTokenPool && !swapStatus.isSummaryLoading && swapStatus.isSwap && swap.summary.isSplitSwap !== undefined ? (
+          {swapStatus.isTokenPool && !swapStatus.isSummaryLoading && swapStatus.isSwap && swap.summary.isSplitSwap !== undefined ? (
             <TransferRateCollapse {...{
-              // title: `${1*selectToken.source.rate} ${selectToken.source.tokenName} = ${1*selectToken.destination.rate} ${selectToken.destination.tokenName}`,
               title: `${1} ${selectToken.source.symbol} = ${toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "")).toString()} ${selectToken.destination.symbol}`,
               source: {
-                chainName: listOptionNetwork?.find((x)=>x.chainId === swap.source.chain)?.chainName,
+                chainName: listOptionNetwork?.find((x) => x.chainId === swap.source.chain)?.chainName,
                 networkName: selectToken.source.name,
                 imageSrc: selectToken.source.img || "chian/unknown_token.svg",
                 value: inputCurrency.source.value,
                 currencySymbol: selectToken.source.symbol,
               },
               destination: {
-                chainName: listOptionNetwork?.find((x)=>x.chainId === swap.destination.chain)?.chainName,
+                chainName: listOptionNetwork?.find((x) => x.chainId === swap.destination.chain)?.chainName,
                 networkName: selectToken.destination.symbol,
                 imageSrc: selectToken.destination.img || "chian/unknown_token.svg",
                 value: swap.summary.expected,
@@ -96,16 +96,16 @@ const SwapPage = (): JSX.Element => {
             <button className="btn btn-connect mt-8" onClick={() => handleConnectWallet()}>Connect Wallet</button>
           ) : (
             <button
-              className={`btn btn-connect mt-8 disabled:text-white/60 h-fit p-2 ${swapStatus.isSummaryLoading? "loading": ""}`}
-              disabled={!swapStatus.isSwap  || Number(inputCurrency.source.value) <= 0 || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf  || 0 ) < Number(inputCurrency.source.value))}
+              className={`btn btn-connect mt-8 disabled:text-white/60 h-fit p-2 ${swapStatus.isSummaryLoading ? "loading" : ""}`}
+              disabled={!swapStatus.isSwap || Number(inputCurrency.source.value) <= 0 || swapStatus.isSummaryLoading || !swapStatus.isTokenPool || swapStatus.isSummaryLoading || swapStatus.isSwitchLoading || ((selectToken.source.balanceOf || 0) < Number(inputCurrency.source.value))}
               onClick={() => handleOpenSwapModal()}
             >
               {
                 swapStatus.isSummaryLoading ? "Fetching best price..."
-                  : !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System" 
-                  : !swapStatus.isSwap || Number(inputCurrency.source.value) <= 0? "Please Select Chain/Token or Enter Amount" 
-                  : ((selectToken.source.balanceOf || 0) < Number(inputCurrency.source.value)) ? `Insufficient ${selectToken.source.symbol} balance` 
-                  :"Swap"
+                  : !swapStatus.isTokenPool ? "No Source/Destination Token in Pool System"
+                    : !swapStatus.isSwap || Number(inputCurrency.source.value) <= 0 ? "Please Select Chain/Token or Enter Amount"
+                      : ((selectToken.source.balanceOf || 0) < Number(inputCurrency.source.value)) ? `Insufficient ${selectToken.source.symbol} balance`
+                        : "Swap"
               }
             </button>
           )}
@@ -114,7 +114,7 @@ const SwapPage = (): JSX.Element => {
 
       <TokenSelectModal visible={sourceModalVisible} selectionUpdate="Source" onClose={() => setSourceModalVisible(false)} />
       <TokenSelectModal visible={destinationModalVisible} selectionUpdate="Destination" onClose={() => setDestinationModalVisible(false)} />
-      <SwapConfirmModal onOpenSuccessModal={()=> handelOpenSuccessModal()} />
+      <SwapConfirmModal onOpenSuccessModal={() => handelOpenSuccessModal()} />
       {isSuccessModal && <SwapSuccessModal link={swapStatus.isLink} onCloseModal={() => handelCloseSuccessModal()} />}
     </div>
   );

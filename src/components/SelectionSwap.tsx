@@ -16,7 +16,7 @@ const SelectionSwap = ({ title, listOptionNetwork, maxCurrency, onClickSelectTok
       <div className="grid grid-cols-3 gap-4">
         <Card
           className="bg-base-100/80 shadow-xl col-span-3 lg:col-span-1 overflow-visible"
-          bodyClassName="grid"
+          bodyClassName="grid p-4 lg:p-8"
         >
           <InputSelectNetwork
             listOption={listOptionNetwork}
@@ -27,7 +27,7 @@ const SelectionSwap = ({ title, listOptionNetwork, maxCurrency, onClickSelectTok
 
         <Card
           className="bg-base-100/80 shadow-xl col-span-3 lg:col-span-2 overflow-visible"
-          bodyClassName="grid grid-cols-2 gap-8 lg:gap-4"
+          bodyClassName="grid grid-cols-2 gap-4 lg:gap-4 p-4 lg:p-8"
         >
           <Fragment>
             <InputSelectToken
@@ -42,7 +42,11 @@ const SelectionSwap = ({ title, listOptionNetwork, maxCurrency, onClickSelectTok
               delay={1000}
               maxCurrency={maxCurrency}
             />
-            { title === "Source" && swap.source.token !== undefined && (<p className="text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{transform: 'translate(-50%, -50%)'}}>Available: {toBigNumber(selectToken.source.balanceOf || 0).toString()}</p>) }
+            {title === "Source" && swap.source.token !== undefined && (
+              <p className="w-full text-center absolute top-[50%] left-[50%] font-medium text-sm visible lg:invisible" style={{ transform: 'translate(-50%, -50%)' }}>
+                Available: {toBigNumber(selectToken.source.balanceOf || 0).toString()}
+              </p>
+            )}
           </Fragment>
         </Card>
       </div>
