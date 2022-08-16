@@ -158,8 +158,18 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if(selectionUpdate !== ""){
           const keyUpdate = (selectionUpdate==="Source")? "destination": "source";
           objSwap = {...objSwap, [keyUpdate]: {...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value }};
+          
+          setInputCurrency({
+            ...inputCurrency,
+            [keyUpdate]: {
+              isDisabled: false,
+              value: utils.formatEther(sumExpected.toString())
+            }
+          })
         }
+
         setSwap({...objSwap, summary});
+
         setSwapStatus({
           ...swapStatus, 
           isSwap: true, 
@@ -265,7 +275,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rete);
         }
         if(objSwap[selectionUpdate.toLowerCase()].token !== undefined && objSwap[selectionUpdate.toLowerCase()].token !== ""){
-          newInputCurrency = {...newInputCurrency, [selectionUpdate]: {...newInputCurrency[selectionUpdate], value: _calCurrency.toString()}}
+          newInputCurrency = {...newInputCurrency, [selectionUpdate]: {...newInputCurrency[selectionUpdate], value: ""}}
         }
         setInputCurrency(newInputCurrency);
         _calCurrency = toBigNumber(0);
