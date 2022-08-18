@@ -3,7 +3,7 @@ import Decimal from 'decimal.js';
 import { useNotifier } from 'react-headless-notifier';
 import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall';
 import ERC20_ABI from "src/utils/erc20.json";
-import { Bytes, ethers, utils } from "ethers";
+import { ethers, utils } from "ethers";
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
@@ -65,6 +65,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [inputCurrency, setInputCurrency] = useState<InputCurrencyType>(defaultValue.inputCurrency);
   const [selectTokenList, setSelectTokenList] = useState<SelectTokenType>(defaultValue.selectTokenList);
   const [loadDefaultChain, setLoadDefaultChain] = useState(true);
+  const [crossRate, getCrossRate] = useState<any>({});
+
 
   const contactSwapProviders = async(selectionUpdate: string) => {
     let provider: any = new ethers.providers.Web3Provider(ethereum);
@@ -167,7 +169,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             }
           })
         }
-
+        getCrossRate(data);
         setSwap({...objSwap, summary});
 
         setSwapStatus({
@@ -393,63 +395,48 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = await currentNetwork();
       if(isApprove){
         if(swapContract && crossSwapContract){
-          let resultSwap, params = [swap.source.token, utils.parseEther(inputCurrency.source.value || "0").toString()];
+          let resultSwap, params = [swap.source.token, utils.parseEther(inputCurrency.source.value || "0").toString()], apiPayload: string = "";
           if(swap.source.chain !== swap.destination.chain){
             const payload = utils.defaultAbiCoder.encode(
               ["address", "address", "uint", "uint"], 
               [walletAddress, swap.destination.token, SWAP_CONTRACTS[Number(swap.source.chain || "")].DOMAIN_CHAIN, SWAP_CONTRACTS[Number(swap.destination.chain || "")].DOMAIN_CHAIN]
             );
-            let apiPayload: string;
+            const routeIndexDestination = crossRate.destination.route.map((list: any)=>{
+              return list.index;
+            })
             /*
               apiPayload = isSplitSwap, routeIndex, routeIndex[], splitAmount[]
                     type = bool, uint, uint[], uint[]
               case 1: source.isSplitSwap === true
                       => use crossSwapContract.splitSwap => apiPayload = true, 0, routeIndex, splitAmount
               case 2: source.isSplitSwap === false
-                      => use crossSwapContract.swap => apiPayload = true, routeIndex, [], []
+                      => use crossSwapContract.swap => apiPayload = false, routeIndex, [], []
               case 3: source.isSplitSwap === false && destination.isSplitSwap === true
                       => use crossSwapContract.swap => apiPayload = true, 0, routeIndex, splitAmount
             */
-
-            if(true){ /* conditional: (object source.isSplitSwap === true) -> data object from api BestRateSwap */
-
-              /*  data destination from api BestRateSwap 
-                  routeIndex = [destination.route.index ทั้งหมด], 
-                  splitAmount = destination.amount
-              */
-
-              // apiPayload = utils.defaultAbiCoder.encode(
-              //   ["bool", "uint", "uint[]", "uint[]"], 
-              //   [true, 0, routeIndex, splitAmount]
-              // );
-
-              /*
-                comment: routes[uint] = source.route.index ทั้งหมด
-                        srcAmounts[uint] = source.route.amount ทั้งหมด -> data from api object source
-              */
-
-              // resultSwap = await crossSwapContract.splitSwap(...params, routes, srcAmounts, payload, apiPayload);
-            }else{
+            if(crossRate.source.isSplitSwap === false){
               /* routeIndex = destination.route.index[0] -> data destination from api BestRateSwap */
-
-              // apiPayload = utils.defaultAbiCoder.encode(
-              //   ["bool", "uint", "uint[]", "uint[]"], 
-              //   [false, routeIndex, [], []]
-              // );
-              if(true){ /* conditional: (object destination.isSplitSwap === true) -> data object from api BestRateSwap */
-                /*  data destination from api BestRateSwap 
-                  routeIndex = [destination.route.index ทั้งหมด], 
-                  splitAmount = destination.amount
-                */
-             
-                // apiPayload = utils.defaultAbiCoder.encode(
-                //   ["bool", "uint", "uint[]", "uint[]"], 
-                //   [true, 0, routeIndex, splitAmount]
-                // );
-              }
+              apiPayload = utils.defaultAbiCoder.encode(
+                ["bool", "uint", "uint[]", "uint[]"], 
+                [false, crossRate.destination.route[0].index, [], []]
+              );
+            }
+            if(crossRate.source.isSplitSwap || crossRate.destination.isSplitSwap){
+              /*  data destination from api BestRateSwap 
+                routeIndex = [destination.route.index ทั้งหมด], splitAmount = destination.amount
+              */
+              apiPayload = utils.defaultAbiCoder.encode(
+                ["bool", "uint", "uint[]", "uint[]"], 
+                [true, 0, routeIndexDestination, crossRate.destination.amount]
+              );
+            }
+            if(crossRate.source.isSplitSwap){
+              const routeIndexSource = crossRate.source.route.map((list: any)=>{ return list.index })
+              /* comment: routes[uint] = source.route.index ทั้งหมด, srcAmounts[uint] = source.route.amount ทั้งหมด -> data from api object source*/
+              resultSwap = await crossSwapContract.splitSwap(...params, routeIndexSource, crossRate.source.amount, payload, apiPayload);
+            }else{
               /* comment: route (type uint) = source.route[0] -> data from api object source */
-
-              // resultSwap = await crossSwapContract.swap(...params, route, payload, apiPayload);
+              resultSwap = await crossSwapContract.swap(...params, crossRate.source.route[0].index, payload, apiPayload);
             }
           }else{
             params = [swap.source.token, swap.destination.token, utils.parseEther(inputCurrency.source.value || "0").toString()]
