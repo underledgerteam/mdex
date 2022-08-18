@@ -46,6 +46,19 @@
   },
   {
     "inputs": [],
+    "name": "mdexController",
+    "outputs": [
+      {
+        "internalType": "contract MdexController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
@@ -66,6 +79,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "serviceCrossChainSwap",
+    "outputs": [
+      {
+        "internalType": "contract IMdexCrossChainSwap",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract MdexController",
@@ -74,19 +100,6 @@
       }
     ],
     "name": "setController",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IMdexCrossChainSwap",
-        "name": "_serviceCrossChainSwap",
-        "type": "address"
-      }
-    ],
-    "name": "setCrossChainSwap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -131,7 +144,34 @@
     "inputs": [
       { "internalType": "address", "name": "tokenIn", "type": "address" },
       { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "payload", "type": "bytes" }
+      { "internalType": "uint256[]", "name": "routes", "type": "uint256[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "srcAmounts",
+        "type": "uint256[]"
+      },
+      { "internalType": "bytes", "name": "payload", "type": "bytes" },
+      { "internalType": "bytes", "name": "apiPayload", "type": "bytes" }
+    ],
+    "name": "spiltSwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stableCoin",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "routeIndex", "type": "uint256" },
+      { "internalType": "bytes", "name": "payload", "type": "bytes" },
+      { "internalType": "bytes", "name": "apiPayload", "type": "bytes" }
     ],
     "name": "swap",
     "outputs": [],

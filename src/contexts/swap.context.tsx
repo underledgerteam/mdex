@@ -3,7 +3,7 @@ import Decimal from 'decimal.js';
 import { useNotifier } from 'react-headless-notifier';
 import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall';
 import ERC20_ABI from "src/utils/erc20.json";
-import { ethers, utils } from "ethers";
+import { Bytes, ethers, utils } from "ethers";
 import { DangerNotification, SuccessNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
@@ -399,7 +399,58 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
               ["address", "address", "uint", "uint"], 
               [walletAddress, swap.destination.token, SWAP_CONTRACTS[Number(swap.source.chain || "")].DOMAIN_CHAIN, SWAP_CONTRACTS[Number(swap.destination.chain || "")].DOMAIN_CHAIN]
             );
-            resultSwap = await crossSwapContract.swap(...params, payload);
+            let apiPayload: string;
+            /*
+              apiPayload = isSplitSwap, routeIndex, routeIndex[], splitAmount[]
+                    type = bool, uint, uint[], uint[]
+              case 1: source.isSplitSwap === true
+                      => use crossSwapContract.splitSwap => apiPayload = true, 0, routeIndex, splitAmount
+              case 2: source.isSplitSwap === false
+                      => use crossSwapContract.swap => apiPayload = true, routeIndex, [], []
+              case 3: source.isSplitSwap === false && destination.isSplitSwap === true
+                      => use crossSwapContract.swap => apiPayload = true, 0, routeIndex, splitAmount
+            */
+
+            if(true){ /* conditional: (object source.isSplitSwap === true) -> data object from api BestRateSwap */
+
+              /*  data destination from api BestRateSwap 
+                  routeIndex = [destination.route.index ทั้งหมด], 
+                  splitAmount = destination.amount
+              */
+
+              // apiPayload = utils.defaultAbiCoder.encode(
+              //   ["bool", "uint", "uint[]", "uint[]"], 
+              //   [true, 0, routeIndex, splitAmount]
+              // );
+
+              /*
+                comment: routes[uint] = source.route.index ทั้งหมด
+                        srcAmounts[uint] = source.route.amount ทั้งหมด -> data from api object source
+              */
+
+              // resultSwap = await crossSwapContract.splitSwap(...params, routes, srcAmounts, payload, apiPayload);
+            }else{
+              /* routeIndex = destination.route.index[0] -> data destination from api BestRateSwap */
+
+              // apiPayload = utils.defaultAbiCoder.encode(
+              //   ["bool", "uint", "uint[]", "uint[]"], 
+              //   [false, routeIndex, [], []]
+              // );
+              if(true){ /* conditional: (object destination.isSplitSwap === true) -> data object from api BestRateSwap */
+                /*  data destination from api BestRateSwap 
+                  routeIndex = [destination.route.index ทั้งหมด], 
+                  splitAmount = destination.amount
+                */
+             
+                // apiPayload = utils.defaultAbiCoder.encode(
+                //   ["bool", "uint", "uint[]", "uint[]"], 
+                //   [true, 0, routeIndex, splitAmount]
+                // );
+              }
+              /* comment: route (type uint) = source.route[0] -> data from api object source */
+
+              // resultSwap = await crossSwapContract.swap(...params, route, payload, apiPayload);
+            }
           }else{
             params = [swap.source.token, swap.destination.token, utils.parseEther(inputCurrency.source.value || "0").toString()]
             if(swap.summary.isSplitSwap){
