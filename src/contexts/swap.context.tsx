@@ -119,36 +119,49 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     while (retries > 0 && !success) {
       setSwapStatus({ ...swapStatus, isSwap: true, isSummaryLoading: true });
       try {
-        let mergeRoute = [], toFee: Decimal, sumExpected: Decimal, mergeAmount, data;
+        let mergeRoute = [], toFee: Decimal, sumExpected: Decimal, mergeAmount, data, fee;
         if (objSwap.source.chain === objSwap.destination.chain) {
           const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&chainId=${objSwap.source.chain}`, {
             signal: controllerApiBestRate.signal
           });
-          data = await response.json();
-
-          mergeRoute = data.route;
-          mergeAmount = Array.isArray(data.amount) ? data.amount : [data.amount];
-          summary = { ...summary, isSplitSwap: Boolean(data.isSplitSwap) };
-
-          if (data.isSplitSwap) {
-            summary = { ...summary, amount: data.amount };
+          const { success, data } = await response.json();
+          if (success) {
+            mergeRoute = data.route;
+            mergeAmount = Array.isArray(data.amount) ? data.amount : [data.amount];
+            summary = { ...summary, isSplitSwap: Boolean(data.isSplitSwap) };
+            fee = data.fee;
+            getCrossRate(data);
+            if (data.isSplitSwap) {
+              summary = { ...summary, amount: data.amount };
+            }
+          } else {
+            notify(
+              <DangerNotification message={`Error ${data.code} ${data.message}`} />
+            );
           }
         } else {
-          const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/cross-rate?tokenIn=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&sourceChainId=${objSwap.source.chain}&destinationChainId=${objSwap.destination.chain}`, {
+          const response = await fetch(`${process.env.REACT_APP_API_BEST_RATE}/cross-rate?tokenI=${objSwap.source.token}&tokenOut=${objSwap.destination.token}&amount=${utils.parseEther(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").toString()}&sourceChainId=${objSwap.source.chain}&destinationChainId=${objSwap.destination.chain}`, {
             signal: controllerApiBestRate.signal
           });
-          data = await response.json();
-
-          mergeRoute = [...data.source.route, { index: "0", name: "Cross Chain Swap", fee: "0" }, ...data.destination.route];
-          mergeAmount = [...data.destination.amount];
-          summary = { ...summary, isSplitSwap: false };
+          const { success, data } = await response.json();
+          if (success) {
+            mergeRoute = [...data.source.route, { index: "0", name: "Cross Chain Swap", fee: "0" }, ...data.destination.route];
+            mergeAmount = [...data.destination.amount];
+            summary = { ...summary, isSplitSwap: false };
+            fee = data.fee;
+            getCrossRate(data);
+          } else {
+            notify(
+              <DangerNotification message={`Error ${data.code} ${data.message}`} />
+            );
+          }
         }
 
         const route = mergeRoute.map((list: any) => {
           return { ...list, fee: toBigNumber(utils.formatEther(toBigNumber(list.fee).toString())).toString() };
         });
 
-        toFee = toBigNumber(utils.formatEther(toBigNumber(data.fee).toString()));
+        toFee = toBigNumber(utils.formatEther(toBigNumber(fee).toString()));
         sumExpected = mergeAmount.reduce((previous: number, current: number) => { return toBigNumber(previous).plus(toBigNumber((current))); }, 0);
 
         summary = {
@@ -172,7 +185,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             }
           });
         }
-        getCrossRate(data);
         setSwap({ ...objSwap, summary });
 
         setSwapStatus({
