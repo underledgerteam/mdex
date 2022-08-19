@@ -620,23 +620,24 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     }
   };
 
+  // clear other input when got new value
   const updateInputValue = async (selectionUpdate: string, objSwap: SwapType) => {
     const beforeSwitchSwapObj = { ...swap };
     const beforeSwitchCurrency = { ...inputCurrency };
     const beforeSwitchToken = { ...selectToken };
     const beforeSwitchSwapStatus = { ...swapStatus };
-    let _rete = 1, _calCurrency: Decimal = toBigNumber(0);
     try {
+      let _calCurrency: Decimal = toBigNumber(0), _rate: number = 1;
       let newInputCurrency = {
         ...inputCurrency,
         [selectionUpdate.toLocaleLowerCase()]: { ...inputCurrency[selectionUpdate.toLocaleLowerCase()], value: objSwap[selectionUpdate.toLocaleLowerCase()].value || "" }
       };
       if (selectionUpdate === "Source") {
         selectionUpdate = "destination";
-        _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
+        _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rate);
       } else {
         selectionUpdate = "source";
-        _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rete);
+        _calCurrency = toBigNumber(objSwap.destination.value || 0).div(_rate);
       }
       if (objSwap[selectionUpdate.toLowerCase()].token !== undefined && objSwap[selectionUpdate.toLowerCase()].token !== "") {
         newInputCurrency = { ...newInputCurrency, [selectionUpdate]: { ...newInputCurrency[selectionUpdate], value: "" } };
