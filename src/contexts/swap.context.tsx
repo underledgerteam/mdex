@@ -526,76 +526,83 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   // ref updateSwap
   // when change network will reset token value and input value
   const updateChain = (selectionUpdate: string, objSwap: SwapType) => {
-    let _calCurrency: Decimal = toBigNumber(0);
-    setLoadDefaultChain(false);
-    const selector = selectionUpdate.toLocaleLowerCase();
-    const currentChain = swap[selector].chain;
-    const selectedChain = objSwap[selector].chain;
-    if (selectedChain !== currentChain) {
-      setSelectToken({ ...selectToken, [selector]: { ...selectToken[selector], ...defaultValue.selectToken.source } });
-      setInputCurrency({ ...inputCurrency, [selector]: { ...inputCurrency[selector], ...defaultValue.inputCurrency.source } });
-      setSwapStatus({ ...swapStatus, isSwap: false });
-      if (selectionUpdate === "Source") {
-        if (objSwap.source.chain === objSwap.destination.chain) {
-          objSwap = { ...objSwap, ["destination"]: defaultValue.swap.source, summary: defaultValue.swap.summary };
-          setInputCurrency(defaultValue.inputCurrency);
-          setSelectToken(defaultValue.selectToken);
+    try {
+      let _calCurrency: Decimal = toBigNumber(0);
+      setLoadDefaultChain(false);
+      const selector = selectionUpdate.toLocaleLowerCase();
+      const currentChain = swap[selector].chain;
+      const selectedChain = objSwap[selector].chain;
+      if (selectedChain !== currentChain) {
+        setSelectToken({ ...selectToken, [selector]: { ...selectToken[selector], ...defaultValue.selectToken.source } });
+        setInputCurrency({ ...inputCurrency, [selector]: { ...inputCurrency[selector], ...defaultValue.inputCurrency.source } });
+        setSwapStatus({ ...swapStatus, isSwap: false });
+        if (selectionUpdate === "Source") {
+          if (objSwap.source.chain === objSwap.destination.chain) {
+            objSwap = { ...objSwap, ["destination"]: defaultValue.swap.source, summary: defaultValue.swap.summary };
+            setInputCurrency(defaultValue.inputCurrency);
+            setSelectToken(defaultValue.selectToken);
+          }
+          walletSwitchChain(Number(objSwap.source.chain));
         }
-        walletSwitchChain(Number(objSwap.source.chain));
       }
+      let newSwapObj = { ...objSwap, [selector]: { ...objSwap[selector], value: (Number(_calCurrency) !== 0 ? _calCurrency : "").toString() } };
+      setSwap(newSwapObj);
+    } catch (error: any) {
+      notify(
+        <DangerNotification
+          message={error.toString()}
+        />
+      );
     }
-    let newSwapObj = { ...objSwap, [selector]: { ...objSwap[selector], value: (Number(_calCurrency) !== 0 ? _calCurrency : "").toString() } };
-    setSwap(newSwapObj);
   };
 
+  // when update
   const updateToken = async (selectionUpdate: string, objSwap: SwapType) => {
-    const beforeSwitchSwapObj = { ...swap };
-    const beforeSwitchCurrency = { ...inputCurrency };
-    const beforeSwitchToken = { ...selectToken };
-    const beforeSwitchSwapStatus = { ...swapStatus };
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    let _rete = 1, _calCurrency: Decimal = toBigNumber(0), _selectToken = { ...selectToken };
     try {
-      const selectTokenKey = Object.keys(selectTokenList).filter((key) => key === objSwap[selectionUpdate.toLocaleLowerCase()].token)?.[0];
-      _selectToken = { ...selectToken, [selectionUpdate.toLocaleLowerCase()]: { ...selectTokenList[selectTokenKey] } };
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      let _rete = 1, _calCurrency: Decimal = toBigNumber(0), _selectToken = { ...selectToken };
+      const selector = selectionUpdate.toLocaleLowerCase();
+      const selectedChain = objSwap[selector].chain;
+
+      const selectTokenKey = Object.keys(selectTokenList).filter((key) => key === objSwap[selector].token)?.[0];
+      _selectToken = { ...selectToken, [selector]: { ...selectTokenList[selectTokenKey] } };
 
       let tokenSaveList = JSON.parse(localStorage.getItem("token") || "{}");
-      tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] = { ...tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""], [selectTokenKey]: selectTokenList[selectTokenKey] };
-      const sortToken = Object.entries(tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] || {}).sort((objA: any, objB: any) => {
+      tokenSaveList[selectedChain || ""] = { ...tokenSaveList[selectedChain || ""], [selectTokenKey]: selectTokenList[selectTokenKey] };
+      const sortToken = Object.entries(tokenSaveList[selectedChain || ""] || {}).sort((objA: any, objB: any) => {
         delete objA[1].balanceOf;
         delete objB[1].balanceOf;
         return objA[1].symbol.toLocaleLowerCase().localeCompare(objB[1].symbol.toLocaleLowerCase());
       });
-      tokenSaveList[objSwap[selectionUpdate.toLocaleLowerCase()].chain || ""] = Object.fromEntries(sortToken);
+      tokenSaveList[selectedChain || ""] = Object.fromEntries(sortToken);
       localStorage.setItem("token", JSON.stringify(tokenSaveList));
 
+      let newInputCurrency = { ...inputCurrency, [selector]: { ...inputCurrency[selector], isDisabled: false } };
       if (selectionUpdate === "Source") {
+        const key = "destination";
         const getContractToken = new ethers.Contract(selectTokenKey, ERC20_ABI || [], provider.getSigner());
         setTokenContract(getContractToken);
-      }
-      setSelectToken(_selectToken);
-      let newInputCurrency = { ...inputCurrency, [selectionUpdate.toLocaleLowerCase()]: { ...inputCurrency[selectionUpdate.toLocaleLowerCase()], isDisabled: false } };
-      if (selectionUpdate === "Source") {
-        selectionUpdate = "destination";
         if (objSwap.destination.value !== "" && objSwap.destination.value !== undefined) {
           _calCurrency = toBigNumber(objSwap.destination.value || 0).mul(_rete);
-          newInputCurrency = { ...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: { ...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toString() } };
+          newInputCurrency = { ...newInputCurrency, [key]: { ...newInputCurrency[key], value: _calCurrency.toString() } };
         }
       } else {
         if (objSwap.source.value !== "" && objSwap.source.value !== undefined) {
           _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
-          newInputCurrency = { ...newInputCurrency, [selectionUpdate.toLocaleLowerCase()]: { ...newInputCurrency[selectionUpdate.toLocaleLowerCase()], value: _calCurrency.toString() } };
+          newInputCurrency = { ...newInputCurrency, [selector]: { ...newInputCurrency[selector], value: _calCurrency.toString() } };
         }
       }
-      setInputCurrency(newInputCurrency);
       _calCurrency = toBigNumber(0);
 
-      objSwap = { ...objSwap, [selectionUpdate.toLocaleLowerCase()]: { ...objSwap[selectionUpdate.toLocaleLowerCase()], value: (Number(_calCurrency) !== 0 ? _calCurrency : "").toString() } };
+      objSwap = { ...objSwap, [selector]: { ...objSwap[selector], value: (Number(_calCurrency) !== 0 ? _calCurrency : "").toString() } };
 
       const checkSourceUndefined = Object.values(objSwap.source).every((value) => { return (value !== undefined && value !== "") ? true : false; });
       const checkDestinationUndefined = Object.values(objSwap.destination).every((value) => { return (value !== undefined && value !== "") ? true : false; });
       const isSourceTokenPool = await isTokenPool(objSwap.source.token || "");
       const isDestinationTokenPool = await isTokenPool(objSwap.destination.token || "");
+
+      setSelectToken(_selectToken);
+      setInputCurrency(newInputCurrency);
       setSwapStatus({
         ...swapStatus,
         isSummaryLoading: false,
@@ -605,10 +612,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       });
       setSwap(objSwap);
     } catch (error: any) {
-      setSwap(beforeSwitchSwapObj);
-      setSelectToken(beforeSwitchToken);
-      setInputCurrency(beforeSwitchCurrency);
-      setSwapStatus(beforeSwitchSwapStatus);
       notify(
         <DangerNotification
           message={error.toString()}
