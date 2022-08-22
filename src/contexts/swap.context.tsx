@@ -56,6 +56,9 @@ export const SwapContext = createContext<SwapContextInterface>(defaultValue);
 
 let controllerApiBestRate = new AbortController();
 
+// refac : แยก data ของ source กับ destination ออกจากกันไม่เก็บรวม แยก function ที่เกี่ยวข้อง
+// refac : เปลี่ยนไปใช้ useReducer ในการจัดการ state
+// refac : แยกส่วนที่เป็นการคำนวณออกไปเป็น function
 export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const { walletSwitchChain, currentNetwork, walletAddress, isConnected, isChainChangeReload } = useContext(Web3Context);
   const { notify } = useNotifier();
@@ -69,7 +72,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const [selectTokenList, setSelectTokenList] = useState<SelectTokenType>(defaultValue.selectTokenList);
   const [loadDefaultChain, setLoadDefaultChain] = useState(true);
   const [crossRate, getCrossRate] = useState<any>({});
-
 
   const contactSwapProviders = async (selectionUpdate: string) => {
     let provider: any = new ethers.providers.Web3Provider(ethereum);
@@ -221,7 +223,6 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     return balance;
   };
 
-  // refac to update func chain, token, value
   const updateSwap = () => { };
 
   const swapSwitch = async () => {
@@ -304,6 +305,17 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     }
   };
 
+  // refac split approve function
+  /*
+    apiPayload = isSplitSwap, routeIndex, routeIndex[], splitAmount[]
+          type = bool, uint, uint[], uint[]
+    case 1: source.isSplitSwap === true
+            => use crossSwapContract.splitSwap => apiPayload = true, 0, routeIndex, splitAmount
+    case 2: source.isSplitSwap === false
+            => use crossSwapContract.swap => apiPayload = false, routeIndex, [], []
+    case 3: source.isSplitSwap === false && destination.isSplitSwap === true
+            => use crossSwapContract.swap => apiPayload = true, 0, routeIndex, splitAmount
+  */
   const swapConfirm = async (isApprove: boolean, handelSuccess: Function = () => { }, handelFail: Function = () => { }) => {
     try {
       setSwapStatus({ ...swapStatus, isApproveLoading: true });
@@ -319,16 +331,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             const routeIndexDestination = crossRate.destination.route.map((list: any) => {
               return list.index;
             });
-            /*
-              apiPayload = isSplitSwap, routeIndex, routeIndex[], splitAmount[]
-                    type = bool, uint, uint[], uint[]
-              case 1: source.isSplitSwap === true
-                      => use crossSwapContract.splitSwap => apiPayload = true, 0, routeIndex, splitAmount
-              case 2: source.isSplitSwap === false
-                      => use crossSwapContract.swap => apiPayload = false, routeIndex, [], []
-              case 3: source.isSplitSwap === false && destination.isSplitSwap === true
-                      => use crossSwapContract.swap => apiPayload = true, 0, routeIndex, splitAmount
-            */
+
             if (crossRate.source.isSplitSwap === false) {
               /* routeIndex = destination.route.index[0] -> data destination from api BestRateSwap */
               apiPayload = utils.defaultAbiCoder.encode(
