@@ -1,6 +1,6 @@
 import { SWAP_CONTRACTS_INTERFACE } from "src/types/constants";
-import swapAbi from "./swapAbi.json"
-import crossSwapAbi from "./crossSwapAbi.json"
+import swapAbi from "./swapAbi.json";
+import crossSwapAbi from "./crossSwapAbi.json";
 
 export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   4: {
@@ -13,7 +13,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     SWAP_ADDRESS: "0x165834eDd4A46B2Bc343f5Be824B403849728E95",
     SWAP_ABI: swapAbi,
 
-    CROSS_SWAP_ADDRESS: "0x8e61Fb5bB993143F9689111d5BBdf5498870aCb3",
+    CROSS_SWAP_ADDRESS: "0xB5c1737663bc4f5D23E4d0c0971e3C275E1aa736",
     CROSS_SWAP_ABI: crossSwapAbi,
 
     BLOCK_EXPLORER_URLS: ["https://rinkeby.etherscan.io"],
@@ -28,7 +28,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     SWAP_ADDRESS: "0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a",
     SWAP_ABI: swapAbi,
     
-    CROSS_SWAP_ADDRESS: "0x98bc0964247a367BDE859aD584F934e439B5D3ab",
+    CROSS_SWAP_ADDRESS: "0x2594986EF5DDF0CdBfF07F2376AF1aD5397770d7",
     CROSS_SWAP_ABI: crossSwapAbi,
 
     BLOCK_EXPLORER_URLS: ["https://goerli.etherscan.io"],
@@ -114,3 +114,4 @@ export const SUPPORT_CHAIN: number[] = [
 ];
 
 export const DEFAULT_CHAIN: number = RINKEBY;
+export const GAS_LIMIT: number = 3000000;

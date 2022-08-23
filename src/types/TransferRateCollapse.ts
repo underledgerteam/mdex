@@ -19,3 +19,8 @@ export interface TokenCardInterface {
   value?: string,
   imageSrc?: string;
 }
+export interface TransferRoute {
+  key: string,
+  name: string,
+  fee: string;
+}

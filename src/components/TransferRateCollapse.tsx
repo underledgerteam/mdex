@@ -1,20 +1,27 @@
 import { useState, useEffect } from "react";
 
-import { TransferRateCollapseInterface } from "src/types/TransferRateCollapse";
+import { TransferRateCollapseInterface, TransferRoute } from "src/types/TransferRateCollapse";
 import TokenTransferCard from "src/components/shared/TokenTransferCard";
 import TransferRateRoute from "src/components/TransferRateRoute";
 
 const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element => {
   const { title, source, destination, fee, recieve, expect, route, amount } = props;
 
-  const [transferRoute, setTransferRoute] = useState<string[]>([]);
-  useEffect(()=>{
-    const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex)=> {
-      return previousValue.concat([`${currentValue.name} ${currentValue.fee !== "0"? `Fee ${currentValue.fee} ${source?.currencySymbol}`: ""}`]);
+  const [transferRoute, setTransferRoute] = useState<Array<TransferRoute>>([]);
+  useEffect(() => {
+    const transferRouteList = route?.reduce((previousValue: any, currentValue, currentIndex) => {
+      return [
+        ...previousValue,
+        {
+          key: `${currentIndex}`,
+          name: `${currentValue.name} Fee`,
+          fee: `${currentValue.fee} ${source?.currencySymbol}`
+        }
+      ];
     }, []) || [];
-    setTransferRoute([...transferRouteList, "Convert"]);
-  },[])
-  
+    setTransferRoute([...transferRouteList, { key: `${transferRouteList.length}`, name: "Convert", fee: "" }]);
+  }, []);
+
   return (
     <>
       <div className="collapse collapse-arrow border border-base-300 bg-base-100/80 rounded-box mt-5">
@@ -24,7 +31,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
         </div>
         <div className="collapse-content">
           <div className="lg:p-4">
-            <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl lg:mb-4">
+            <div className="flex justify-between font-semibold text-sm md:text-lg lg:text-xl lg:mb-4">
               <div>{`MDEX Fee`}</div>
               <div>{`${fee} ${source?.currencySymbol}`}</div>
             </div>
@@ -42,7 +49,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
                 )
               })
             } */}
-            <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl lg:mb-4">
+            <div className="flex justify-between font-bold text-sm md:text-lg lg:text-xl lg:mb-4">
               <div className="underline">{`Expected output(${destination?.currencySymbol})`}</div>
               <div className="underline">{`${expect} ${destination?.currencySymbol}`}</div>
             </div>

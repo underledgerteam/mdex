@@ -9,7 +9,7 @@ interface ModalInterface {
 
 const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
   const { visible, selectionUpdate, onClose } = props;
-  const { updateSwap, debounceSelectToken, clearSelectTokenList, openSelectToken, swap, selectTokenList } = useContext(SwapContext);
+  const { updateToken, debounceSelectToken, clearSelectTokenList, openSelectToken, swap, selectTokenList } = useContext(SwapContext);
   const [inputSearchToken, setInputSearchToken] = useState({
     isDisabled: false,
     isLoading: false,
@@ -24,19 +24,20 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
   const handelSearchToken = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputSearchToken({ ...inputSearchToken, value: e.target.value });
   };
-  const handelSelectToken = async(value: string | undefined) => {
-    updateSwap(selectionUpdate, "token", {
+  const handelSelectToken = async (value: string | undefined) => {
+    const swapObj = {
       ...swap,
       [selectionUpdate.toLowerCase()]: {
         ...swap[selectionUpdate.toLowerCase()],
         token: value,
         value: undefined
       }
-    });
+    };
+    updateToken(selectionUpdate, swapObj);
     onClose();
     clearSelectTokenList();
   };
-  
+
   useEffect(() => {
     const delayInput = setTimeout(() => {
       setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: true });
@@ -49,8 +50,8 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
   }, [inputSearchToken.value]);
 
   useEffect(() => {
-    if(visible){
-      (async()=>{
+    if (visible) {
+      (async () => {
         setInputSearchToken({ ...inputSearchToken, isDisabled: true, isLoading: true, value: "" });
         await openSelectToken(selectionUpdate);
         setInputSearchToken({ ...inputSearchToken, isDisabled: false, isLoading: false });
@@ -93,33 +94,33 @@ const TokenSelectModal = (props: ModalInterface): JSX.Element | null => {
               </div>
             )}
 
-            { (!inputSearchToken.isLoading && inputSearchToken.value !== "" && Object.keys(selectTokenList)?.length <= 0) && (
+            {(!inputSearchToken.isLoading && inputSearchToken.value !== "" && Object.keys(selectTokenList)?.length <= 0) && (
               <Fragment>
                 <div className="border-[2px] rounded-lg mb-4" />
                 <p className="py-4 text-center">No results found.</p>
               </Fragment>
             )}
 
-            { Object.keys(selectTokenList)?.length > 0 && (
+            {Object.keys(selectTokenList)?.length > 0 && (
               <Fragment>
-              <div className="border-[2px] rounded-lg mb-4" />
+                <div className="border-[2px] rounded-lg mb-4" />
                 <ul id={`dropdown-content-${selectionUpdate.toLowerCase()}-token`} className="menu p-2 shadow bg-base-100 rounded-box w-full">
                   <div>
-                    { Object.keys(selectTokenList).map((keyToken: any, key: any)=>{
+                    {Object.keys(selectTokenList).map((keyToken: any, key: any) => {
                       return (
                         <li key={key}>
-                          <div onClick={()=> handelSelectToken(keyToken)} className={`${(swap.source.token === keyToken || swap.destination.token === keyToken)? "cursor-no-drop text-custom-black/70 bg-slate-400/20 pointer-events-none": ""}`}>
-                            <img className="mask mask-squircle mr-1" src={selectTokenList[keyToken]?.img || "chian/unknown_token.svg"} width="40" /> 
+                          <div onClick={() => handelSelectToken(keyToken)} className={`${(swap.source.token === keyToken || swap.destination.token === keyToken) ? "cursor-no-drop text-custom-black/70 bg-slate-400/20 pointer-events-none" : ""}`}>
+                            <img className="mask mask-squircle mr-1" src={selectTokenList[keyToken]?.img || "chian/unknown_token.svg"} width="40" />
                             <div className="w-full">
                               <p className="font-semibold">{selectTokenList[keyToken]?.symbol}</p>
                               <p className="text-sm">{selectTokenList[keyToken]?.name}</p>
                               <p className="text-sm block sm:hidden">Available: {toBigNumber(selectTokenList[keyToken]?.balanceOf || 0).toString()}</p>
                             </div>
-                            { selectTokenList[keyToken]?.balanceOf && <p className="text-md font-semibold text-right hidden sm:block">{toBigNumber(selectTokenList[keyToken]?.balanceOf || 0).toString()}</p> }
+                            {selectTokenList[keyToken]?.balanceOf && <p className="text-md font-semibold text-right hidden sm:block">{toBigNumber(selectTokenList[keyToken]?.balanceOf || 0).toString()}</p>}
                           </div>
                         </li>
-                      )
-                    }) }
+                      );
+                    })}
                   </div>
                 </ul>
               </Fragment>
