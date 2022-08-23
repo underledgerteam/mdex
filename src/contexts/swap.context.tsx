@@ -8,7 +8,7 @@ import { DangerNotification } from 'src/components/shared/Notification';
 import { Web3Context } from "./web3.context";
 import { toBigNumber } from "src/utils/calculatorCurrency.util";
 import { SwapContextInterface, SwapProviderInterface, SwapType, SwapStatusType, SelectTokenType, InputCurrencyType } from "src/types/contexts/swap.context";
-import { SWAP_CONTRACTS } from "src/utils/constants";
+import { SWAP_CONTRACTS, GAS_LIMIT } from "src/utils/constants";
 import WHITE_LIST_TOKEN from "src/utils/whiteListToken.json";
 const { ethereum } = window;
 
@@ -364,13 +364,13 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
                 ...params,
                 JSON.stringify(resultRouteIndex),
                 JSON.stringify(swap.summary.amount),
-                { gasLimit: 2100000 }
+                { gasLimit: GAS_LIMIT }
               );
             } else {
               resultSwap = await swapContract.swap(
                 ...params,
                 swap.summary.route?.[0].index,
-                { gasLimit: 2100000 }
+                { gasLimit: GAS_LIMIT }
               );
             }
           }
@@ -398,7 +398,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           const resultApprove = await tokenContract.approve(
             params,
             utils.parseEther(inputCurrency.source.value || "0").toString(),
-            { gasLimit: 2100000 }
+            { gasLimit: GAS_LIMIT }
           );
           await resultApprove.wait();
           setSwapStatus({ ...swapStatus, isApproveLoading: false, isApprove: true });

@@ -1,6 +1,6 @@
 import { SWAP_CONTRACTS_INTERFACE } from "src/types/constants";
-import swapAbi from "./swapAbi.json"
-import crossSwapAbi from "./crossSwapAbi.json"
+import swapAbi from "./swapAbi.json";
+import crossSwapAbi from "./crossSwapAbi.json";
 
 export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   4: {
@@ -114,3 +114,4 @@ export const SUPPORT_CHAIN: number[] = [
 ];
 
 export const DEFAULT_CHAIN: number = RINKEBY;
+export const GAS_LIMIT: number = 3000000;
