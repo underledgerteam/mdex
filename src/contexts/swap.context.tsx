@@ -351,28 +351,42 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = (isConnected || walletAddress !== "")? await currentNetwork(): "";
       if(address.indexOf("0x") !== -1){
         const provider = await contactSwapProviders(selectionUpdate);
-        const multicall = new Multicall({ ethersProvider: provider, tryAggregate: false });
-        const contractCallContext: ContractCallContext[] = [{
-          reference: 'selectToken',
-          contractAddress: address,
-          abi: ERC20_ABI,
-          calls: [
-            { reference: 'getName', methodName: 'name', methodParameters: [] },
-            { reference: 'getSymbol', methodName: 'symbol', methodParameters: [] },
-            { reference: 'getDecimals', methodName: 'decimals', methodParameters: [] },
-            { reference: 'getBalanceOf', methodName: 'balanceOf', methodParameters: [walletAddress] },
-          ]
-        }];
-        const results: ContractCallResults = await multicall.call(contractCallContext);
+        const contract = new ethers.Contract(address, ERC20_ABI, provider);
+        const [symbol, name, decimals, balanceOf] = await Promise.all([
+          contract.symbol(),
+          contract.name(),
+          contract.decimals(),
+          contract.balanceOf(walletAddress)
+        ])
         setSelectTokenList({
           [address]: {
-            symbol: results.results.selectToken.callsReturnContext[1].returnValues[0], 
-            name: results.results.selectToken.callsReturnContext[0].returnValues[0], 
-            decimals: results.results.selectToken.callsReturnContext[2].returnValues[0],
-            balanceOf:  Number(toBigNumber(utils.formatEther(results.results.selectToken.callsReturnContext[3].returnValues[0].hex)).toString())
-           
+            symbol: symbol, 
+            name: name, 
+            decimals: decimals,
+            balanceOf:  Number(toBigNumber(utils.formatEther(balanceOf)).toString())
           }
         });
+        // const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
+        // const contractCallContext: ContractCallContext[] = [{
+        //   reference: 'selectToken',
+        //   contractAddress: address,
+        //   abi: ERC20_ABI,
+        //   calls: [
+        //     { reference: 'getName', methodName: 'name', methodParameters: [] },
+        //     { reference: 'getSymbol', methodName: 'symbol', methodParameters: [] },
+        //     { reference: 'getDecimals', methodName: 'decimals', methodParameters: [] },
+        //     { reference: 'getBalanceOf', methodName: 'balanceOf', methodParameters: [walletAddress] },
+        //   ]
+        // }];
+        // const results: ContractCallResults = await multicall.call(contractCallContext);
+        // setSelectTokenList({
+        //   [address]: {
+        //     symbol: results.results.selectToken.callsReturnContext[1].returnValues[0], 
+        //     name: results.results.selectToken.callsReturnContext[0].returnValues[0], 
+        //     decimals: results.results.selectToken.callsReturnContext[2].returnValues[0],
+        //     balanceOf:  Number(toBigNumber(utils.formatEther(results.results.selectToken.callsReturnContext[3].returnValues[0].hex)).toString())
+        //   }
+        // });
       }else{
         let searchTokenList = JSON.parse(localStorage.getItem("token") || "{}");
         searchTokenList = Object.entries(searchTokenList[currentChain] || {}).filter((token: any)=> token[1].symbol.toLocaleLowerCase().includes(address.toLocaleLowerCase()) || token[1].name.toLocaleLowerCase().includes(address.toLocaleLowerCase()));
