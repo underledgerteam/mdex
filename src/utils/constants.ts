@@ -19,7 +19,7 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
   //   BLOCK_EXPLORER_URLS: ["https://rinkeby.etherscan.io"],
   // },
   5: {
-    DOMAIN_CHAIN: 3331,
+    DOMAIN_CHAIN: 1735353714,
     NETWORK_NAME: "Goerli Testnet Network",
     NETWORK_SHORT_NAME: "Goerli",
     SYMBOL: "chian/ethereum.png",
@@ -34,17 +34,17 @@ export const SWAP_CONTRACTS: SWAP_CONTRACTS_INTERFACE = {
     BLOCK_EXPLORER_URLS: ["https://goerli.etherscan.io"],
   },
   420: {
-    // DOMAIN_CHAIN: 3331,
+    DOMAIN_CHAIN: 1735356532,
     NETWORK_NAME: "Optimism Goerli Testnet Network",
     NETWORK_SHORT_NAME: "Optimism Goerli",
     SYMBOL: "chian/ethereum.png",
     CHAIN_NAME: "Ethereum",
     CURRENCY_SYMBOL: "ETH",
-    // SWAP_ADDRESS: "0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a",
-    // SWAP_ABI: swapAbi,
+    SWAP_ADDRESS: "0x93C2DCE0cc0B9aFA001834c76d26180CE6FC367d",
+    SWAP_ABI: swapAbi,
     
-    // CROSS_SWAP_ADDRESS: "0x2594986EF5DDF0CdBfF07F2376AF1aD5397770d7",
-    // CROSS_SWAP_ABI: crossSwapAbi,
+    CROSS_SWAP_ADDRESS: "0x817F5b1eE8a26C80Fab7E74E58AE88e5b4DaB615",
+    CROSS_SWAP_ABI: crossSwapAbi,
     NATIVE_CURRENCY: {
       NAME: "Ethereum",
       SYMBOL: "ETH",
