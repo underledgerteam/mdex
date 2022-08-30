@@ -442,7 +442,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       if (selectedChain !== currentChain) {
         setSelectToken({ ...selectToken, [selector]: { ...selectToken[selector], ...defaultValue.selectToken.source } });
         setInputCurrency({ ...inputCurrency, [selector]: { ...inputCurrency[selector], ...defaultValue.inputCurrency.source } });
-        setSwapStatus({ ...swapStatus, isSwap: false });
+        setSwapStatus({ ...swapStatus, isSwap: false, isSwitch: (objSwap.source.chain === undefined || objSwap.destination.chain === undefined) });
         if (selectionUpdate === "Source") {
           if (objSwap.source.chain === objSwap.destination.chain) {
             objSwap = { ...objSwap, ["destination"]: defaultValue.swap.source, summary: defaultValue.swap.summary };
