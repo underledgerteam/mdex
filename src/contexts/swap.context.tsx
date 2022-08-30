@@ -422,7 +422,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
   const openSelectToken = async (selectionUpdate: string) => {
     const defaultToken = JSON.parse(localStorage.getItem("token") || "{}");
     let defaultTokenGetBalanceOf = await Promise.all(Object.entries(defaultToken[swap[selectionUpdate.toLocaleLowerCase()].chain || ""] || {}).map(async (list: any) => {
-      return [list[0], { ...list[1], balanceOf: (selectionUpdate === "Source") ? await getBalanceOf(selectionUpdate, list[0]) : undefined }];
+      return [list[0], { ...list[1], balanceOf: await getBalanceOf(selectionUpdate, list[0]) }];
     }));
     if (defaultTokenGetBalanceOf.length > 0) {
       await new Promise(resolve => setTimeout(resolve, 1000));
