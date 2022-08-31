@@ -369,7 +369,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           }
 
           await resultSwap.wait();
-          setSwapStatus({ ...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false });
+          setSwapStatus({ ...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false, isSwitch: (swap.source.chain === undefined || swap.destination.chain === undefined) });
           setSelectToken({ ...selectToken, source: { ...selectToken.source, balanceOf: toBigNumber(selectToken.source.balanceOf || "").minus(toBigNumber(inputCurrency.source.value || "")).toNumber() } });
           setInputCurrency({ source: { isDisabled: false, value: "" }, destination: { isDisabled: false, value: "" } });
           setSwap({
