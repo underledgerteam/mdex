@@ -92,6 +92,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       if (chainId !== currentChain) {
         await provider.send("wallet_switchEthereumChain", [{ chainId: ethers.utils.hexValue(chainId) }]);
       }
+      handelSuccess();
     } catch (error: any) {
       if (error.code === 4902) {
         await walletAddChain(chainId);

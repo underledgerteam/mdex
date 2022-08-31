@@ -251,7 +251,9 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       }
       walletSwitchChain(Number(swap.destination.chain), 
       ()=>{ 
-        // handelSuccess 
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const getContractToken = new ethers.Contract(beforeSwitchSwapObj?.destination?.token || "", ERC20_ABI || [], provider.getSigner());
+        setTokenContract(getContractToken);
       }, 
       ()=>{
         // handelFail
