@@ -68,7 +68,7 @@ const SwapPage = (): JSX.Element => {
           <SelectionSwap title="Destination" listOptionNetwork={listOptionNetwork} onClickSelectToken={handleOpenDestinationTokenModal} />
           {swapStatus.isTokenPool && !swapStatus.isSummaryLoading && swapStatus.isSwap && swap.summary.isSplitSwap !== undefined ? (
             <TransferRateCollapse {...{
-              title: `${1} ${selectToken.source.symbol} = ${toBigNumber(swap.summary.fee || "").plus(toBigNumber(swap.summary.expected || "")).div(toBigNumber(swap.source.value || "")).toString()} ${selectToken.destination.symbol}`,
+              title: `${1} ${selectToken.source.symbol} = ${toBigNumber(swap.summary.fee || "0").plus(toBigNumber(swap.summary.expected || "0")).div(toBigNumber(swap.source.value || "0")).toString()} ${selectToken.destination.symbol}`,
               source: {
                 chainName: listOptionNetwork?.find((x) => x.chainId === swap.source.chain)?.chainName,
                 networkName: selectToken.source.name,
