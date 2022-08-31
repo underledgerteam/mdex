@@ -46,7 +46,7 @@ const defaultValue: SwapContextInterface = {
   openSelectToken: () => { },
   debounceSelectToken: async (selectionUpdate: string, address: string) => { },
   swapConfirm: async () => { },
-  clearSwapStatus: () => { },
+  clearSwapStatus: (objStatus: SwapStatusType) => { },
   clearSelectTokenList: () => { },
   updateChain: () => { },
   updateToken: () => { },
@@ -249,18 +249,28 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       if (checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool) {
         await getSummaryBestRateSwap("Source", { ...swap, source: { ...swap.destination }, destination: { ...swap.source } });
       }
-      walletSwitchChain(Number(swap.destination.chain));
+      walletSwitchChain(Number(swap.destination.chain), 
+      ()=>{ 
+        // handelSuccess 
+      }, 
+      ()=>{
+        // handelFail
+        setSwap(beforeSwitchSwapObj);
+        setSelectToken(beforeSwitchTokenObj);
+        setInputCurrency(beforeSwitchCurrencyObj);
+        setSwapStatus({ ...swapStatus, isSwitch: false, isSwitchLoading: false });
+      });
       setSwapStatus({ ...swapStatus, isSwitchLoading: true, isSwitch: false });
     } catch (error: any) {
       setSwap(beforeSwitchSwapObj);
       setSelectToken(beforeSwitchTokenObj);
       setInputCurrency(beforeSwitchCurrencyObj);
+      setSwapStatus({ ...swapStatus, isSwitch: false, isSwitchLoading: false });
       notify(
         <DangerNotification
           message={error.toString()}
         />
       );
-      setSwapStatus({ ...swapStatus, isSwitch: false });
     }
   };
 
@@ -369,7 +379,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
           }
 
           await resultSwap.wait();
-          setSwapStatus({ ...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false, isSwitch: (swap.source.chain === undefined || swap.destination.chain === undefined) });
+          setSwapStatus({ ...swapStatus, isSuccess: true, isLink: `${SWAP_CONTRACTS[currentChain].BLOCK_EXPLORER_URLS?.[0]}/tx/${resultSwap.hash}`, isApproveLoading: false });
           setSelectToken({ ...selectToken, source: { ...selectToken.source, balanceOf: toBigNumber(selectToken.source.balanceOf || "").minus(toBigNumber(inputCurrency.source.value || "")).toNumber() } });
           setInputCurrency({ source: { isDisabled: false, value: "" }, destination: { isDisabled: false, value: "" } });
           setSwap({

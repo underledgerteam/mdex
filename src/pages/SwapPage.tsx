@@ -31,7 +31,7 @@ const SwapPage = (): JSX.Element => {
   };
 
   const handelCloseSuccessModal = () => {
-    clearSwapStatus();
+    clearSwapStatus({...swapStatus, isSuccess: false, isLink: '#'});
     setIsSuccessModal(false);
   };
 

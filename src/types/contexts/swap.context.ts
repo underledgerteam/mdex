@@ -13,7 +13,7 @@ export interface SwapContextInterface {
   updateSwap: (selectionUpdate: string, keyUpdate: string, objSwap: SwapType) => void,
   debounceSelectToken: (selectionUpdate: string, address: string) => void,
   swapConfirm: (isApprove: boolean, handelSuccess: Function, handelFail: Function) => void,
-  clearSwapStatus: () => void,
+  clearSwapStatus: (objStatus: SwapStatusType) => void,
   clearSelectTokenList: () => void,
   updateChain: (selectionUpdate: string, objSwap: SwapType) => void,
   updateToken: (selectionUpdate: string, objSwap: SwapType) => void,

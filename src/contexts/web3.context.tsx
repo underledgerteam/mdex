@@ -10,7 +10,7 @@ export interface Web3ContextInterface {
   isChainChangeReload: boolean;
   currentNetwork: () => Promise<number>;
   handleConnectWallet: Function;
-  walletSwitchChain: (chainId: number) => void;
+  walletSwitchChain: (chainId: number, handelSuccess?: Function, handelFail?: Function) => void;
 }
 
 const defaultValue: Web3ContextInterface = {
@@ -85,7 +85,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     const { chainId } = await provider.getNetwork();
     return chainId;
   };
-  const walletSwitchChain = async (chainId: number): Promise<void> => {
+  const walletSwitchChain = async (chainId: number, handelSuccess: Function = () => {}, handelFail: Function = () => {}): Promise<void> => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const currentChain = await currentNetwork();
@@ -96,6 +96,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       if (error.code === 4902) {
         await walletAddChain(chainId);
       }
+      handelFail();
       throw new Error("Can't Switch Chain");
     }
   };
