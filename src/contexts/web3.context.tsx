@@ -97,10 +97,9 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       handelSuccess();
     } catch (error: any) {
       if (error.code === 4902) {
-        await walletAddChain(chainId, handelSuccess, handelFail);
-      }else{
-        handelFail();
+        return await walletAddChain(chainId, handelSuccess, handelFail);
       }
+      handelFail();
       throw new Error("Can't Switch Chain");
     }
   };
