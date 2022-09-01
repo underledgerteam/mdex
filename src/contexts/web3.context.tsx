@@ -62,7 +62,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       console.error(e);
     }
   };
-  const walletAddChain = async (chainId: number): Promise<void> => {
+  const walletAddChain = async (chainId: number, handelSuccess: Function = () => {}, handelFail: Function = () => {}): Promise<void> => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       await provider.send("wallet_addEthereumChain", [{
@@ -76,7 +76,9 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
         rpcUrls: SWAP_CONTRACTS[chainId].RPC_URLS,
         blockExplorerUrls: SWAP_CONTRACTS[chainId].BLOCK_EXPLORER_URLS,
       }]);
+      handelSuccess();
     } catch (error) {
+      handelFail();
       throw new Error(`Can't Add ${SWAP_CONTRACTS[chainId].NETWORK_NAME} to Wallet`);
     }
   };
@@ -95,9 +97,10 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
       handelSuccess();
     } catch (error: any) {
       if (error.code === 4902) {
-        await walletAddChain(chainId);
+        await walletAddChain(chainId, handelSuccess, handelFail);
+      }else{
+        handelFail();
       }
-      handelFail();
       throw new Error("Can't Switch Chain");
     }
   };
