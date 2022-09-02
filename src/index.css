@@ -58,11 +58,19 @@ code {
   .estimated.tooltip:before {
     max-width: 6.5rem;
   }
+  .estimated-confirm.tooltip:before{
+    max-width: 13rem!important;
+    transform: translateX(-35%)!important;
+  }
 }
 
 @media (min-width: 281px) and (max-width: 360px) {
   .estimated.tooltip:before {
     max-width: 8rem;
+  }
+  .estimated-confirm.tooltip:before{
+    max-width: 13rem!important;
+    transform: translateX(-25%)!important;
   }
 }
 
@@ -70,14 +78,29 @@ code {
   .estimated.tooltip:before {
     max-width: 11rem;
   }
+  .estimated-confirm.tooltip:before{
+    max-width: 15rem!important;
+    transform: translateX(-20%)!important;
+  }
 }
 
 @media (min-width: 481px) and (max-width: 897px) {
   .estimated.tooltip:before {
     max-width: 18rem;
   }
+  .estimated-confirm.tooltip:before{
+    max-width: 25rem!important;
+    transform: translateX(-30%)!important;
+  }
 }
 
 .estimated.tooltip:before {
   z-index: 999;
+  position: absolute!important;
+  transform: translateY(-10%)!important;
+}
+
+.estimated-confirm.tooltip:before{
+  max-width: 25rem;
+  transform: translateX(-30%)!important;
 }
