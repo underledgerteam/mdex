@@ -613,6 +613,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         });
         setSelectTokenList(defaultValue.selectTokenList);
         setSwapStatus(defaultValue.swapStatus);
+        setInputCurrency(defaultValue.inputCurrency);
+        setSelectToken(defaultValue.selectToken);
       }
       // Every time the chain changes including change ro switch chain, this useEffect is running. because onListener chainChanged
       setSwapStatus({ ...swapStatus, isSwitchLoading: false });

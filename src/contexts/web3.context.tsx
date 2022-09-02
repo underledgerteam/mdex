@@ -113,7 +113,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
   };
   const handleAccountChange = (accounts: Array<string>): void => {
     if (accounts.length > 0) {
-      setWalletAddresss(accounts[0]);
+      checkWalletIsConnected();
     } else {
       window.location.reload();
     }
@@ -122,6 +122,7 @@ export const Web3Provider: React.FC<React.PropsWithChildren> = ({ children }) =>
     // window.location.reload();
     isChainChange = !isChainChange;
     setIsChainChangeReload(isChainChange);
+    checkWalletIsConnected();
   };
 
   useEffect(() => {
