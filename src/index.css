@@ -54,7 +54,30 @@ code {
   -webkit-box-orient: vertical;
 }
 
-.estimated.tooltip:before{
-  max-width: 13rem;
+@media (max-width: 280px) {
+  .estimated.tooltip:before {
+    max-width: 6.5rem;
+  }
+}
+
+@media (min-width: 281px) and (max-width: 360px) {
+  .estimated.tooltip:before {
+    max-width: 8rem;
+  }
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+  .estimated.tooltip:before {
+    max-width: 11rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 897px) {
+  .estimated.tooltip:before {
+    max-width: 18rem;
+  }
+}
+
+.estimated.tooltip:before {
   z-index: 999;
 }
