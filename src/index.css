@@ -53,3 +53,8 @@ code {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
+
+.estimated.tooltip:before{
+  max-width: 13rem;
+  z-index: 999;
+}
