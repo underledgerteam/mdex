@@ -111,7 +111,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     return (isExits || address === "") ? true : false;
   };
 
-  const getSummaryBestRateSwap = async (selectionUpdate: string, objSwap: SwapType) => {
+  const getSummaryBestRateSwap = async (selectionUpdate: string, objSwap: SwapType, objCurrency: InputCurrencyType = inputCurrency) => {
     let retries = 5, success = false, summary = defaultValue.swap.summary;
     setSwap({ ...objSwap, [selectionUpdate === "Source" ? "destination" : "source"]: { ...objSwap[selectionUpdate === "Source" ? "destination" : "source"], value: objSwap[selectionUpdate.toLocaleLowerCase()].value } });
     setSwapStatus({ ...swapStatus, isSwap: true, isSummaryLoading: true });
@@ -178,9 +178,9 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if (selectionUpdate !== "") {
           const keyUpdate = (selectionUpdate === "Source") ? "destination" : "source";
           objSwap = { ...objSwap, [keyUpdate]: { ...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value } };
-
+          
           setInputCurrency({
-            ...inputCurrency,
+            ...objCurrency,
             [keyUpdate]: {
               isDisabled: false,
               value: utils.formatEther(sumExpected.toString())
@@ -229,30 +229,26 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
     const beforeSwitchSwapObj = { ...swap };
     const beforeSwitchTokenObj = { ...selectToken };
     const beforeSwitchCurrencyObj = { ...inputCurrency };
+
+    const newObjSwap = { ...swap, source: { ...swap.destination }, destination: { ...swap.source }};
+    const newObjCurrency = { source: beforeSwitchCurrencyObj.destination, destination: beforeSwitchCurrencyObj.source };
+    const selectionUpdate = newObjCurrency.source.value === newObjSwap.source.value? "Source": "Destination";
+    const oppositeSelectionUpdate = newObjCurrency.source.value !== newObjSwap.source.value? "Source": "Destination";
     try {
       setSwapStatus({ ...swapStatus, isSwitch: true, isSwitchLoading: true, isSummaryLoading: true });
       setSelectToken({
         source: { ...beforeSwitchTokenObj.destination, balanceOf: beforeSwitchSwapObj.destination.token !== undefined ? await getBalanceOf("Destination", beforeSwitchSwapObj.destination.token || "") : undefined },
         destination: beforeSwitchTokenObj.source,
       });
-      setInputCurrency({
-        source: beforeSwitchCurrencyObj.destination,
-        destination: beforeSwitchCurrencyObj.source,
-      });
+      setInputCurrency({...newObjCurrency, [oppositeSelectionUpdate.toLocaleLowerCase()]: {value: "", isDisabled: false}});
       const checkSourceUndefined = Object.values(swap.source).every((value) => { return (value !== undefined && value !== "") ? true : false; });
       const checkDestinationUndefined = Object.values(swap.destination).every((value) => { return (value !== undefined && value !== "") ? true : false; });
       const isSourceTokenPool = await isTokenPool(swap.destination.token || "");
       const isDestinationTokenPool = await isTokenPool(swap.destination.token || "");
-      const newObjSwap = { ...swap, source: { ...swap.destination }, destination: { ...swap.source }};
+      
       setSwap({ ...newObjSwap, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined } });
       if (checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool) {
-        console.log("newObjSwap", newObjSwap);
-        console.log("setInputCurrency", {
-          source: beforeSwitchCurrencyObj.destination,
-          destination: beforeSwitchCurrencyObj.source,
-        });
-        
-        await getSummaryBestRateSwap("Source", newObjSwap);
+        await getSummaryBestRateSwap(selectionUpdate, newObjSwap, newObjCurrency);
       }
       walletSwitchChain(Number(swap.destination.chain), 
       async()=>{ 
