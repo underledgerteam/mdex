@@ -56,7 +56,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
                   <p className="font-semibold text-sm md:text-lg whitespace-nowrap">Estimated (LAT)</p>
                   <div className="flex items-start mt-[0.2rem] md:mt-[0.5rem] cursor-pointer w-4">
                     <div className="estimated tooltip" data-tip="Estimated received token may be subject to price impact or slippage that may cause estimated received token to be less or more than show.">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E727D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E727D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     </div>
                   </div>
                 </div>
@@ -70,7 +70,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
                   {`(${destination?.currencySymbol})`} 
                   <div className="cursor-pointer w-5 inline-block align-middle ml-1">
                     <div className="estimated tooltip tooltip-right" data-tip="Estimated received token may be subject to price impact or slippage that may cause estimated received token to be less or more than show.">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E727D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E727D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     </div>
                   </div>
                 </div>

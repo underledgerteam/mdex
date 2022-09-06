@@ -243,10 +243,16 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const checkDestinationUndefined = Object.values(swap.destination).every((value) => { return (value !== undefined && value !== "") ? true : false; });
       const isSourceTokenPool = await isTokenPool(swap.destination.token || "");
       const isDestinationTokenPool = await isTokenPool(swap.destination.token || "");
-
-      setSwap({ ...swap, source: { ...swap.destination }, destination: { ...swap.source }, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined } });
+      const newObjSwap = { ...swap, source: { ...swap.destination }, destination: { ...swap.source }};
+      setSwap({ ...newObjSwap, summary: { fee: undefined, recieve: undefined, expected: undefined, isSplitSwap: false, route: undefined } });
       if (checkSourceUndefined && checkDestinationUndefined && isSourceTokenPool && isDestinationTokenPool) {
-        await getSummaryBestRateSwap("Source", { ...swap, source: { ...swap.destination }, destination: { ...swap.source } });
+        console.log("newObjSwap", newObjSwap);
+        console.log("setInputCurrency", {
+          source: beforeSwitchCurrencyObj.destination,
+          destination: beforeSwitchCurrencyObj.source,
+        });
+        
+        await getSummaryBestRateSwap("Source", newObjSwap);
       }
       walletSwitchChain(Number(swap.destination.chain), 
       async()=>{ 
