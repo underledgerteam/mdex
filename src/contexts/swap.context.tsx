@@ -179,7 +179,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if (selectionUpdate !== "") {
           const keyUpdate = (selectionUpdate === "Source") ? "destination" : "source";
           objSwap = { ...objSwap, [keyUpdate]: { ...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value } };
-          const perRate = toBigNumber(summary.fee || "0").plus(toBigNumber(summary.expected || "0").div(toBigNumber(objSwap[keyUpdate].value || "0")));
+          const perRate = (toBigNumber(summary.fee || "0").plus(toBigNumber(summary.expected || "0")).div(toBigNumber(objSwap.source.value || "0")));
           setInputCurrency({
             ...objCurrency,
             [keyUpdate]: {
