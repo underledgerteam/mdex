@@ -179,13 +179,13 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if (selectionUpdate !== "") {
           const keyUpdate = (selectionUpdate === "Source") ? "destination" : "source";
           objSwap = { ...objSwap, [keyUpdate]: { ...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value } };
-          const newTotalValueCurrency = toBigNumber(summary.fee || "0").plus(toBigNumber(summary.expected || "0"));
+          const perRate = toBigNumber(summary.fee || "0").plus(toBigNumber(summary.expected || "0").div(toBigNumber(objSwap[keyUpdate].value || "0")));
           setInputCurrency({
             ...objCurrency,
             [keyUpdate]: {
               isDisabled: false,
               // value: utils.formatEther(sumExpected.toString())
-              value: ((selectionUpdate === "Destination")? toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0").div(newTotalValueCurrency) : newTotalValueCurrency).toString()
+              value: ((selectionUpdate === "Source")? (toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0")).mul(perRate) : (toBigNumber(objSwap[selectionUpdate.toLocaleLowerCase()].value || "0")).div(perRate)).toString()
             }
           });
         }
