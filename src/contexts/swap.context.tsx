@@ -158,9 +158,10 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             );
           }
         }
-
+        let isDestination = false;
         const route = mergeRoute.map((list: any) => {
-          return { ...list, fee: toBigNumber(utils.formatEther(toBigNumber(list.fee).toString())).toString() };
+          isDestination = (isDestination === false && typeof list.index === "string")? true: isDestination;
+          return { ...list, fee: toBigNumber(utils.formatEther(toBigNumber(list.fee).toString())).toString(), feeSymbol: isDestination? "TEST": selectToken.source.symbol };
         });
 
         toFee = toBigNumber(utils.formatEther(toBigNumber(fee).toString()));
@@ -183,7 +184,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
             ...objCurrency,
             [keyUpdate]: {
               isDisabled: false,
-              value: utils.formatEther(sumExpected.toString())
+              // value: utils.formatEther(sumExpected.toString())
+              value: toBigNumber(summary.fee || "0").plus(toBigNumber(summary.expected || "0")).toString()
             }
           });
         }

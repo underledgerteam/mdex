@@ -27,7 +27,8 @@ export interface SwapProviderInterface {
 export type SwapRouteType = {
   index: string,
   name: string,
-  fee: string;
+  fee: string,
+  feeSymbol?: string
 };
 
 export type SwapType = {

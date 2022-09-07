@@ -15,7 +15,7 @@ const TransferRateCollapse = (props: TransferRateCollapseInterface): JSX.Element
         {
           key: `${currentIndex}`,
           name: `${currentValue.name} Fee`,
-          fee: `${currentValue.fee ==="0"? ``: `${currentValue.fee} ${source?.currencySymbol}`}`
+          fee: `${currentValue.fee ==="0"? ``: `${currentValue.fee} ${currentValue.feeSymbol}`}`
         }
       ];
     }, []) || [];
