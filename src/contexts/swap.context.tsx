@@ -179,7 +179,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
         if (selectionUpdate !== "") {
           const keyUpdate = (selectionUpdate === "Source") ? "destination" : "source";
           objSwap = { ...objSwap, [keyUpdate]: { ...objSwap[keyUpdate], value: objSwap[selectionUpdate.toLocaleLowerCase()].value } };
-          setInputCurrency({ ...objCurrency, destination: { ...objCurrency.destination, value: utils.formatEther(sumExpected.toString())} });
+          setInputCurrency({ ...objCurrency, destination: { ...objCurrency.destination, value: toBigNumber(summary.expected || "0").plus(toBigNumber(summary.fee || "0")).toString() } });
         }
         setSwap({ ...objSwap, summary });
 
