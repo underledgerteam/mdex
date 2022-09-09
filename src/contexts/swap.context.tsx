@@ -448,8 +448,8 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const currentChain = swap[selector].chain;
       const selectedChain = objSwap[selector].chain;
       if (selectedChain !== currentChain) {
-        setSelectToken({ ...selectToken, [selector]: { ...selectToken[selector], ...defaultValue.selectToken.source } });
-        setInputCurrency({...defaultValue.inputCurrency, source: { value: "", isDisabled: (objSwap.source.token === undefined || objSwap.source.token === "") }});
+        setSelectToken({ ...selectToken, [selector]: { ...selectToken[selector], ...defaultValue.selectToken[selector] } });
+        setInputCurrency({ ...inputCurrency, [selector]: { ...inputCurrency[selector], ...defaultValue.inputCurrency[selector] } });
         setSwapStatus({ ...swapStatus, isSwap: false, isSwitch: (objSwap.source.chain === undefined || objSwap.destination.chain === undefined) });
         if (selectionUpdate === "Source") {
           if (objSwap.source.chain === objSwap.destination.chain) {
@@ -500,16 +500,19 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       });
       tokenSaveList[selectedChain || ""] = Object.fromEntries(sortToken);
       localStorage.setItem("token", JSON.stringify(tokenSaveList));
-      
+      let newInputCurrency = { ...inputCurrency, [selector]: { ...inputCurrency[selector] } };
       if (selectionUpdate === "Source") {
+        const key = "destination";
         const getContractToken = new ethers.Contract(selectTokenKey, ERC20_ABI || [], provider.getSigner());
         setTokenContract(getContractToken);
         if (objSwap.destination.value !== "" && objSwap.destination.value !== undefined) {
           _calCurrency = toBigNumber(objSwap.destination.value || 0).mul(_rete);
+          newInputCurrency = { ...newInputCurrency, [key]: { ...newInputCurrency[key], value: "" } };
         }
       } else {
         if (objSwap.source.value !== "" && objSwap.source.value !== undefined) {
           _calCurrency = toBigNumber(objSwap.source.value || 0).mul(_rete);
+          newInputCurrency = { ...newInputCurrency, [selector]: { ...newInputCurrency[selector], value: "" } };
         }
       }
       _calCurrency = toBigNumber(0);
@@ -522,7 +525,7 @@ export const SwapProvider = ({ children }: SwapProviderInterface) => {
       const isDestinationTokenPool = await isTokenPool(objSwap.destination.token || "");
 
       setSelectToken(_selectToken);
-      setInputCurrency({...defaultValue.inputCurrency, source: { value: "", isDisabled: (objSwap.source.token === undefined || objSwap.source.token === "") }});
+      setInputCurrency({...newInputCurrency, source: { ...newInputCurrency.source , isDisabled: (objSwap.source.token === undefined || objSwap.source.token === "") }} );
       setSwapStatus({
         ...swapStatus,
         isSummaryLoading: false,
